@@ -1,0 +1,19 @@
+ip: 192.168.44.44
+memory: 2048
+cpus: 1
+provider: virtualbox
+authorize: ~/.ssh/id_rsa.pub
+keys:
+    - ~/.ssh/id_rsa
+folders:
+    -
+        map: path/to/your/code
+        to: /home/vagrant/Code/timekeeper
+sites:
+    -
+        map: TimeKeeper.dev
+        to: /home/vagrant/Code/timekeeper/public
+databases:
+    - homestead
+name: timekeeper
+hostname: timekeeper
