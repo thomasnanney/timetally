@@ -11246,11 +11246,6 @@ var Clock = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'h1',
-                    null,
-                    'Hello, world!'
-                ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(FormattedDate, { date: this.state.date })
             );
         }
