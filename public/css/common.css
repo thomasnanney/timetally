@@ -6,11 +6,107 @@ body{
     display: none;
 }
 
+.relative{
+    position: relative;
+}
+
+.timer-container{
+    background-color: #fff;
+    padding:8px;
+}
+
+.timer-container input{
+    display: block;
+    width: 100%;
+    height: 50px;
+    padding: 6px 12px;
+    font-size: 24px;
+    line-height: 1.6;
+    color: #555555;
+    background-color: #fff;
+    border: none;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.tk-dropdown input{
+    font-size:16px;
+}
+
+.timer-container div[class*="timer-"]{
+    display: table;
+}
+
+.timer-container div[class*="timer-"] > *:not(div){
+    display: table-cell;
+    vertical-align: middle;
+    height:50px;
+}
+
+.timer-container .timer-set-time:hover{
+    cursor: pointer;
+}
+
+.tk-dropdown-container[class*="active"] .tk-dropdown, .tk-dropdown-container[class*="active"] .tk-arrow{
+    display: block !important;
+}
+
+.tk-dropdown{
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width:300px;
+    background-color: #fff;
+    -webkit-box-shadow: -2px 2px 5px 0px #000;
+    -moz-box-shadow: -2px 2px 5px 0px #000;
+    box-shadow: -2px 2px 5px 0px #000;
+    padding: 8px;
+}
+
+.tk-dropdown + .tk-arrow{
+    display: none;
+    position: absolute;
+    z-index: 1002;
+    width: 0;
+    height: 0;
+    border-left: 13px solid transparent;
+    border-bottom: 13px solid #fff;
+    -webkit-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+    box-shadow: 1px 1px 0 #c2c8cd;
+    content: ' ';
+    top:calc(100% - 5px);
+    left:35%;
+}
+
+.datepicker.datepicker-inline, .datepicker table{
+    width:100%;
+}
+
+.tk-projects-found{
+    margin: 15px 0px;
+}
+
+.tk-add-new-project{
+    background-color: #cecece;
+}
+
+.tk-add-new-project-dropdown .input-group{
+    width:100%;
+}
 @media screen and (min-width: 768px){
     .navbar.navbar-default.navbar-fixed-top{
         width:calc(100% - 200px);
         margin-left: 200px;
+        height: 60px;
     }
+
+    .content{
+        margin-top:60px;
+        margin-left:200px;
+        padding:30px;
+    }
+
     .sidebar{
         display: block;
         position: fixed;

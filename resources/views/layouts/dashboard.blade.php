@@ -14,6 +14,7 @@
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
     <link href="{{ mix('css/common.css') }}" rel="stylesheet">
     <link href="{{ asset('fonts/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
+    @yield('css')
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top">
@@ -70,13 +71,13 @@
         <img src="{{asset('images/hourglass.png')}}">
     </div>
     <ul>
-        <a href="#">
+        <a href="{{url('/timer')}}">
             <li>
                 <i class="fa fa-hourglass-half" aria-hidden="true"></i>
                 <span class="sidebar-text">Timer</span>
             </li>
         </a>
-        <a href="#">
+        <a href="{{url('/home')}}">
             <li>
                 <i class="fa fa-tachometer" aria-hidden="true"></i>
                 <span class="sidebar-text">Dashboard</span>
@@ -123,5 +124,6 @@
 
 <!-- Scripts -->
 <script src="{{ mix('js/app.js') }}"></script>
+@yield('js')
 </body>
 </html>
