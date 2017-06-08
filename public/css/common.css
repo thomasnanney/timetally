@@ -105,6 +105,21 @@ body{
     width:100%;
 }
 
+.fa.fa-usd{
+    color: #2ca02c;
+    font-size:20px;
+}
+
+.fa.fa-play-circle{
+    color: #4cae4c;
+    font-size:40px;
+}
+
+.fa.fa-tag{
+    color: #ac2925;
+    font-size:20px;
+}
+
 /*********************MENU CSS*************************/
 .menu ul{
     list-style:none;

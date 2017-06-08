@@ -118,7 +118,7 @@
                                 Client 1 - Project 1
                             </div>
                             <div class="col-xs-4 col-md-2 text-right">
-                                <i class="fa fa-usd" aria-hidden="true"></i>
+
                             </div>
                             <div class="col-xs-4 col-md-2">
                                 01:30:00
@@ -185,7 +185,7 @@
                                 Client 1 - Project 1
                             </div>
                             <div class="col-xs-4 col-md-2 text-right">
-                                <i class="fa fa-usd" aria-hidden="true"></i>
+
                             </div>
                             <div class="col-xs-4 col-md-2">
                                 01:30:00
@@ -220,7 +220,7 @@
                                 Client 1 - Project 1
                             </div>
                             <div class="col-xs-4 col-md-2 text-right">
-                                <i class="fa fa-usd" aria-hidden="true"></i>
+
                             </div>
                             <div class="col-xs-4 col-md-2">
                                 01:30:00
@@ -252,7 +252,7 @@
                                 Client 1 - Project 1
                             </div>
                             <div class="col-xs-4 col-md-2 text-right">
-                                <i class="fa fa-usd" aria-hidden="true"></i>
+
                             </div>
                             <div class="col-xs-4 col-md-2">
                                 01:30:00

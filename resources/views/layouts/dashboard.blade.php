@@ -134,25 +134,25 @@
     <small>Manage</small>
     <ul>
         <a href="{{url('/clients')}}">
-            <li>
+            <li class="{{ isActive('clients') }}">
                 <i class="fa fa-handshake-o" aria-hidden="true"></i>
                 <span class="sidebar-text">Clients</span>
             </li>
         </a>
         <a href="{{url('/projects')}}">
-            <li>
+            <li class="{{ isActive('projects') }}">
                 <i class="fa fa-briefcase" aria-hidden="true"></i>
                 <span class="sidebar-text">Projects</span>
             </li>
         </a>
         <a href="{{url('/users')}}">
-            <li>
+            <li class="{{ isActive('users') }}">
                 <i class="fa fa-users" aria-hidden="true"></i>
                 <span class="sidebar-text">Users</span>
             </li>
         </a>
         <a href="{{url('/workspaces')}}">
-            <li>
+            <li class="{{ isActive('workspaces') }}">
                 <i class="fa fa-building" aria-hidden="true"></i>
                 <span class="sidebar-text">Workspaces</span>
             </li>
