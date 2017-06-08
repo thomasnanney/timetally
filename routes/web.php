@@ -20,3 +20,7 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/timer', "TimerController@index")->name('timer');
+
+Route::get('/clients', "ClientsController@index")->name('clients');
+
+Route::get('/projects', "ProjectsController@index")->name('projects');
