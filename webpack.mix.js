@@ -13,3 +13,7 @@ const { mix } = require('laravel-mix');
 
 mix.react('resources/assets/js/app.jsx', 'public/js')
    .sass('resources/assets/sass/app.scss', 'public/css');
+
+mix.styles([
+    'resources/assets/css/dashboard.common.css'
+], 'public/css/common.css');
