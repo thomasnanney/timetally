@@ -45,6 +45,10 @@ body{
     display: table;
 }
 
+.timer-start-stop{
+    padding:0px;
+}
+
 .timer-container div[class*="timer-"] > *:not(div){
     display: table-cell;
     vertical-align: middle;
@@ -206,4 +210,8 @@ body{
     .menu li{
         color: #fff;
     }
+}
+
+.workspace-container{
+    background-color: #fff;
 }
