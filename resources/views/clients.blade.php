@@ -19,7 +19,7 @@
         </div>
         </div>
     </div>
-    <br>
+    <hr>
     <div class="row">
     <div class="timer-container">
         <div class="row">
@@ -37,7 +37,7 @@
                 <p>Currently there are <strong>4 active projects</strong> and <strong>2 workspaces</strong> being used</p>
             </div>
         </div>
-        <br>
+        <hr>
         <div class="row">
             <div class="col-xs-4 col-md-4 timer-description">
                 <div class="panel panel-default">
@@ -130,7 +130,7 @@
         </div>
     </div>
     </div>
-    <br>
+    <hr>
         <div class="row">
     <div class="timer-container">
         <div class="row">
@@ -148,7 +148,7 @@
                 <p>Currently there are <strong>4 active projects</strong> and <strong>2 workspaces</strong> being used</p>
             </div>
         </div>
-        <br>
+        <hr>
         <div class="row">
             <div class="col-xs-4 col-md-4 timer-description">
                 <div class="panel panel-default">
@@ -241,7 +241,7 @@
         </div>
     </div>
     </div>
-    <br>
+    <hr>
     
 @endsection
 
