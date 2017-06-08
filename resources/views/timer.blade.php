@@ -3,6 +3,7 @@
 @section('css')
     <link href="{{asset('libs/clockpicker/dist/bootstrap-clockpicker.css') }}" type="text/css" rel="stylesheet">
     <link href="{{asset('libs/datepicker/css/datepicker.css') }}" type="text/css" rel="stylesheet">
+    <link href="{{asset('css/timer.css')}}" type="text/css" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -99,6 +100,182 @@
                         <i class="fa fa-play-circle" aria-hidden="true"></i>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    <div class="log-container">
+        <div class="row">
+            <div class="col-xs-12">
+                <ul>
+                    <li>Today</li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 1
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 2
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 3
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul>
+                    <li>Yesterday</li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 1
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 3
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul>
+                    <li>Tuesday - June 6, 2017</li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 1
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 2
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 3
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 4
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li><li>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                Description 5
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                Client 1 - Project 1
+                            </div>
+                            <div class="col-xs-4 col-md-2 text-right">
+                                <i class="fa fa-usd" aria-hidden="true"></i>
+                            </div>
+                            <div class="col-xs-4 col-md-2">
+                                01:30:00
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
             </div>
         </div>
     </div>
