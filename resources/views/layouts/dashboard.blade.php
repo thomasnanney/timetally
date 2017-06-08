@@ -145,13 +145,13 @@
                 <span class="sidebar-text">Projects</span>
             </li>
         </a>
-        <a href="#">
+        <a href="{{url('/users')}}">
             <li>
                 <i class="fa fa-users" aria-hidden="true"></i>
                 <span class="sidebar-text">Users</span>
             </li>
         </a>
-        <a href="#">
+        <a href="{{url('/workspaces')}}">
             <li>
                 <i class="fa fa-building" aria-hidden="true"></i>
                 <span class="sidebar-text">Workspaces</span>

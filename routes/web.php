@@ -26,3 +26,7 @@ Route::get('/reports', "ReportsController@index")->name('timer');
 Route::get('/clients', "ClientsController@index")->name('clients');
 
 Route::get('/projects', "ProjectsController@index")->name('projects');
+
+Route::get('/users', "UsersController@index")->name('users');
+
+Route::get('/workspaces', "WorkspacesController@index")->name('workspaces');
