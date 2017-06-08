@@ -6,8 +6,18 @@
 @section('content')
     <div class="row">
     <div class="timer-container">
-
-    </div>
+        <div class="row">
+            <div class="col-md-2 text-left timer-description">
+                <h1>Clients</h1>
+            </div>
+        <div class="col-md-8 timer-description">
+            <input type="text" placeholder="Search Clients...">
+        </div>
+            <div class="col-md-2 timer-description">
+                <button type="button" class="btn">Add Client</button>
+            </div>
+        </div>
+        </div>
     </div>
     <br>
     <div class="row">
