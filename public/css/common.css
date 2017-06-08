@@ -2,6 +2,11 @@
 body{
     font-size:18px;
 }
+
+.content{
+    margin-top:60px;
+}
+
 .sidebar{
     display: none;
 }
@@ -15,7 +20,7 @@ body{
     padding:8px;
 }
 
-input{
+.tk-dropdown input, input{
     display: inline-block;
     width:100%;
     height: 50px;
@@ -26,6 +31,10 @@ input{
     background-color: transparent;
     border: none;
     transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.tk-dropdown .input-group{
+    width:100%;
 }
 
 .tk-dropdown input{
@@ -96,15 +105,52 @@ input{
     width:100%;
 }
 
+/*********************MENU CSS*************************/
+.menu ul{
+    list-style:none;
+    padding:20px;
+    width:100%;
+}
+
+.menu li{
+    display: table;
+    color: #777;
+    width:100%;
+}
+
+.menu li > *{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.menu i{
+    width:20%;
+}
+
+.menu .menu-text{
+    width:80%;
+}
+
+.menu a:hover {
+    text-decoration: none;
+}
+
+.menu .active{
+    background-color: darkgrey;
+    margin: 0px -10px;
+    padding:0px 10px;
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+}
+
 @media screen and (min-width: 768px){
     .navbar.navbar-default.navbar-fixed-top{
-        width:calc(100% - 200px);
-        margin-left: 200px;
-        height: 60px;
+        display: none;
     }
 
     .content{
-        margin-top:60px;
+        margin-top:0;
         margin-left:200px;
         padding:30px;
     }
@@ -118,13 +164,6 @@ input{
         background-color: slategrey;
         color: #fff;
         padding:15px;
-    }
-
-    .sidebar .active{
-        background-color: darkgrey;
-        border-radius: 10px;
-        margin: 0px 10px 0px -10px;
-        padding: 0px 10px;
     }
 
     .sidebar:after{
@@ -145,32 +184,11 @@ input{
         max-height: 100px;
     }
 
-    .sidebar ul{
-        list-style:none;
-        padding:0px;
-        width:100%;
+    .menu ul{
+        padding: 0px;
     }
 
-    .sidebar li{
-        display: table;
+    .menu li{
         color: #fff;
-        width:100%;
-    }
-
-    .sidebar li > *{
-        display: table-cell;
-        vertical-align: middle;
-    }
-
-    .sidebar i{
-        width:20%;
-    }
-
-    .sidebar .sidebar-text{
-        width:80%;
-    }
-
-    .sidebar a:hover{
-        text-decoration: none;
     }
 }

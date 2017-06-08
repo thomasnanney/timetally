@@ -1,21 +1,50 @@
 @extends('layouts.dashboard')
 
 @section('css')
-
+    <link href="{{asset('libs/datepicker/css/datepicker.css') }}" type="text/css" rel="stylesheet">
 @endsection
 
 @section('content')
     <div class="row">
     <div class="timer-container">
         <div class="row">
-            <div class="col-md-2 text-left timer-description">
+            <div class="col-md-2 text-left ">
                 <h1>Projects</h1>
             </div>
-        <div class="col-md-8 timer-description">
+        <div class="col-md-8 ">
             <input type="text" placeholder="Search Projects...">
         </div>
-            <div class="col-md-2 timer-description">
-                <button type="button" class="btn">Create Project</button>
+            <div class="col-md-2 tk-dropdown-container">
+                <button type="button" class="btn tk-dropdown-toggle">Create Client</button>
+                <div class="tk-dropdown set-project-dropdown tk-root">
+                    <form>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" placeholder="Client Name...">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" placeholder="Project Name...">
+                            </div>
+                            <div class="input-group">
+                                <input class="datepicker" type="text" placeholder="Start Date...">
+                            </div>
+                            <div class="input-group">
+                                <input class="datepicker" type="text" placeholder="End Date...">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" placeholder="Estimated Hours...">
+                            </div>
+                            <div class="input-group">
+                                <input type="text" placeholder="Projected Revenue...">
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="tk-arrow"></div>
             </div>
         </div>
         </div>
@@ -163,5 +192,9 @@
 
 
 @section('js')
-
+    <script type="text/javascript" src="{{asset('libs/datepicker/js/bootstrap-datepicker.js')}}"
+            charset="UTF-8"></script>
+    <script type="text/javascript">
+        jQuery('.datepicker').datepicker();
+    </script>
 @endsection

@@ -34,39 +34,71 @@
         </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="navbar">
+        <div class="collapse navbar-collapse menu" id="navbar">
             <ul class="nav navbar-nav navbar-right">
                 <!-- Authentication Links -->
                 @if (Auth::guest())
                     <li><a href="{{ route('login') }}">Login</a></li>
                     <li><a href="{{ route('register') }}">Register</a></li>
                 @else
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                            {{ Auth::user()->name }} <span class="caret"></span>
-                        </a>
-
-                        <ul class="dropdown-menu" role="menu">
-                            <li>
-                                <a href="{{ route('logout') }}"
-                                   onclick="event.preventDefault();
-                                                         document.getElementById('logout-form').submit();">
-                                    Logout
-                                </a>
-
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    {{ csrf_field() }}
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
+                    <a href="{{url('/timer')}}">
+                        <li class="{{ isActive('timer') }}">
+                            <i class="fa fa-hourglass-half" aria-hidden="true"></i>
+                            <span class="sidebar-text">Timer</span>
+                        </li>
+                    </a>
+                    <a href="{{url('/dashboard')}}">
+                        <li class="{{ isActive('dashboard')}}">
+                            <i class="fa fa-tachometer" aria-hidden="true"></i>
+                            <span class="sidebar-text">Dashboard</span>
+                        </li>
+                    </a>
+                    <a href="{{url('/reports')}}">
+                        <li class="{{ isActive('reports')}}">
+                            <i class="fa fa-line-chart" aria-hidden="true"></i>
+                            <span class="sidebar-text">Reports</span>
+                        </li>
+                    </a>
+                    <a href="{{url('/clients')}}">
+                        <li>
+                            <i class="fa fa-handshake-o" aria-hidden="true"></i>
+                            <span class="sidebar-text">Clients</span>
+                        </li>
+                    </a>
+                    <a href="{{url('/projects')}}">
+                        <li>
+                            <i class="fa fa-briefcase" aria-hidden="true"></i>
+                            <span class="sidebar-text">Projects</span>
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li>
+                            <i class="fa fa-users" aria-hidden="true"></i>
+                            <span class="sidebar-text">Users</span>
+                        </li>
+                    </a>
+                    <a href="#">
+                        <li>
+                            <i class="fa fa-building" aria-hidden="true"></i>
+                            <span class="sidebar-text">Workspaces</span>
+                        </li>
+                    </a>
+                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <li>
+                            <i class="fa fa-sign-out" aria-hidden="true"></i>
+                            <span class="sidebar-text">Logout</span>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                {{ csrf_field() }}
+                            </form>
+                        </li>
+                    </a>
                 @endif
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
 
-<div class="sidebar">
+<div class="sidebar menu">
     <div class="sidebar-header text-center">
         <img src="{{asset('images/hourglass.png')}}">
     </div>
@@ -87,6 +119,15 @@
             <li class="{{ isActive('reports')}}">
                 <i class="fa fa-line-chart" aria-hidden="true"></i>
                 <span class="sidebar-text">Reports</span>
+            </li>
+        </a>
+        <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <li>
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+                <span class="sidebar-text">Logout</span>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                {{ csrf_field() }}
+            </form>
             </li>
         </a>
     </ul>
