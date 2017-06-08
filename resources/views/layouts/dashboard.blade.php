@@ -72,19 +72,19 @@
     </div>
     <ul>
         <a href="{{url('/timer')}}">
-            <li>
+            <li class="{{ isActive('timer') }}">
                 <i class="fa fa-hourglass-half" aria-hidden="true"></i>
                 <span class="sidebar-text">Timer</span>
             </li>
         </a>
-        <a href="{{url('/home')}}">
-            <li>
+        <a href="{{url('/dashboard')}}">
+            <li class="{{ isActive('dashboard')}}">
                 <i class="fa fa-tachometer" aria-hidden="true"></i>
                 <span class="sidebar-text">Dashboard</span>
             </li>
         </a>
-        <a href="#">
-            <li>
+        <a href="{{url('/reports')}}">
+            <li class="{{ isActive('reports')}}">
                 <i class="fa fa-line-chart" aria-hidden="true"></i>
                 <span class="sidebar-text">Reports</span>
             </li>
