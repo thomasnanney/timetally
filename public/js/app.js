@@ -11197,16 +11197,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 
-function FormattedDate(props) {
-    return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-        'h2',
-        null,
-        'It is ',
-        props.date.toLocaleTimeString(),
-        '.'
-    );
-}
-
 var Clock = function (_Component) {
     _inherits(Clock, _Component);
 
@@ -11215,7 +11205,10 @@ var Clock = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, (Clock.__proto__ || Object.getPrototypeOf(Clock)).call(this, props));
 
-        _this.state = { date: new Date() };
+        _this.state = {
+            startDate: new Date(),
+            date: new Date()
+        };
         return _this;
     }
 
@@ -11246,18 +11239,26 @@ var Clock = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'h1',
-                    null,
-                    'Hello, world!'
-                ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(FormattedDate, { date: this.state.date })
+                msToTime(this.state.date - this.state.startDate)
             );
         }
     }]);
 
     return Clock;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+function msToTime(duration) {
+    var milliseconds = parseInt(duration % 1000 / 100),
+        seconds = parseInt(duration / 1000 % 60),
+        minutes = parseInt(duration / (1000 * 60) % 60),
+        hours = parseInt(duration / (1000 * 60 * 60) % 24);
+
+    hours = hours < 10 ? "0" + hours : hours;
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    return hours + ":" + minutes + ":" + seconds;
+}
 
 if (document.getElementById('clock')) {
     __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(Clock, null), document.getElementById('clock'));

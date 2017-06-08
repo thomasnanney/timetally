@@ -17,4 +17,16 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
+
+Route::get('/timer', "TimerController@index")->name('timer');
+
+Route::get('/reports', "ReportsController@index")->name('timer');
+
+Route::get('/clients', "ClientsController@index")->name('clients');
+
+Route::get('/projects', "ProjectsController@index")->name('projects');
+
+Route::get('/users', "UsersController@index")->name('users');
+
+Route::get('/workspaces', "WorkspacesController@index")->name('workspaces');
