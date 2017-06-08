@@ -22,3 +22,7 @@ Route::get('/dashboard', 'DashboardController@index')->name('dashboard');
 Route::get('/timer', "TimerController@index")->name('timer');
 
 Route::get('/reports', "ReportsController@index")->name('timer');
+
+Route::get('/clients', "ClientsController@index")->name('clients');
+
+Route::get('/projects', "ProjectsController@index")->name('projects');

@@ -288,18 +288,14 @@
             charset="UTF-8"></script>
     <script type="text/javascript">
         jQuery('.clockpicker').clockpicker({
-            donetext: 'Done'
+            donetext: 'Done',
+            twelvehour: true
         });
         jQuery('#datepicker').datepicker();
         jQuery('#datepicker').on('changeDate', function() {
             jQuery('#my_hidden_input').val(
                 jQuery('#datepicker').datepicker('getFormattedDate')
             );
-        });
-
-        jQuery('.tk-dropdown-toggle').on('click', function(){
-            var container = jQuery(this).parent();
-            container.hasClass('active') ? container.removeClass('active') : container.addClass('active');
         });
 
         jQuery('.tk-add-new-project').on('click', function(evt){

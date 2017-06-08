@@ -1,0 +1,18 @@
+.activity-sidebar{
+    background-color: #fff;
+    padding-top:15px;
+}
+
+.portrait-container{
+    display: table;
+}
+
+.portrait-container img{
+    display: table-cell;
+    vertical-align: middle;
+    max-width:300px;
+    -webkit-border-radius:100%;
+    -moz-border-radius:100%;
+    border-radius:100%;
+    margin:auto;
+}

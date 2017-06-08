@@ -92,13 +92,13 @@
     </ul>
     <small>Manage</small>
     <ul>
-        <a href="#">
+        <a href="{{url('/clients')}}">
             <li>
                 <i class="fa fa-handshake-o" aria-hidden="true"></i>
                 <span class="sidebar-text">Clients</span>
             </li>
         </a>
-        <a href="#">
+        <a href="{{url('/projects')}}">
             <li>
                 <i class="fa fa-briefcase" aria-hidden="true"></i>
                 <span class="sidebar-text">Projects</span>
@@ -124,6 +124,12 @@
 
 <!-- Scripts -->
 <script src="{{ mix('js/app.js') }}"></script>
+<script type="text/javascript">
+    jQuery('.tk-dropdown-toggle').on('click', function(){
+        var container = jQuery(this).parent();
+        container.hasClass('active') ? container.removeClass('active') : container.addClass('active');
+    });
+</script>
 @yield('js')
 </body>
 </html>
