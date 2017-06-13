@@ -85,6 +85,7 @@ input:checked + .slider:before {
 .chart-toggle-container{
     display: table;
     margin:auto;
+    padding-bottom:20px;
 }
 
 .chart-toggle-container > *{
