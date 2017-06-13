@@ -14,7 +14,9 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
+
     protected $web = 'App\Core\Controllers';
+    protected $api = 'App\API\Controllers';
     protected $auth = 'App\Auth\Controllers';
     protected $clients = 'App\Clients\Controllers';
     protected $dashboard = 'App\Dashboard\Controllers';
@@ -191,7 +193,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('api')
              ->middleware('api')
-             ->namespace($this->namespace)
-             ->group(base_path('routes/api.php'));
+             ->namespace($this->api)
+             ->group(base_path('app/API/routes.php'));
     }
 }
