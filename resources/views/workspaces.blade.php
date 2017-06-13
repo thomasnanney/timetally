@@ -6,10 +6,10 @@
 
 @section('content')
     <div class="row timer-container">
-        <div class="col-md-2 text-left ">
+        <div class="col-md-4 text-left ">
             <h1>Workspaces</h1>
         </div>
-        <div class="col-md-8 timer-description">
+        <div class="col-md-6 timer-description">
             <input type="text" placeholder="Search Workspaces...">
         </div>
         <div class="col-md-2 tk-dropdown-container">

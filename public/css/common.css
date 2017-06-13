@@ -1,6 +1,6 @@
 /************COMMON CSS*****************/
 body{
-    font-size:18px;
+    font-size:16px;
 }
 
 .content{
@@ -43,6 +43,7 @@ body{
 
 .timer-container div[class*="timer-"]{
     display: table;
+    padding: 0px !important;
 }
 
 .timer-start-stop{
