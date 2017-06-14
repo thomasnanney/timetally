@@ -23,7 +23,7 @@
             "App\\": "app/"
         },
         "files": [
-            "app/Helpers/isActive.php"
+            "app/Dashboard/Helpers/isActive.php"
         ]
     },
     "autoload-dev": {

@@ -52697,7 +52697,7 @@ function bindAutoBindMethod(component, method) {
         args[_key - 1] = arguments[_key];
       }
 
-      // User is trying to bind() an autobound method; we effectively will
+      // Users is trying to bind() an autobound method; we effectively will
       // ignore the value of "this" that the user is trying to use, so
       // let's warn.
       if (newThis !== component && newThis !== null) {

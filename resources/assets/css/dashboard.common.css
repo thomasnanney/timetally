@@ -2,6 +2,11 @@
 body{
     font-size:18px;
 }
+
+.content{
+    margin-top:60px;
+}
+
 .sidebar{
     display: none;
 }
@@ -15,17 +20,21 @@ body{
     padding:8px;
 }
 
-.timer-container input{
-    display: block;
-    width: 100%;
+.tk-dropdown input, input{
+    display: inline-block;
+    width:100%;
     height: 50px;
     padding: 6px 12px;
     font-size: 24px;
     line-height: 1.6;
     color: #555555;
-    background-color: #fff;
+    background-color: transparent;
     border: none;
     transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.tk-dropdown .input-group{
+    width:100%;
 }
 
 .tk-dropdown input{
@@ -61,6 +70,7 @@ body{
     -moz-box-shadow: -2px 2px 5px 0px #000;
     box-shadow: -2px 2px 5px 0px #000;
     padding: 8px;
+    z-index: 3;
 }
 
 .tk-dropdown + .tk-arrow{
@@ -94,15 +104,68 @@ body{
 .tk-add-new-project-dropdown .input-group{
     width:100%;
 }
+
+.fa.fa-usd{
+    color: #2ca02c;
+    font-size:20px;
+}
+
+.fa.fa-play-circle{
+    color: #4cae4c;
+    font-size:40px;
+}
+
+.fa.fa-tag{
+    color: #ac2925;
+    font-size:20px;
+}
+
+/*********************MENU CSS*************************/
+.menu ul{
+    list-style:none;
+    padding:20px;
+    width:100%;
+}
+
+.menu li{
+    display: table;
+    color: #777;
+    width:100%;
+}
+
+.menu li > *{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.menu i{
+    width:20%;
+}
+
+.menu .menu-text{
+    width:80%;
+}
+
+.menu a:hover {
+    text-decoration: none;
+}
+
+.menu .active{
+    background-color: darkgrey;
+    margin: 0px -10px;
+    padding:0px 10px;
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+}
+
 @media screen and (min-width: 768px){
     .navbar.navbar-default.navbar-fixed-top{
-        width:calc(100% - 200px);
-        margin-left: 200px;
-        height: 60px;
+        display: none;
     }
 
     .content{
-        margin-top:60px;
+        margin-top:0;
         margin-left:200px;
         padding:30px;
     }
@@ -136,32 +199,11 @@ body{
         max-height: 100px;
     }
 
-    .sidebar ul{
-        list-style:none;
-        padding:0px;
-        width:100%;
+    .menu ul{
+        padding: 0px;
     }
 
-    .sidebar li{
-        display: table;
+    .menu li{
         color: #fff;
-        width:100%;
-    }
-
-    .sidebar li > *{
-        display: table-cell;
-        vertical-align: middle;
-    }
-
-    .sidebar i{
-        width:20%;
-    }
-
-    .sidebar .sidebar-text{
-        width:80%;
-    }
-
-    .sidebar a:hover{
-        text-decoration: none;
     }
 }
