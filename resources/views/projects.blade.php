@@ -8,12 +8,12 @@
     <div class="row">
     <div class="timer-container">
         <div class="row">
-            <div class="col-md-2 text-left ">
+            <div class="col-md-4 text-left ">
                 <h1>Projects</h1>
             </div>
-        <div class="col-md-8 ">
-            <input type="text" placeholder="Search Projects...">
-        </div>
+            <div class="col-md-6 ">
+                <input type="text" placeholder="Search Projects...">
+            </div>
             <div class="col-md-2 tk-dropdown-container">
                 <button type="button" class="btn tk-dropdown-toggle">Create Client</button>
                 <div class="tk-dropdown set-project-dropdown tk-root">
