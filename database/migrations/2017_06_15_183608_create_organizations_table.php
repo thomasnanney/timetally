@@ -16,12 +16,12 @@ class CreateOrganizationsTable extends Migration
         Schema::create('organizations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->string('email');
-            $table->string('address');
-            $table->integer('subscriptionType');
-            $table->string('subscriptionRenewType');
-            $table->date('subscriptionStartDate');
-            $table->date('subscriptionEndDate');
+            $table->string('email')->nullable();
+            $table->string('address1');
+            $table->string('address2');
+            $table->string('city');
+            $table->string('state');
+            $table->string('postalCode');
             $table->timestamps();
         });
     }
