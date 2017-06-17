@@ -17,6 +17,8 @@ class CreateProjectsTable extends Migration
             $table->increments('id');
             $table->string('description');
             $table->integer('clientID');
+            $table->string('blllableType')->nullable();
+            $table->decimal('projectedRevenue', 7, 2);
             $table->timestamps();
         });
     }
