@@ -1,0 +1,131 @@
+.thin-border-bottom{
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.thick-border-bottom{
+    border-bottom: 4px solid #e5e5e5;
+}
+
+.table .thick-border-bottom .table-cell{
+    border-bottom: 4px solid #e5e5e5;
+}
+
+.table .thin-border-bottom .table-cell{
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.no-list-style{
+    list-style:none;
+}
+
+.list{
+    font-size: 1vmax;
+}
+
+.list li{
+    padding:10px;
+}
+
+.list li:nth-child(even){
+    background-color: #f5f5f5;
+}
+
+.clickable:hover {
+    cursor: pointer;
+}
+
+.table{
+    display: table;
+    width:100%;
+}
+
+.table-row{
+    display: table-row;
+}
+
+.table-cell{
+    display: table-cell;
+    padding:10px;
+}
+
+.workspace-list .table-row .table-cell:nth-child(1){
+    width: 50px;
+}
+
+.workspace-list .table-row .table-cell:nth-child(2){
+
+}
+
+.valign-bottom{
+    vertical-align: bottom;
+}
+
+.workspace-list .table-row .table-cell:nth-child(3){
+    width: 20%;
+}
+
+.table-cell.full-width-cell{
+    width:100% !important;
+}
+
+.large-container{
+    padding:40px;
+}
+
+.medium-container{
+    padding:20px;
+}
+
+.dark{
+    background-color: #dce5fa;
+}
+
+.drop{
+    box-shadow: 0 2px 6px 0 #d6d6d6 inset!important;
+}
+
+.raise{
+    box-shadow: -2px 2px 6px 0px #d6d6d6!important;
+}
+
+.no-margin{
+    margin:0px;
+}
+
+.no-padding{
+    padding: 0px;
+}
+
+.tile{
+    background-color: #fff;
+}
+
+li.tab{
+    display: inline-block;
+    padding: 20px;
+}
+
+li.tab:hover{
+    cursor: pointer;
+}
+
+li.tab.active{
+    color: #0c07aa;
+    border-bottom: 4px solid #0c07aa;
+}
+
+.margin-center{
+    margin: 0 auto;
+}
+
+.pane{
+    min-height:300px;
+}
+
+.pane input{
+    width:100%;
+}
+
+.pane-container .medium-container{
+    max-width: 600px;
+}

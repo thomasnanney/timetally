@@ -26,4 +26,12 @@ class WorkspacesController extends Controller
     {
         return view('workspaces');
     }
+
+    public function getViewWorkspace(){
+//        if($workspace){
+//
+//        }
+        return view('viewWorkspace');
+//        return redirect('/workspaces');
+    }
 }
