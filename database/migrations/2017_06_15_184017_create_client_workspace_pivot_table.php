@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateClientOrganizationPivotTable extends Migration
+class CreateClientWorkspacePivotTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateClientOrganizationPivotTable extends Migration
      */
     public function up()
     {
-        Schema::create('client_organization_pivot', function (Blueprint $table) {
+        Schema::create('client_workspace_pivot', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('clientID');
-            $table->integer('organizationID');
+            $table->integer('workspaceID');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateClientOrganizationPivotTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('client_organization_pivot');
+        Schema::dropIfExists('client_workspace_pivot');
     }
 }
