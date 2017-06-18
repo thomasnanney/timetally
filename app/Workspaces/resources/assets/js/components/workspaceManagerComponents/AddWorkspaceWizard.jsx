@@ -29,6 +29,30 @@ export default class AddWorkspaceWizard extends Component {
     }
 
     nextStep(){
+        let name = this.state.name;
+        let users = this.state.users;
+        let step = this.state.step;
+        let error = null;
+
+        if(step == 2){
+            if(name.length == 0){
+                error = "You must enter a name";
+            }
+            else if(name.length < 3){
+                error = "The name must be at least 3 characters";
+            }
+        }
+        if(step == 3){
+            //clear out empty users fields
+            users = users.filter(Boolean);
+        }
+
+        if(error){
+            this.setState({error: error});
+            return;
+        }else{
+            this.setState({error: error});
+        }
         this.setState((prevState, props) => ({
             step: prevState.step + 1,
         }));
@@ -37,7 +61,7 @@ export default class AddWorkspaceWizard extends Component {
     addWorkspace(){
         alert('You added a workspace');
         this.setState((prevState, porps) => ({
-           step: 1,
+            step: 1,
         }));
         this.props.addWorkspace(this.state.name);
     }
@@ -71,9 +95,9 @@ export default class AddWorkspaceWizard extends Component {
                         case 2:
                             return (
                                 <div>
-                                        <p>Give your workspace a name</p>
-                                        <input type="text" className="tk-form-input" value={this.state.name} placeholder="Workspace name..." onChange={this.setName}></input>
-                                        <button onClick={this.nextStep} className="btn tk-btn">Continue</button>
+                                    <p>Give your workspace a name</p>
+                                    <input type="text" className="tk-form-input" value={this.state.name} placeholder="Workspace name..." onChange={this.setName}></input>
+                                    <button onClick={this.nextStep} className="btn tk-btn">Continue</button>
                                 </div >
                             );
                         case 3:
@@ -93,6 +117,11 @@ export default class AddWorkspaceWizard extends Component {
                             return <p>Sorry we experienced an error.  Try reloading the page.</p>
                     }
                 }) ()}
+                {
+                    this.state.error
+                    ? <small className="error">{this.state.error}</small>
+                    : ''
+                }
             </div>
         );
     }

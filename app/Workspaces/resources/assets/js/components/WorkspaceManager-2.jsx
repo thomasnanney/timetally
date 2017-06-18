@@ -63,7 +63,7 @@ class WorkspaceManager extends Component {
     }
 }
 
-if(document.getElementById('workspaceManager')){
-    console.log("manager present");
-    ReactDOM.render(<WorkspaceManager />, document.getElementById('workspaceManager'));
+if(document.getElementById('workspaceManager')) {
+    console.log("Manager present");
+    ReactDOM.render(<WorkspaceManager/>, document.getElementById('workspaceManager'));
 }

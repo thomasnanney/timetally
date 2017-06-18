@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 //components imports
-import DropDownMenu from '../DropDownMenu';
+import DropDownMenu from './DropDownMenu';
 
 export default class ListItem extends Component {
 
@@ -9,7 +9,7 @@ export default class ListItem extends Component {
         super(props);
         this.state = {
             active: false,
-        }
+        };
 
         this.handleClick = this.handleClick.bind(this);
     }
