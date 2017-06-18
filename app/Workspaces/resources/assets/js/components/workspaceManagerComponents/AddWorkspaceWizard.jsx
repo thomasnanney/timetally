@@ -1,0 +1,99 @@
+import React, { Component } from 'react';
+
+//components imports
+
+export default class AddWorkspaceWizard extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            step: 1,
+            name: '',
+            users: [],
+            usersCount: 1
+        };
+
+        this.nextStep = this.nextStep.bind(this);
+        this.addWorkspace = this.addWorkspace.bind(this);
+        this.setName = this.setName.bind(this);
+        this.addUserField = this.addUserField.bind(this);
+        this.updateUserName = this.updateUserName.bind(this);
+    }
+
+    componentDidMount() {
+
+    }
+
+    componentWillUnmount() {
+
+    }
+
+    nextStep(){
+        this.setState((prevState, props) => ({
+            step: prevState.step + 1,
+        }));
+    }
+
+    addWorkspace(){
+        alert('You added a workspace');
+        this.setState((prevState, porps) => ({
+           step: 1,
+        }));
+        this.props.addWorkspace(this.state.name);
+    }
+
+    setName(event){
+        let inputName = event.target.value;
+        this.setState({
+            name: inputName
+        });
+    };
+
+    addUserField(){
+        this.setState((prevState, props) => ({
+            users: prevState.users.concat(['']),
+        }))
+    };
+
+    updateUserName(id, evt){
+        let users = this.state.users.slice();
+        users[id] = evt.target.value;
+        this.setState({users: users});
+    }
+
+    render() {
+        return (
+            <div className="add-workspace-wizard margin-center">
+                {(() => {
+                    switch(this.state.step){
+                        case 1:
+                            return <button onClick={this.nextStep} className="btn tk-btn">Add Workspace</button>
+                        case 2:
+                            return (
+                                <div>
+                                        <p>Give your workspace a name</p>
+                                        <input type="text" className="tk-form-input" value={this.state.name} placeholder="Workspace name..." onChange={this.setName}></input>
+                                        <button onClick={this.nextStep} className="btn tk-btn">Continue</button>
+                                </div >
+                            );
+                        case 3:
+                            return  (
+                                <div>
+                                    <p>Add Users</p>
+                                    {
+                                        this.state.users.map((user, id) => (
+                                            <input type="text" className="tk-form-input" value={this.state.users[id]} onChange={this.updateUserName.bind(this, id)}></input>
+                                        ))
+                                    }
+                                    <button onClick={this.addUserField} className="btn tk-btn">Add User</button>
+                                    <button onClick={this.addWorkspace} className="btn tk-btn">Finish</button>
+                                </div>
+                            );
+                        default:
+                            return <p>Sorry we experienced an error.  Try reloading the page.</p>
+                    }
+                }) ()}
+            </div>
+        );
+    }
+}

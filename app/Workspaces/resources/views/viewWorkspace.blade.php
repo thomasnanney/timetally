@@ -22,7 +22,7 @@
                     <div class="row">
                         <div class="col-xs-12 ">
                             <label>Workspace Name:</label>
-                            <input type="text">
+                            <input type="text" class="tk-form-input">
                         </div>
                     </div>
                 </div>

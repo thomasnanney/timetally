@@ -7,5 +7,5 @@
 
 require('./bootstrap');
 
-import Example from '../components/Example';
-import Clock from '../components/Clock';
+import Example from './components/Example';
+import Clock from './components/Clock';
