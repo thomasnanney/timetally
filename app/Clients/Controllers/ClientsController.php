@@ -2,10 +2,11 @@
 
 namespace App\Clients\Controllers;
 
-use App\Clients\Requests\CreateClient;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use App\Clients\Models\Client;
+use App\Clients\Requests\CreateClient;
+use App\Clients\Requests\UpdateClient;
 
 class ClientsController extends Controller
 {
@@ -29,7 +30,18 @@ class ClientsController extends Controller
         return view('clients');
     }
 
-    public function store(CreateClient $request){
+
+    public function find($id)
+    {
+
+        $client = Client::find($id);
+
+        return $client;
+    }
+
+
+    public function create(CreateClient $request)
+    {
         $client = new Client;
 
         $client->name = $request->input('name');
@@ -46,7 +58,9 @@ class ClientsController extends Controller
         return $client;
     }
 
-    public function update(CreateClient $request, $id){
+
+    public function update(UpdateClient $request, $id)
+    {
 
         $client = Client::find($id);
 
@@ -64,7 +78,9 @@ class ClientsController extends Controller
         return $client;
     }
 
-    public function delete($id){
+
+    public function delete($id)
+    {
 
         $client = Client::find($id);
 
