@@ -63,23 +63,27 @@ class ProjectsController extends Controller
                     'errors' => $v->errors(),
                 ]);
             }
-        }
-        // project information
-        $project = new Project;
-        $project->title = $data['title'];
-        $project->description = $data['description'];
 
-        // retrieve client ID from DB
+            // project information
+            $project = new Project;
+            $project->title = $data['title'];
+            $project->description = $data['description'];
+
+            // retrieve client ID from DB
         
-        $project->startDate = $data['startDate'];
-        $project->endDate = $date['endDate'];
-        $project->projectedTime = $data['projectedTime'];
-        $project->projectedRevenue = $data['projectedRevenue'];
-        $project->billableType = $data['billableType'];
-        $product->save();
+            $project->startDate = $data['startDate'];
+            $project->endDate = $date['endDate'];
+            $project->projectedTime = $data['projectedTime'];
+            $project->projectedRevenue = $data['projectedRevenue'];
+            $project->billableType = $data['billableType'];
+            $product->save();
+        }
+
         return respones()->json([
                     'status' => 'Success',
-                ]);
+            ]);
+
+        
     }
 
     public function deleteProject() {
