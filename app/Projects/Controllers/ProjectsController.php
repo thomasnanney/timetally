@@ -76,7 +76,7 @@ class ProjectsController extends Controller
             $project->projectedTime = $data['projectedTime'];
             $project->projectedRevenue = $data['projectedRevenue'];
             $project->billableType = $data['billableType'];
-            $product->save();
+            $project->save();
         }
 
         return respones()->json([
