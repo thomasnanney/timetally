@@ -68,4 +68,12 @@ class ClientsController extends Controller
 
     }
 
+
+    public function deleteClient(Client $client){
+        $client->delete();
+        return response()->json([
+            'status' => 'Client Successfully Deleted',
+        ]);
+    }
+
 }
