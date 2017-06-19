@@ -23,7 +23,7 @@ class Client extends Model
     ];
 
 
-    public function workspaces(){
+    public function getWorkspaces(){
         return $this->belongsToMany('App\Workspaces\Models\Workspace',
             'client_workspace_pivot',
             'clientID',
