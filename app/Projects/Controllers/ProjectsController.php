@@ -72,7 +72,7 @@ class ProjectsController extends Controller
             // retrieve client ID from DB
         
             $project->startDate = $data['startDate'];
-            $project->endDate = $date['endDate'];
+            $project->endDate = $data['endDate'];
             $project->projectedTime = $data['projectedTime'];
             $project->projectedRevenue = $data['projectedRevenue'];
             $project->billableType = $data['billableType'];
