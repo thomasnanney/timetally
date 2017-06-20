@@ -28,6 +28,7 @@ class AddNameToWorkspace extends Migration
     {
         Schema::table('workspaces', function (Blueprint $table) {
             //
+            $table->string('name');
         });
     }
 }
