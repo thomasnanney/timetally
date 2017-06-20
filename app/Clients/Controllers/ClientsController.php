@@ -89,7 +89,7 @@ class ClientsController extends Controller
 
     /**
      * @param Request $request Incoming request for editing a client
-     * @param $id ID of the client to be updated
+     * @param $id int ID of the client to be updated
      * @return \Illuminate\Http\JsonResponse On fail, return error messages, on success return success
      */
     public function editClient(Request $request, $id){
@@ -144,7 +144,7 @@ class ClientsController extends Controller
     }
 
     /**
-     * @param $id ID of the client ot be deleted
+     * @param $id int ID of the client ot be deleted
      * @return \Illuminate\Http\JsonResponse Return a success message on deletion
      */
     public function deleteClient($id){
