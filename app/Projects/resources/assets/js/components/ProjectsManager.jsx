@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-class ProejctsManager extends Component{
+import SearchBar from 'projects/ProjectManagerComponents/SearchBar'
+import ProjectsList from 'projects/ProjectManagerComponents/ProjectsList'
+class ProjectsManager extends Component{
 
     constructor(props){
-
+        super(props);
     }
 
     componentDidMount(){
@@ -17,9 +19,22 @@ class ProejctsManager extends Component{
 
     render(){
 
+        return (
+            <div>
+                <div className="row">
+                    <div className="col-xs-12">
+                        <span className="tk-header">Projects</span>
+                        <a href="/projects/add" className="btn tk-btn pull-right">Add Project</a>
+                    </div>
+                </div>
+                <br></br>
+                <SearchBar />
+                <ProjectsList />
+            </div>
+        );
     }
 }
 
 if(document.getElementById('projectManager')){
-    ReactDOM.render(<ProejctsManager/>, document.getElementById('projectManager'));
+    ReactDOM.render(<ProjectsManager/>, document.getElementById('projectManager'));
 }

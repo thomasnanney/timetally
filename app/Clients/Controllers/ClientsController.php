@@ -26,4 +26,12 @@ class ClientsController extends Controller
     {
         return view('clients');
     }
+
+    public function getAdd(){
+        return view('addClient');
+    }
+
+    public function getView(){
+        return view('viewClient');
+    }
 }

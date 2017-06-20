@@ -26,4 +26,12 @@ class ProjectsController extends Controller
     {
         return view('projects');
     }
+
+    public function getAdd(){
+        return view('addProject');
+    }
+
+    public function getView(){
+        return view('viewProject');
+    }
 }

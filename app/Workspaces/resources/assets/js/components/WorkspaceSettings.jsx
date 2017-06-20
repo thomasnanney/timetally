@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 //components imports
-import WorkspaceSettingsPane from './viewWorkspaceComponents/WorkspaceSettingsPane';
+import WorkspaceSettingsPane from 'workspaces/ViewWorkspaceComponents/WorkspaceSettingsPane';
 
 class WorkspaceSettings extends Component {
 

@@ -21,7 +21,7 @@ export default class DropDownMenu extends Component {
     render() {
 
         return (
-        <li><a href={this.props.link}>{this.props.title}</a></li>
+        <li><a href={this.props.link}>{this.props.name}</a></li>
         );
     }
 }

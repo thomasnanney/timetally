@@ -7,15 +7,11 @@
 
 @section('content')
     <div class="tk-container">
-        <div id="projectManager"></div>
+        <div id="createProject"></div>
     </div>
 @endsection
 
 
 @section('js')
-    <script type="text/javascript" src="{{asset('libs/datepicker/js/bootstrap-datepicker.js')}}"
-            charset="UTF-8"></script>
-    <script type="text/javascript">
-        jQuery('.datepicker').datepicker();
-    </script>
+
 @endsection

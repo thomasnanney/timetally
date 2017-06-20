@@ -106,7 +106,7 @@ export default class AddWorkspaceWizard extends Component {
                                     <p>Add Users</p>
                                     {
                                         this.state.users.map((user, id) => (
-                                            <input type="text" className="tk-form-input" value={this.state.users[id]} onChange={this.updateUserName.bind(this, id)}></input>
+                                            <input type="text" className="tk-form-input" placeholder="User's Email..." value={this.state.users[id]} onChange={this.updateUserName.bind(this, id)}></input>
                                         ))
                                     }
                                     <button onClick={this.addUserField} className="btn tk-btn">Add User</button>

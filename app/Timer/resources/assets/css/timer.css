@@ -1,0 +1,13 @@
+.log-container ul{
+    list-style: none;
+    margin-bottom:25px;
+}
+
+.log-container ul li:first-child{
+    font-weight:bold;
+    border-bottom: 1px solid #cecece;
+}
+
+.timer-start-stop{
+    padding: 0px;
+}

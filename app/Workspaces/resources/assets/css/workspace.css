@@ -1,11 +1,16 @@
-.action{
+.workspace-list .table-row .table-cell:nth-child(1){
+    width: 50px;
+}
+
+.workspace-list .table-row .table-cell:nth-child(2){
 
 }
 
-.thin-border-bottom{
-    border-bottom: 2px solid #e5e5e5;
+.workspace-list .table-row .table-cell:nth-child(3){
+    width: 20%;
 }
 
-.thick-border-bottom{
-    border-bottom: 4px solid #e5e5e5;
+.add-workspace-wizard{
+    max-width:400px;
 }
+

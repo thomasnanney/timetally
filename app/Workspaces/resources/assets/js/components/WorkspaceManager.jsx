@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
 //components imports
-import ListItem from './ListItem';
-import AddWorkspaceWizard from './workspaceManagerComponents/AddWorkspaceWizard';
+import ListItem from 'workspaces/WorkspaceManagerComponents/ListItem';
+import AddWorkspaceWizard from 'workspaces/WorkspaceManagerComponents/AddWorkspaceWizard';
 
 class WorkspaceManager extends Component {
 
@@ -11,7 +11,6 @@ class WorkspaceManager extends Component {
         super(props);
         this.state ={
             addNewActive: false,
-            workspaces: ['Workspace 1', 'Workspace 2', 'Workspace 3']
         };
 
         this.addWorkspace = this.addWorkspace.bind(this);
@@ -33,6 +32,21 @@ class WorkspaceManager extends Component {
 
     render() {
 
+        const  workspaces = [
+            {
+                name: 'Workspace 1',
+                link: '/workspaces/view/1'
+            },
+            {
+                name: 'Workspace 2',
+                link: '/workspaces/view/1'
+            },
+            {
+                name: 'Workspace 3',
+                link: '/workspaces/view/1'
+            },
+        ];
+
         return (
             <div>
                 <h1>Workspaces</h1>
@@ -45,9 +59,9 @@ class WorkspaceManager extends Component {
                         <div className="table-cell valign bottom">
                         </div>
                     </div>
-                    {this.state.workspaces.length > 0 ?
-                        this.state.workspaces.map((space, id) =>
-                            <ListItem name={space} key={id}/>
+                    {workspaces.length > 0 ?
+                        workspaces.map((space, id) =>
+                            <ListItem workspace={space} key={id}/>
                         )
                         :
                         <p>You do not have any workspaces...</p>
