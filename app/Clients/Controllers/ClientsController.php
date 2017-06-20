@@ -29,7 +29,10 @@ class ClientsController extends Controller
         return view('clients');
     }
 
-
+    /**
+     * @param Request $request Incoming creating a client
+     * @return \Illuminate\Http\JsonResponse On fail, return error messages, on success, return success
+     */
     public function createClient(Request $request) {
 
         $data = $request->all();
@@ -84,7 +87,11 @@ class ClientsController extends Controller
 
     }
 
-
+    /**
+     * @param Request $request Incoming request for editing a client
+     * @param $id ID of the client to be updated
+     * @return \Illuminate\Http\JsonResponse On fail, return error messages, on success return success
+     */
     public function editClient(Request $request, $id){
         $data = $request->all();
 
@@ -136,7 +143,10 @@ class ClientsController extends Controller
 
     }
 
-
+    /**
+     * @param $id ID of the client ot be deleted
+     * @return \Illuminate\Http\JsonResponse Return a success message on deletion
+     */
     public function deleteClient($id){
        $client = Client::find($id);
        $client->delete();

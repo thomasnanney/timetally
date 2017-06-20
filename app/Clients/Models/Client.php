@@ -9,7 +9,7 @@ class Client extends Model
 
 
     /**
-     * @var array
+     * @var array Fields that are mass assignable
      */
     protected $fillable = [
         'name',
@@ -22,7 +22,9 @@ class Client extends Model
         'description'
     ];
 
-
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany Pivot table relationship
+     */
     public function getWorkspaces(){
         return $this->belongsToMany('App\Workspaces\Models\Workspace',
             'client_workspace_pivot',
@@ -30,6 +32,9 @@ class Client extends Model
             'workspaceID');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany Has foreign key in Projects table
+     */
     public function getProjects(){
         return $this->hasMany('App\Projects\Models\Project', 'clientID');
     }
