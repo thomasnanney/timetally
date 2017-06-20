@@ -136,6 +136,7 @@ class ClientsController extends Controller
         $client->city = $request->input('city');
         $client->state = $request->input('state');
         $client->postalCode = $request->input('postalCode');
+        $client->description = $request->input('description');
         $client->save();
         return response()->json([
             'errors' => 'false'
