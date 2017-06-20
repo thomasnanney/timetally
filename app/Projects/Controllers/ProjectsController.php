@@ -72,7 +72,7 @@ class ProjectsController extends Controller
             // retrieve client ID from DB
         
             $project->startDate = $data['startDate'];
-            $project->endDate = $date['endDate'];
+            $project->endDate = $data['endDate'];
             $project->projectedTime = $data['projectedTime'];
             $project->projectedRevenue = $data['projectedRevenue'];
             $project->billableType = $data['billableType'];
@@ -85,8 +85,12 @@ class ProjectsController extends Controller
 
         
     }
-
-    public function deleteProject() {
-
+    /**
+    +     * @param $project of the client to be deleted
+    +     * @return redirect
+    +     */
+    public function deleteProject(Project $project) {
+        $project->delete();
+        return redirect()->to('/projects')->with('status','project deleted');
     }
 }
