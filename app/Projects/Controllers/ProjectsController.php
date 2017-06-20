@@ -5,6 +5,7 @@ namespace App\Projects\Controllers;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use App\Projects\Models\Project;
+use App\Clients\Models\Client;
 
 
 
@@ -27,6 +28,7 @@ class ProjectsController extends Controller
      */
     public function index()
     {
+        
         return view('projects');
     }
 
@@ -70,7 +72,9 @@ class ProjectsController extends Controller
             $project->description = $data['description'];
 
             // retrieve client ID from DB
-        
+            // assuming we are getting a string as input for client
+            $clientName = App\Clients\Model\Client::where('name', $data['clientName'])->first(); // iffy
+            $project->clientID = $clientName->id;
             $project->startDate = $data['startDate'];
             $project->endDate = $data['endDate'];
             $project->projectedTime = $data['projectedTime'];
