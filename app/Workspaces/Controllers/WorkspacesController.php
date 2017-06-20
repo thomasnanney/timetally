@@ -4,6 +4,7 @@ namespace App\Workspaces\Controllers;
 
 use App\Workspaces\Models\Workspace;
 use App\Clients\Models\Client;
+use App\Users\Models\User;
 
 
 class WorkspacesController extends Controller
@@ -25,10 +26,24 @@ class WorkspacesController extends Controller
      */
     public function index()
     {
+        // get workspaces that belong to organization
+        // pass it to the view
+
+        // Step 1: Get all the workspaces that belong to the organization
+        
+        // Step 2: Get all the projects that belong to each specific workspace
+
+        // Step 3: Get all the users that belong to each specific workspace
+
+        // Step 4: Pass it all to the view
+
         return view('workspaces');
     }
 
     public function createWorkspace() {
+
+        $user->Auth::user();
+
         if(isset($request->data['input'])) {
             $data = $request->data['input'];
             $messages = [
@@ -54,7 +69,7 @@ class WorkspacesController extends Controller
             $workspace->title = $data['name'];
             $workspace->description = $data['description'];
             $workspace->ownerID = $user->id;
-            $project->save();
+            $workspace->save();
         }
     }
 
