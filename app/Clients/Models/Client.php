@@ -29,4 +29,8 @@ class Client extends Model
             'clientID',
             'workspaceID');
     }
+
+    public function getProjects(){
+        return $this->hasMany('App\Projects\Models\Project', 'clientID');
+    }
 }
