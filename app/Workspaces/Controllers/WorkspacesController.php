@@ -51,7 +51,7 @@ class WorkspacesController extends Controller
                 'description.required' => 'Please enter a Workspace Description',
             ];
             $rules = [
-                'projectTitle' => 'required|string|min:1',
+                'workspaceName' => 'required|string|min:1',
                 'description' => 'sometimes|required|string|min:1',
             ];
 
@@ -78,7 +78,33 @@ class WorkspacesController extends Controller
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
 
-    public function updateWorkspace() {
+    public function editWorkspace(Request $request, Workspace $workspace) {
+        $data = $request->all();
+        $messages = array(
+            'workspaceName.required' => 'required|string|min:1',
+            'description.required' => 'nullable|string|min:1',
+        );
+        $rules = array(
+            'workspaceName.required' => 'Please enter a name for the workspace',
+            'description.string' => 'Please enter a description for the workspace',
+        );
 
+        $validator = Validator::make($data, $rules, $messages);
+
+        if($validator->fails()) {
+            return response()->json([
+                'errors' => 'true',
+                'messages' => $validator->errors(),
+                'status' => 'fail'
+            ]);
+        }
+
+        $workspace->name = $request->input['name'];
+        $workspace->description = $request->input['description'];
+        $workspace->save();
+
+        return response()->json([
+            'errors' => 'false'
+        ]);
     }
 }
