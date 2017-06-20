@@ -139,6 +139,7 @@ class ClientsController extends Controller
         $client->save();
         return response()->json([
             'errors' => 'false'
+        ]);
 
 
     }
