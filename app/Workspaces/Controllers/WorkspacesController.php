@@ -117,8 +117,5 @@ class WorkspacesController extends Controller
         $workspace->delete();
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
-
-    public function updateWorkspace() {
-
-    }
+    
 }
