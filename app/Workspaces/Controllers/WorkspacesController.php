@@ -41,9 +41,10 @@ class WorkspacesController extends Controller
     }
 
     public function createWorkspace() {
-
+        // Need UserID for entry creation in DB
         $user->Auth::user();
 
+        // validate info
         if(isset($request->data['input'])) {
             $data = $request->data['input'];
             $messages = [
@@ -64,7 +65,7 @@ class WorkspacesController extends Controller
                 ]);
             }
 
-            // project information
+            // workspace information
             $workspace = new Workspace;
             $workspace->title = $data['name'];
             $workspace->description = $data['description'];
@@ -74,11 +75,15 @@ class WorkspacesController extends Controller
     }
 
     public function deleteWorkspace(Workspace $workspace) {
+
+        // Delete workspace from DB
         $workspace->delete();
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
 
     public function editWorkspace(Request $request, Workspace $workspace) {
+
+        // Validate Info
         $data = $request->all();
         $messages = array(
             'workspaceName.required' => 'required|string|min:1',
@@ -98,7 +103,8 @@ class WorkspacesController extends Controller
                 'status' => 'fail'
             ]);
         }
-
+        
+        // Edit workspace Info
         $workspace->name = $request->input['name'];
         $workspace->description = $request->input['description'];
         $workspace->save();

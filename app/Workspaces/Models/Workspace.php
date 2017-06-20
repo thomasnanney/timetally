@@ -12,7 +12,15 @@ class Workspace extends Model
     );
 
     public function workspaceUsers() {
-        // TODO: return users assigned to projects
+        // TODO: return users assigned to workspace
 
+    }
+
+    public function workspaceProjects() {
+        // TODO: return projects assigned to workspace
+    }
+
+    public function setOrganization() {
+        // TODO: set the organization ID for the workspace
     }
 }
