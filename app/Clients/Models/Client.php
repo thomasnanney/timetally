@@ -25,7 +25,7 @@ class Client extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany Pivot table relationship
      */
-    public function getWorkspaces(){
+    public function queryWorkspaces(){
         return $this->belongsToMany('App\Workspaces\Models\Workspace',
             'client_workspace_pivot',
             'clientID',
@@ -35,7 +35,7 @@ class Client extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany Has foreign key in Projects table
      */
-    public function getProjects(){
+    public function queryProjects(){
         return $this->hasMany('App\Projects\Models\Project', 'clientID');
     }
 }
