@@ -26,4 +26,17 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function addUserToWorkspace($workspaceID) {
+        if(!(DB::table('user_workspace_pivot')
+            ->where('workspaceID', '=', $workspaceID)
+            ->where('userID', '=', $this->id)
+            ->exists())
+        ) {
+            DB::table('user_workspace_pivot')->insert([
+                'userID' => $this->id,
+                'workspaceID' => $workspaceID,
+            ]);
+        }
+    }
 }
