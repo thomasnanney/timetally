@@ -16,8 +16,6 @@ class UserRegisterTest extends TestCase
      */
     public function testValidRegistration()
     {
-//        $user = factory(User::class, 1)->make();
-//        $this->be($user);
         $response = $this->call('POST', '/register',
             array(
                 '_token' => csrf_token(),
@@ -35,6 +33,23 @@ class UserRegisterTest extends TestCase
     }
 
     public function testInvalidPassword()
+    {
+        $response = $this->call('POST', '/register',
+            array(
+                '_token' => csrf_token(),
+                'name' => 'John Smith',
+                'email' => 'John@example.com',
+                'password' => 'te',
+                'password_confirmation' => 'te'
+            ));
+
+        $this->assertEquals(302, $response->getStatusCode());
+        $response->assertSessionHasErrors([
+            'password'
+        ]);
+    }
+
+    public function testMismatchPassword()
     {
         $response = $this->call('POST', '/register',
             array(
@@ -77,6 +92,23 @@ class UserRegisterTest extends TestCase
                 'email' => '',
                 'password' => 'te3',
                 'password_confirmation' => 'test'
+            ));
+
+        $this->assertEquals(302, $response->getStatusCode());
+        $response->assertSessionHasErrors([
+            'email'
+        ]);
+    }
+
+    public function testInvalidEmail()
+    {
+        $response = $this->call('POST', '/register',
+            array(
+                '_token' => csrf_token(),
+                'name' => 'John Smith',
+                'email' => 'Johnny',
+                'password' => 'test123',
+                'password_confirmation' => 'test123'
             ));
 
         $this->assertEquals(302, $response->getStatusCode());
