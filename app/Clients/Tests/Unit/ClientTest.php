@@ -25,11 +25,6 @@ class ClientTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $this->assertDatabaseHas('clients', [
-
-            'name' => 'Client 1'
-
-        ]);
 
 
 
@@ -59,7 +54,7 @@ class ClientTest extends TestCase
 
                 '_token' => csrf_token(),
 
-                'date' => [
+                'data' => [
 
                     'name' => 'Client 1',
 
@@ -67,7 +62,7 @@ class ClientTest extends TestCase
 
                     'address1' => 'Address 1',
 
-                    'address2' => 'sadfasdf',
+                    'address2' => '',
 
                     'city' => 'San Antonio',
 
@@ -104,7 +99,7 @@ class ClientTest extends TestCase
 
         $this->be($user);
 
-        $response = $this->call('POST', '/clients/edit/2',
+        $response = $this->call('POST', '/clients/edit/10',
 
             array(
 

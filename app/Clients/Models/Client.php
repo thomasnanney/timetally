@@ -52,7 +52,7 @@ class Client extends Model
                 'name' => 'required|string|min:1',
                 'email' => 'required|email',
                 'address1' => 'required|string|min:1',
-                'address2' => 'sometimes|string',
+                'address2' => 'nullable|string|min:1',
                 'city' => 'required|string|min:1',
                 'state' => 'required|string|min:1',
                 'postalCode' => 'required|digits:5',
