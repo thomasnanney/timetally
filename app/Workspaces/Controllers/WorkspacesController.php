@@ -40,7 +40,7 @@ class WorkspacesController extends Controller
         return view('workspaces');
     }
 
-    public function updateWorkspace(Request $request, $id)
+    public function updateWorkspace(Request $request, Workspace $workspace)
     {
         $data = $request->all();
 
@@ -69,7 +69,6 @@ class WorkspacesController extends Controller
         }
 
         //workspace information
-        $workspace = Workspace::find($id);
         $workspace->name = $request->input('name');
         $workspace->description = $request->input('description');
         $workspace->organizationID = $request->input('organizationID');
@@ -80,13 +79,13 @@ class WorkspacesController extends Controller
 
     }
 
-    public function createWorkspace() {
+    public function createWorkspace(Request $request) {
         // Need UserID for entry creation in DB
         $user->Auth::user();
 
         // validate info
-        if(isset($request->data['input'])) {
-            $data = $request->data['input'];
+        if(isset($request->data['array'])) {
+            $data = $request->data['array'];
             $messages = [
                 'workspaceName.required' => 'Please enter a Workspace Name',
                 'description.required' => 'Please enter a Workspace Description',
