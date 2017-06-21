@@ -37,27 +37,23 @@ class ClientsController extends Controller
 
         $data = $request->input('data');
 
-        if(isset($data)) {
+        $validator = Client::validate($data);
 
-            return Client::createClient($data);
-
+        if ($validator->fails()){
+            return response()->json([
+                'errors' => 'true',
+                'messages' => $validator->errors(),
+                'status' => 'fail'
+            ]);
         }
 
+        Client::create($data);
+
         return response()->json([
-
-            'errors' => 'true',
-
-            'status' => 'fail',
-
-            'messages' => [
-
-                'No input provided'
-
-            ]
-
+            'errors' => 'false',
+            'messages' => null,
+            'status' => 'success'
         ]);
-
-
     }
 
     /**
@@ -66,10 +62,38 @@ class ClientsController extends Controller
      * @return \Illuminate\Http\JsonResponse On fail, return error messages, on success return success
      */
     public function editClient(Request $request, $id){
+
         $data = $request->input('data');
 
-        return Client::editClient($data, $id);
+        $validator = Client::validate($data);
 
+        if ($validator->fails()){
+            return response()->json([
+                'errors' => 'true',
+                'messages' => $validator->errors(),
+                'status' => 'fail'
+            ]);
+        }
+
+        // client information
+        $client = Client::find($id);
+        if($client){
+            $client->fill($data);
+            $client->save();
+            return response()->json([
+                'errors' => 'false',
+                'messages' => null,
+                'status' => 'success'
+            ]);
+        }
+
+        return response()->json([
+            'errors' => 'true',
+            'messages' => array(
+                'No client found'
+            ),
+            'status' => 'fail'
+        ]);
     }
 
     /**
@@ -77,7 +101,23 @@ class ClientsController extends Controller
      * @return \Illuminate\Http\JsonResponse Return a success message on deletion
      */
     public function deleteClient($id){
-       return Client::deleteClient($id);
+        if(Client::find($id)){
+            Client::destroy($id);
+
+            return response()->json([
+                'errors' => 'false',
+                'status' => 'success'
+            ]);
+        }
+
+        return response()->json([
+            'errors' => 'true',
+            'status' => 'fail',
+            'messages' => [
+                'Client not found'
+            ]
+        ]);
+
     }
 
 }

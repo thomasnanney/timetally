@@ -15,10 +15,18 @@ class Project extends Model
         'scope',
         'billableHourlyType',
         'billableRate',
+        'title',
+        'description',
+        'billableType',
+        'projectedRevenue',
+        'startDate',
+        'endDate',
+        'projectedTime',
     );
 
     public function projectUsers() {
         // TODO: return users assigned to projects
+
     }
 
     /**
@@ -36,5 +44,14 @@ class Project extends Model
                 'projectID' => $this->id,
             ]);
         }
+
+
+    }
+
+    public static function deleteProject($id){
+        Project::destroy($id);
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }

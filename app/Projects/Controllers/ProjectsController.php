@@ -5,7 +5,7 @@ namespace App\Projects\Controllers;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use App\Projects\Models\Project;
-use App\Projects\Models\Projects_user;
+use App\Clients\Models\Client;
 
 class ProjectsController extends Controller
 {
@@ -25,11 +25,15 @@ class ProjectsController extends Controller
      */
     public function index()
     {
+        
         return view('projects');
     }
+
+
     public function createProject(Request $request) {
-        if(isset($request->data['input'])) {
-            $data = $request->data['input'];
+
+        if(isset($request['data'])) {
+            $data = $request['data'];
             $messages = [
                 'projectTitle.required' => 'Please enter a Project Title',
                 'description.required' => 'Please enter a Project Description',
@@ -50,6 +54,7 @@ class ProjectsController extends Controller
                 'projectedRevenue' => 'required|decimal',
                 'billableType' => 'sometimes|required|string|min:1',
             ];
+          
             $v = Validator::make($data, $rules, $messages);
             if($v->failes()) {
                 return response()->json([
