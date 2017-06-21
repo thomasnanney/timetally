@@ -13,7 +13,7 @@ class CreateTimeEntriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('timeentries', function (Blueprint $table) {
+        Schema::create('time_entries', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('workspaceID');
             $table->integer('projectID');
@@ -33,6 +33,6 @@ class CreateTimeEntriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('timekeeper');
+        Schema::dropIfExists('time_entries');
     }
 }
