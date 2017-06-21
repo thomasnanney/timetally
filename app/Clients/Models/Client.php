@@ -82,6 +82,7 @@ class Client extends Model
         Client::create($data);
         return response()->json([
             'errors' => 'false',
+            'messages' => null,
             'status' => 'success',
         ]);
 
@@ -132,7 +133,9 @@ class Client extends Model
         $client->fill($data);
         $client->save();
         return response()->json([
-            'errors' => 'false'
+            'errors' => 'false',
+            'message' => null,
+            'status' => 'success'
         ]);
 
 
@@ -145,6 +148,7 @@ class Client extends Model
     public static function deleteClient($id){
         Client::destroy($id);
         return response()->json([
+            'errors' => 'false',
             'status' => 'success'
         ]);
 }
