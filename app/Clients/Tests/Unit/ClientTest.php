@@ -59,7 +59,7 @@ class ClientTest extends TestCase
 
                 '_token' => csrf_token(),
 
-                'data' => [
+                'date' => [
 
                     'name' => 'Client 1',
 

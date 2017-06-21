@@ -46,47 +46,62 @@ class Client extends Model
      */
     public static function createClient(array $data) {
 
-        $rules = array (
-            'name' => 'required|string|min:1',
-            'email' => 'required|email',
-            'address1' => 'required|string|min:1',
-            'address2' => 'sometimes|string',
-            'city' => 'required|string|min:1',
-            'state' => 'required|string|min:1',
-            'postalCode' => 'required|digits:5',
-            'description' => 'nullable|string|min:1'
-        );
+        if(isset($data)) {
 
-        $messages = array(
-            'name.required' => 'Please enter a Company Name',
-            'email.required' => 'Please enter an E-Mail',
-            'address1.required' => 'Please enter an Address',
-            'address2.string' => 'Please enter an Address2',
-            'city.required' => 'Please enter a City',
-            'state.required' => 'Please enter a State',
-            'postalCode.required' => 'Please enter a Postal Code',
-            'description.required' => 'Please enter a Description'
-        );
+            $rules = array(
+                'name' => 'required|string|min:1',
+                'email' => 'required|email',
+                'address1' => 'required|string|min:1',
+                'address2' => 'sometimes|string',
+                'city' => 'required|string|min:1',
+                'state' => 'required|string|min:1',
+                'postalCode' => 'required|digits:5',
+                'description' => 'nullable|string|min:1'
+            );
 
-        $validator = Validator::make($data, $rules, $messages);
+            $messages = array(
+                'name.required' => 'Please enter a Company Name',
+                'email.required' => 'Please enter an E-Mail',
+                'address1.required' => 'Please enter an Address',
+                'address2.string' => 'Please enter an Address2',
+                'city.required' => 'Please enter a City',
+                'state.required' => 'Please enter a State',
+                'postalCode.required' => 'Please enter a Postal Code',
+                'description.required' => 'Please enter a Description'
+            );
 
-        if ($validator->fails()){
+            $validator = Validator::make($data, $rules, $messages);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'errors' => 'true',
+                    'messages' => $validator->errors(),
+                    'status' => 'fail'
+                ]);
+            }
+
+            // client information
+            Client::create($data);
             return response()->json([
-                'errors' => 'true',
-                'messages' => $validator->errors(),
-                'status' => 'fail'
+                'errors' => 'false',
+                'messages' => null,
+                'status' => 'success',
             ]);
         }
 
-        // client information
-        Client::create($data);
-        return response()->json([
-            'errors' => 'false',
-            'messages' => null,
-            'status' => 'success',
+        return response()-json([
+
+            'status' => 'fail',
+
+            'errors' => 'true',
+
+            'messages' => [
+
+                'Missing input to create a new Client.',
+
+            ]
+
         ]);
-
-
     }
 
     /**

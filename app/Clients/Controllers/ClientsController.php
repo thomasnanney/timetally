@@ -37,7 +37,25 @@ class ClientsController extends Controller
 
         $data = $request->input('data');
 
-        return Client::createClient($data);
+        if(isset($data)) {
+
+            return Client::createClient($data);
+
+        }
+
+        return response()->json([
+
+            'errors' => 'true',
+
+            'status' => 'fail',
+
+            'messages' => [
+
+                'No input provided'
+
+            ]
+
+        ]);
 
 
     }
