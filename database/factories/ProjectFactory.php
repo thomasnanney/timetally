@@ -19,7 +19,7 @@ $factory->define(App\Projects\Models\Project::class, function (Faker\Generator $
         'id' => $faker->randomDigitNotNull,
         'description' => $faker->paragraph,
         'clientID' => $faker->randomDigitNotNull,
-        'billableType' => $faker->word,
+        'billableType' => 'byProject',
         'projectedRevenue' => $faker->numberBetween(0,1000),
         'created_at' => $faker->dateTime,
         'updated_at' => $faker->dateTime,

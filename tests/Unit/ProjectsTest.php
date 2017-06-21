@@ -17,8 +17,8 @@ class ProjectsTest extends TestCase
      */
     public function testPostUpdateScope()
     {
-        factory(\App\Projects\Models\Project::class)->create();
-        $response = $this->call('POST', '/projects/views/{project}',
+        $project = factory(\App\Projects\Models\Project::class)->create();
+        $response = $this->call('POST', '/projects/views/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'description' => 'test',
@@ -33,6 +33,27 @@ class ProjectsTest extends TestCase
 
         $this->assertDatabaseHas('projects', [
             'scope' => 'public',
+        ]);
+    }
+
+    public function testPostUpdateBillableType()
+    {
+        $project = factory(\App\Projects\Models\Project::class)->create();
+        $response = $this->call('POST', '/projects/views/'.$project->id,
+            array(
+                '_token' => csrf_token(),
+                'description' => 'test',
+                'clientID' => 'abc123',
+                'billableType' => 'byProject',
+                'scope' => 'public',
+                'billableHourlyType' => 'none',
+                'billableRate' => '1000'
+            ));
+
+        $this->assertEquals(302, $response->getStatusCode());
+
+        $this->assertDatabaseHas('projects', [
+            'billableType' => 'byProject',
         ]);
     }
 }
