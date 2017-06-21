@@ -42,7 +42,10 @@ class WorkspacesController extends Controller
 
     public function updateWorkspace(Request $request, Workspace $workspace)
     {
-        $data = $request->all();
+        
+        // needs to get wrapped in an isset ...
+        
+        $data = $request['data'];
 
         //error messages
         $messages = array(
@@ -69,9 +72,9 @@ class WorkspacesController extends Controller
         }
 
         //workspace information
-        $workspace->name = $request->input('name');
-        $workspace->description = $request->input('description');
-        $workspace->organizationID = $request->input('organizationID');
+        $workspace->name = $data['name'];
+        $workspace->description = $data['description']; //$request->input('description');
+        $workspace->organizationID = $data['organizationID']; // $request->input('organizationID');
         $workspace->save();
         return response()->json([
             'errors' => 'false'
@@ -84,8 +87,8 @@ class WorkspacesController extends Controller
         $user->Auth::user();
 
         // validate info
-        if(isset($request->data['array'])) {
-            $data = $request->data['array'];
+        if(isset($request['data'])) {
+            $data = $request['data'];
             $messages = [
                 'workspaceName.required' => 'Please enter a Workspace Name',
                 'description.required' => 'Please enter a Workspace Description',
@@ -118,38 +121,5 @@ class WorkspacesController extends Controller
         // Delete workspace from DB
         $workspace->delete();
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
-    }
-
-    public function editWorkspace(Request $request, Workspace $workspace) {
-
-        // Validate Info
-        $data = $request->all();
-        $messages = array(
-            'workspaceName.required' => 'required|string|min:1',
-            'description.required' => 'nullable|string|min:1',
-        );
-        $rules = array(
-            'workspaceName.required' => 'Please enter a name for the workspace',
-            'description.string' => 'Please enter a description for the workspace',
-        );
-
-        $validator = Validator::make($data, $rules, $messages);
-
-        if($validator->fails()) {
-            return response()->json([
-                'errors' => 'true',
-                'messages' => $validator->errors(),
-                'status' => 'fail'
-            ]);
-        }
-        
-        // Edit workspace Info
-        $workspace->name = $request->input['name'];
-        $workspace->description = $request->input['description'];
-        $workspace->save();
-
-        return response()->json([
-            'errors' => 'false'
-        ]);
     }
 }
