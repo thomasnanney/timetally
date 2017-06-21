@@ -43,8 +43,29 @@ class WorkspacesController extends Controller
     public function updateWorkspace(Request $request, Workspace $workspace)
     {
         $data = $request->input('data');
-        return Workspace::updateWorkspace($data, $id);
+        $validator = false;
+        if(isset($request['data'])) {
+            $validator = Workspace::validateWorkspace($data);
 
+            if($validator->fails()) {
+                return respones()->json([
+                    'status' => 'Fail',
+                    'errors' => $validator->errors(),
+                ]);
+            }
+            $workspace->name = $request->input('name');
+            $workspace->description = $request->input('description');
+            $workspace->organizationID = $request->input('organizationID');
+            $workspace->save();
+            return response()->json([
+                'errors' => 'false'
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'Fail',
+            'errors' => 'No input',
+        ]);
     }
 
     public function createWorkspace(Request $request) {

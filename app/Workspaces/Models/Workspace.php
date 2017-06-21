@@ -42,6 +42,7 @@ class Workspace extends Model
 
         $validator = Validator::make($data, $rules, $messages);
 
+
         if ($validator->fails()){
             return response()->json([
                 'errors' => 'true',
@@ -59,5 +60,27 @@ class Workspace extends Model
         return response()->json([
             'errors' => 'false'
         ]);
+    }
+
+    public static function workspaceValidator( array $data) {
+
+        // error messages
+        $messages = array(
+            'name.required' => 'Please enter a Company Name',
+            'description.required' => 'Please enter a Description',
+            'organizationID.required' => 'Please enter an Organziation ID'
+        );
+
+        //rules
+        $rules = array(
+            'name' => 'required|string|min:1',
+            'description' => 'nullable|string|min:1',
+            'organizationID' => 'sometimes|required|int'
+        );
+
+        $validator = Validator::make($data, $rules, $messages);
+
+        return $validator;
+        
     }
 }
