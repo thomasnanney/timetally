@@ -15,7 +15,7 @@
                 <input type="text" placeholder="Search Projects...">
             </div>
             <div class="col-md-2 tk-dropdown-container">
-                <button type="button" class="btn tk-dropdown-toggle">Create Project</button>
+                <button type="button" class="btn tk-dropdown-toggle">Create Client</button>
                 <div class="tk-dropdown set-project-dropdown tk-root">
                     <form>
                         <div class="form-group">
@@ -24,9 +24,6 @@
                             </div>
                             <div class="input-group">
                                 <input type="text" placeholder="Project Name...">
-                            </div>
-                            <div class="input-group">
-                                <input type="text" placeholder="Project Description...">
                             </div>
                             <div class="input-group">
                                 <input class="datepicker" type="text" placeholder="Start Date...">
@@ -39,12 +36,6 @@
                             </div>
                             <div class="input-group">
                                 <input type="text" placeholder="Projected Revenue...">
-                            </div>
-                            <div class="input-group">
-                                <input type="text" placeholder="Projected Time...">
-                            </div>
-                            <div class="input-group">
-                                <input type="text" placeholder="Billable Type...">
                             </div>
                         </div>
                         <hr>
