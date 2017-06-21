@@ -34,8 +34,8 @@ class ProjectsController extends Controller
 
     public function createProject(Request $request) {
 
-        if(isset($request->data['input'])) {
-            $data = $request->data['input'];
+        if(isset($request['data'])) {
+            $data = $request['data'];
             $messages = [
                 'projectTitle.required' => 'Please enter a Project Title',
                 'description.required' => 'Please enter a Project Description',
