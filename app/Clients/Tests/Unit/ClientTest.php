@@ -3,10 +3,9 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
-
-use Illuminate\Foundation\Testing\DatabaseMigrations;
-
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use App\Users\Models\User as User;
+use App\Clients\Models\Client as Client;
 
 class ClientTest extends TestCase
 
@@ -17,7 +16,7 @@ class ClientTest extends TestCase
 
     public function testClientIndex()
     {
-        $user = factory(\App\Users\Models\User::class)->make();
+        $user = factory(User::class)->make();
 
         $this->be($user);
 
@@ -44,11 +43,11 @@ class ClientTest extends TestCase
 
     {
 
-        $user = factory(\App\Users\Models\User::class)->make();
+        $user = factory(User::class)->make();
 
         $this->be($user);
 
-        $response = $this->call('POST', '/clients/',
+        $response = $this->call('POST', '/clients',
 
             array(
 
@@ -62,7 +61,7 @@ class ClientTest extends TestCase
 
                     'address1' => 'Address 1',
 
-                    'address2' => '',
+                    'address2' => 'Address 2',
 
                     'city' => 'San Antonio',
 
@@ -75,8 +74,6 @@ class ClientTest extends TestCase
                 ]
 
             ));
-
-        var_dump($response->getContent());
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -95,11 +92,13 @@ class ClientTest extends TestCase
 
     public function testEditClient()
     {
-        $user = factory(\App\Users\Models\User::class)->make();
+        $user = factory(User::class)->make();
 
         $this->be($user);
 
-        $response = $this->call('POST', '/clients/edit/10',
+        $client = factory(Client::class)->create();
+
+        $response = $this->call('POST', '/clients/edit/'.$client->id,
 
             array(
 
@@ -113,7 +112,7 @@ class ClientTest extends TestCase
 
                     'address1' => 'Address 1',
 
-                    'address2' => 'sadfasdf',
+                    'address2' => 'Suite 700',
 
                     'city' => 'San Antonio',
 
@@ -126,8 +125,6 @@ class ClientTest extends TestCase
                 ]
 
             ));
-
-        var_dump($response->getContent());
 
         $this->assertEquals(200, $response->getStatusCode());
 
@@ -144,7 +141,68 @@ class ClientTest extends TestCase
 
     public function testDeleteClient()
     {
-        $this->assertTrue(true);
+        $user = factory(User::class)->make();
+
+        $this->be($user);
+
+        $client = factory(Client::class)->create();
+
+        $response = $this->call('DELETE', '/clients/delete/'.$client->id,
+
+            array(
+
+                '_token' => csrf_token(),
+
+            ));
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertEquals('success', $data['status']);
+    }
+
+    public function testDeleteClientNoId()
+    {
+        $user = factory(User::class)->make();
+
+        $this->be($user);
+
+        $response = $this->call('DELETE', '/clients/delete/',
+
+            array(
+
+                '_token' => csrf_token(),
+
+            ));
+
+        $this->assertEquals(404, $response->getStatusCode());
+
+        //ToDo: make 404 page
+        //shoudl redirect to  a cusotm 404 page
+    }
+
+    public function testDeleteClientInvalidId()
+    {
+        $user = factory(User::class)->make();
+
+        $this->be($user);
+
+        $response = $this->call('DELETE', '/clients/delete/19023842093854',
+
+            array(
+
+                '_token' => csrf_token(),
+
+            ));
+
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Client not found', $data['messages'][0]);
     }
 
 }
