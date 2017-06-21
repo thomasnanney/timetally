@@ -42,43 +42,8 @@ class WorkspacesController extends Controller
 
     public function updateWorkspace(Request $request, Workspace $workspace)
     {
-        
-        // needs to get wrapped in an isset ...
-        
-        $data = $request['data'];
-
-        //error messages
-        $messages = array(
-            'name.required' => 'Please enter a Company Name',
-            'description.required' => 'Please enter a Description',
-            'organizationID.required' => 'Please enter an Organziation ID'
-        );
-
-        //rules
-        $rules = array(
-            'name' => 'required|string|min:1',
-            'description' => 'nullable|string|min:1',
-            'organizationID' => 'sometimes|required|int'
-        );
-
-        $validator = Validator::make($data, $rules, $messages);
-
-        if ($validator->fails()){
-            return response()->json([
-                'errors' => 'true',
-                'messages' => $validator->errors(),
-                'status' => 'fail'
-            ]);
-        }
-
-        //workspace information
-        $workspace->name = $data['name'];
-        $workspace->description = $data['description']; //$request->input('description');
-        $workspace->organizationID = $data['organizationID']; // $request->input('organizationID');
-        $workspace->save();
-        return response()->json([
-            'errors' => 'false'
-        ]);
+        $data = $request->input('data');
+        return Workspace::updateWorkspace($data, $id);
 
     }
 
@@ -122,4 +87,5 @@ class WorkspacesController extends Controller
         $workspace->delete();
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
+
 }

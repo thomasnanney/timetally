@@ -19,4 +19,11 @@ class Project extends Model
         // TODO: return users assigned to projects
 
     }
+
+    public static function deleteProject($id){
+        Project::destroy($id);
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
 }
