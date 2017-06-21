@@ -90,9 +90,9 @@ class ProjectsController extends Controller
         
     }
     /**
-    +     * @param $project of the client to be deleted
-    +     * @return redirect
-    +     */
+         * @param $project of the client to be deleted
+         * @return redirect
+     */
     public function deleteProject(Project $project) {
         $project->delete();
         return redirect()->to('/projects')->with('status','project deleted');
