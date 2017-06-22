@@ -2,9 +2,9 @@
 
 namespace App\Clients\Controllers;
 
-use Validator;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
+use JavaScript;
 use App\Clients\Models\Client;
 
 class ClientsController extends Controller
@@ -33,7 +33,7 @@ class ClientsController extends Controller
      * @param Request $request Incoming creating a client
      * @return \Illuminate\Http\JsonResponse On fail, return error messages, on success, return success
      */
-    public function createClient(Request $request) {
+    public function postCreate(Request $request) {
 
         $data = $request->input('data');
 
@@ -56,12 +56,16 @@ class ClientsController extends Controller
         ]);
     }
 
+    public function getCreate(){
+        return view('createClient');
+    }
+
     /**
      * @param Request $request Incoming request for editing a client
      * @param $id int ID of the client to be updated
      * @return \Illuminate\Http\JsonResponse On fail, return error messages, on success return success
      */
-    public function editClient(Request $request, $id){
+    public function postEdit(Request $request, $id){
 
         $data = $request->input('data');
 
@@ -96,12 +100,17 @@ class ClientsController extends Controller
         ]);
     }
 
+    public function getEdit(Client $client){
+        return view('editClient', ['client' => $client]);
+    }
+
     /**
      * @param $id int ID of the client ot be deleted
      * @return \Illuminate\Http\JsonResponse Return a success message on deletion
      */
-    public function deleteClient($id){
-        if(Client::find($id)){
+    public function deleteClient($id)
+    {
+        if (Client::find($id)) {
             Client::destroy($id);
 
             return response()->json([
@@ -120,4 +129,7 @@ class ClientsController extends Controller
 
     }
 
+    public function getProjectsByUsersWorkspaces(Client $client){
+        return $client->queryProjectsByUsersWorkspaces()->get();
+    }
 }

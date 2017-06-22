@@ -1,6 +1,7 @@
 <?php
-namespace App\Models;
+namespace App\Workspaces\Models;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
 
 class Workspace extends Model
 {
@@ -8,61 +9,27 @@ class Workspace extends Model
     protected $fillable = array(
         'name',
         'description',
-        'organizationID',
+        'ownerID',
+        'organizationID'
     );
 
-    public function workspaceUsers() {
-        // TODO: return users assigned to workspace
-
+    public function queryUsers() {
+        return $this->belongsToMany('App\Users\Models\User', 'user_workspace_pivot', 'workspaceID', 'userID');
     }
 
-    public function workspaceProjects() {
-        // TODO: return projects assigned to workspace
+    public function queryProjects() {
+        return $this->hasMany('App\Projects\Models\Project', 'workspaceID');
     }
 
     public function setOrganization() {
         // TODO: set the organization ID for the workspace
     }
 
-    public static function updateWorkspace( array $data, $id) {
-
-        //error messages
-        $messages = array(
-            'name.required' => 'Please enter a Company Name',
-            'description.required' => 'Please enter a Description',
-            'organizationID.required' => 'Please enter an Organziation ID'
-        );
-
-        //rules
-        $rules = array(
-            'name' => 'required|string|min:1',
-            'description' => 'nullable|string|min:1',
-            'organizationID' => 'sometimes|required|int'
-        );
-
-        $validator = Validator::make($data, $rules, $messages);
-
-
-        if ($validator->fails()){
-            return response()->json([
-                'errors' => 'true',
-                'messages' => $validator->errors(),
-                'status' => 'fail'
-            ]);
-        }
-
-        //workspace information
-        $workspace = Workspace::find($id);
-        $workspace->name = $request->input('name');
-        $workspace->description = $request->input('description');
-        $workspace->organizationID = $request->input('organizationID');
-        $workspace->save();
-        return response()->json([
-            'errors' => 'false'
-        ]);
+    public function queryClients(){
+        return $this->belongsToMany('App\Clients\Models\Client', 'client_workspace_pivot', 'workspaceID', 'clientID');
     }
 
-    public static function workspaceValidator( array $data) {
+    public static function validate( array $data) {
 
         // error messages
         $messages = array(

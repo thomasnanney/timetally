@@ -15,9 +15,10 @@ class CreateWorkspaceTable extends Migration
     {
         Schema::create('workspaces', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('ownerID')->nullable(); // A user that starts the workspace
+            $table->string('title');
+            $table->integer('ownerID'); // A user that starts the workspace
             $table->integer('organizationID')->nullable(); // the organizaiton
-            $table->string('description');
+            $table->text('description');
             $table->timestamps();
         });
     }

@@ -1,32 +1,55 @@
 <?php
 namespace App\Projects\Models;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
+
 class Project extends Model
 {
     //set fillable and guarded
     protected $fillable = array(
-        'id',
         'description',
         'clientID',
         'billableType',
         'projectedRevenue',
-        'created_at',
-        'updated_at',
-        'scope',
-        'billableHourlyType',
-        'billableRate',
         'title',
-        'description',
-        'billableType',
-        'projectedRevenue',
         'startDate',
         'endDate',
         'projectedTime',
+        'scope',
+        'billableHourlyType',
+        'billableRate'
     );
 
-    public function projectUsers() {
-        // TODO: return users assigned to projects
+    public static function validate($data){
 
+        $tempData = array_filter($data, function($value){
+            return !is_null($value);
+        });
+        var_dump($tempData);
+
+        $messages = [
+            'title.required' => 'Please enter a Project Title',
+            'clientID.required' => 'Please enter a Client Name',
+            'startDate.required' => 'Please enter a Start Date',
+            'endDate.required' => 'Please enter an End Date',
+            'billableType.required' => 'Please enter Billable Type',
+        ];
+        $rules = [
+            'title' => 'required|string|min:1',
+            'description' => 'sometimes|string|min:1',
+            'clientID' => 'required|integer|exists:clients,id', // needs to exist
+            'startDate' => 'required',
+            'endDate' => 'required',
+            'projectedTime' => 'required|integer|',
+            'projectedRevenue' => 'sometimes|numeric',
+            'billableType' => 'required|string|min:1',
+        ];
+
+        return Validator::make($tempData, $rules, $messages);
+    }
+
+    public function queryUsers() {
+        return $this->belongsToMany('App\Users\Models\User', 'project_user_pivot', 'projectID', 'userID');
     }
 
     /**

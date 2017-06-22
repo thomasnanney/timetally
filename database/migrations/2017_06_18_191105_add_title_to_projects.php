@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddNameToProjects extends Migration
+class AddTitleToProjects extends Migration
 {
     /**
      * Run the migrations.
@@ -15,7 +15,7 @@ class AddNameToProjects extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             //
-            $table->string('name');
+            $table->string('title');
 
         });
     }
@@ -29,7 +29,7 @@ class AddNameToProjects extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             //
-            $table->string('name');
+            $table->dropColumn('title');
         });
     }
 }

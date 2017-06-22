@@ -11,8 +11,9 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
-    <link href="{{ mix('css/common.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/timepicker.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/common.css') }}" rel="stylesheet">
     <link href="{{ asset('fonts/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
     @yield('css')
 </head>
@@ -164,13 +165,8 @@
 </div>
 
 <!-- Scripts -->
+@yield('vars')
 <script src="{{ mix('js/app.js') }}"></script>
-<script type="text/javascript">
-    jQuery('.tk-dropdown-toggle').on('click', function(){
-        var container = jQuery(this).parent();
-        container.hasClass('active') ? container.removeClass('active') : container.addClass('active');
-    });
-</script>
 @yield('js')
 </body>
 </html>

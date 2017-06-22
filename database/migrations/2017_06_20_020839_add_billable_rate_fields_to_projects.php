@@ -27,8 +27,8 @@ class AddBillableRateFieldsToProjects extends Migration
     public function down()
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->string('billableHourlyType');
-            $table->decimal('billableRate');
+            $table->dropColumn('billableHourlyType');
+            $table->dropColumn('billableRate');
         });
     }
 }
