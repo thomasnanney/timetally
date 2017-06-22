@@ -2,15 +2,3 @@
     display: flex;
     flex-wrap: wrap;
 }
-
-.payroll-report ul{
-    list-style: none;
-}
-
-.payroll-report > ul > li:nth-child(even) > .row{
-    background-color: #cecece;
-}
-
-.payroll-report-employee-breakdown > li:nth-child(even) > .row{
-    background-color: #cecece;
-}

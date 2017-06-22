@@ -1,0 +1,16 @@
+.workspace-list .table-row .table-cell:nth-child(1){
+    width: 50px;
+}
+
+.workspace-list .table-row .table-cell:nth-child(2){
+
+}
+
+.workspace-list .table-row .table-cell:nth-child(3){
+    width: 20%;
+}
+
+.add-workspace-wizard{
+    max-width:400px;
+}
+

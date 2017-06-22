@@ -14,7 +14,19 @@ return [
     */
 
     'paths' => [
-        resource_path('views'),
+        base_path('app/API/resources/views'),
+        base_path('app/Auth/resources/views'),
+        base_path('app/Clients/resources/views'),
+        base_path('app/Core/resources/views'),
+        base_path('app/Core/resources/views/layouts'),
+        base_path('app/Dashboard/resources/views'),
+        base_path('app/Dashboard/resources/views/layouts'),
+        base_path('app/Organizations/resources/views'),
+        base_path('app/Projects/resources/views'),
+        base_path('app/Reports/resources/views'),
+        base_path('app/Timer/resources/views'),
+        base_path('app/Users/resources/views'),
+        base_path('app/Workspaces/resources/views'),
     ],
 
     /*

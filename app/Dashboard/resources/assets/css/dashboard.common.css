@@ -1,0 +1,463 @@
+/************COMMON CSS*****************/
+body{
+    font-size:18px;
+}
+
+.content{
+    margin-top:60px;
+}
+
+.tk-container{
+    max-width: 1200px;
+    margin:0 auto;
+}
+
+@media screen and (max-width: 1200px){
+    .tk-container{
+        margin: 0px 50px;
+    }
+}
+
+.timer-container{
+    background-color: #fff;
+    padding:8px;
+}
+
+.timer-container div[class*="timer-"]{
+    display: table;
+}
+
+.timer-container div[class*="timer-"] > *:not(div){
+    display: table-cell;
+    vertical-align: middle;
+    height:50px;
+}
+
+.timer-container .timer-set-time:hover{
+    cursor: pointer;
+}
+
+.datepicker.datepicker-inline, .datepicker table{
+    width:100%;
+}
+/********************DROPDOWN MENU STYLES*********************/
+.tk-dropdown-container[class*="active"] .tk-dropdown, .tk-dropdown-container[class*="active"] .tk-arrow{
+    display: block !important;
+}
+
+.tk-dropdown{
+    display: none;
+    position: absolute;
+    top: 100%;
+    background-color: #fff;
+    -webkit-box-shadow: -2px 2px 5px 0px #000;
+    -moz-box-shadow: -2px 2px 5px 0px #000;
+    box-shadow: -2px 2px 5px 0px #000;
+    padding: 8px;
+    z-index: 3;
+}
+
+.tk-dropdown.align-right{
+    right: 0%;
+}
+
+.tk-dropdown.align-left{
+    left: 0%;
+}
+
+.tk-dropdown li{
+    padding:10px 20px;
+}
+
+.tk-dropdown + .tk-arrow{
+    display: none;
+    position: absolute;
+    z-index: 1002;
+    width: 0;
+    height: 0;
+    border-left: 13px solid transparent;
+    border-bottom: 13px solid #fff;
+    -webkit-transform: rotate(-135deg);
+    transform: rotate(-135deg);
+    box-shadow: 1px 1px 0 #c2c8cd;
+    content: ' ';
+    top:calc(100% - 5px);
+    left:35%;
+}
+
+.tk-dropdown input{
+    display: inline-block;
+    width:100%;
+    height: 50px;
+    padding: 6px 12px;
+    font-size: 24px;
+    line-height: 1.6;
+    color: #555555;
+    background-color: transparent;
+    border: none;
+    transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
+}
+
+.tk-dropdown .input-group{
+    width:100%;
+}
+
+.tk-dropdown input{
+    font-size:16px;
+}
+
+/**********************ICON STYLES*************************/
+
+.fa.fa-usd{
+    color: #2ca02c;
+    font-size:20px;
+}
+
+.fa.fa-play-circle{
+    color: #4cae4c;
+    font-size:40px;
+}
+
+.fa.fa-tag{
+    color: #ac2925;
+    font-size:20px;
+}
+
+/***********************STYLES BY ELEMENT*****************/
+.thin-border-bottom{
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.thick-border-bottom{
+    border-bottom: 4px solid #e5e5e5;
+}
+
+.table .thick-border-bottom .table-cell{
+    border-bottom: 4px solid #e5e5e5;
+}
+
+.table .thin-border-bottom .table-cell{
+    border-bottom: 2px solid #e5e5e5;
+}
+
+.no-list-style{
+    list-style:none;
+}
+
+.list > li{
+    padding:10px;
+}
+
+.list > li:nth-child(even){
+    background-color: #f5f5f5;
+}
+
+.clickable:hover {
+    cursor: pointer;
+}
+
+.table{
+    display: table;
+    width:100%;
+}
+
+.table-row{
+    display: table-row;
+}
+
+.table-cell{
+    display: table-cell;
+    padding:10px;
+}
+
+.large-container{
+    padding:40px;
+}
+
+.medium-container{
+    padding:20px;
+}
+
+.dark{
+    background-color: #dce5fa;
+}
+
+.drop{
+    box-shadow: 0 2px 6px 0 #d6d6d6 inset!important;
+}
+
+.raise{
+    box-shadow: -2px 2px 6px 0px #d6d6d6!important;
+}
+
+.no-margin{
+    margin:0px;
+}
+
+.no-padding{
+    padding: 0px;
+}
+
+.tile{
+    background-color: #fff;
+}
+
+li.tab{
+    display: inline-block;
+    padding: 20px;
+}
+
+li.tab:hover{
+    cursor: pointer;
+}
+
+li.tab.active{
+    color: #0c07aa;
+    border-bottom: 4px solid #0c07aa;
+}
+
+.margin-center{
+    margin: 0 auto;
+}
+
+.pane{
+    min-height:300px;
+}
+
+.pane-container .medium-container{
+    max-width: 600px;
+}
+
+.tk-btn{
+    background-color: #f9f9f9;
+    color: #777;
+    font-weight: 700;
+    border: 1px solid #ccc;
+}
+
+.tk-btn:focus{
+    text-decoration: none;
+    outline:none;
+}
+
+.error{
+    color: red;
+}
+
+.valign-bottom{
+    vertical-align: bottom;
+}
+
+.relative{
+    position: relative;
+}
+
+.no-link-style{
+    color: inherit;
+}
+
+.no-link-style:hover{
+    color: inherit;
+}
+
+.no-link-style:focus{
+    color: inherit;
+}
+
+.tk-header{
+    font-size: 1.5vmax;
+}
+
+/*********************MENU CSS*************************/
+
+.sidebar{
+    display: none;
+}
+
+.menu ul{
+    list-style:none;
+    padding:20px;
+    width:100%;
+}
+
+.menu li{
+    display: table;
+    color: #777;
+    width:100%;
+}
+
+.menu li > *{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.menu i{
+    width:20%;
+}
+
+.menu .menu-text{
+    width:80%;
+}
+
+.menu a:hover {
+    text-decoration: none;
+}
+
+.menu .active{
+    background-color: darkgrey;
+    margin: 0px -10px;
+    padding:0px 10px;
+    -webkit-border-radius:10px;
+    -moz-border-radius:10px;
+    border-radius:10px;
+}
+
+@media screen and (min-width: 768px){
+    .navbar.navbar-default.navbar-fixed-top{
+        display: none;
+    }
+
+    .content{
+        margin-top:0;
+        margin-left:200px;
+        padding:30px;
+    }
+
+    .sidebar{
+        display: block;
+        position: fixed;
+        top:0;
+        left:0;
+        width:200px;
+        background-color: slategrey;
+        color: #fff;
+        padding:15px;
+    }
+
+    .sidebar:after{
+        content: '';
+        height:100%;
+        background-color: slategrey;
+        position: fixed;
+        left:0;
+        width:200px;
+    }
+
+    .sidebar-header{
+        min-height:150px;
+    }
+
+    .sidebar-header img{
+        max-width: 100%;
+        max-height: 100px;
+    }
+
+    .menu ul{
+        padding: 0px;
+    }
+
+    .menu li{
+        color: #fff;
+    }
+}
+
+/******************GENERAL FORM CSS**********************/
+.tk-form-input{
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #cecece;
+}
+
+.tk-form-input:focus{
+    outline:none;
+}
+
+.tk-form-textarea{
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: 1px dotted #cecece;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    border-radius:5px;
+}
+
+.tk-form-textarea:focus{
+    outline:none;
+}
+
+/**************************TOGGLE SWITCH***********************/
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 17px;
+    padding: 0px 10px;
+    margin: 10px 10px -2px 10px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 13px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #0c07aa;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #0c07aa;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(24px);
+    -ms-transform: translateX(24px);
+    transform: translateX(24px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+    margin: 0px 10px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/*****************BADGES*************************/
+.tk-badge{
+    margin-left: 30px;
+    padding:2px 15px;
+}
+
+.tk-badge-public{
+    background-color: #2ca02c;
+}
