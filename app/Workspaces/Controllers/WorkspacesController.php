@@ -5,6 +5,7 @@ namespace App\Workspaces\Controllers;
 use App\Workspaces\Models\Workspace;
 use App\Clients\Models\Client;
 use App\Users\Models\User;
+use App\Core\Controllers\Controller;
 
 
 class WorkspacesController extends Controller
