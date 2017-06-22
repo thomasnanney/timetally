@@ -28,7 +28,7 @@ class AddScopeToProjects extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             //
-            $table->string('scope');
+            $table->dropColumn('scope');
         });
     }
 }

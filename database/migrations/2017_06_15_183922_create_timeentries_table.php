@@ -20,7 +20,7 @@ class CreateTimeEntriesTable extends Migration
             $table->timeTz('startTime');
             $table->timeTz('endTime');
             $table->string('title');
-            $table->string('description');
+            $table->text('description');
             $table->boolean('billable');
             $table->timestamps();
         });

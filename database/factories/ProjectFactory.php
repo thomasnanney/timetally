@@ -13,18 +13,34 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Projects\Models\Project::class, function (Faker\Generator $faker) {
-    static $password;
+
+    $scopes =[
+        'public',
+        'private'
+    ];
+
+    $billableHourlyType = [
+        'project',
+        'employee'
+    ];
+
+    $billableTypes = [
+        'hourly',
+        'fixed'
+    ];
 
     return [
-        'id' => $faker->randomDigitNotNull,
         'description' => $faker->paragraph,
-        'clientID' => $faker->randomDigitNotNull,
-        'billableType' => 'byProject',
-        'projectedRevenue' => $faker->numberBetween(0,1000),
-        'created_at' => $faker->dateTime,
-        'updated_at' => $faker->dateTime,
-        'scope' => 'public',
-        'billableHourlyType' => $faker->word,
+        'clientID' => 1, //default to one, but this should be over ridden on creation
+        'workspaceID' => 1,
+        'billableType' => $billableTypes[rand(0,1)],
+        'projectedRevenue' => $faker->numberBetween(0,10000),
+        'scope' => 'public', //$scopes[rand(0, 1)],
+        'title' => $faker->word,
+        'startDate' => $faker->dateTime,
+        'endDate' => $faker->dateTime,
+        'projectedTime' => $faker->randomDigitNotNull,
+        'billableHourlyType' => $billableHourlyType[rand(0, 1)],
         'billableRate' => $faker->numberBetween(0,1000),
     ];
 });

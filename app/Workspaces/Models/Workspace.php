@@ -1,5 +1,5 @@
 <?php
-namespace App\Models;
+namespace App\Workspaces\Models;
 use Illuminate\Database\Eloquent\Model;
 
 class Workspace extends Model
@@ -8,20 +8,24 @@ class Workspace extends Model
     protected $fillable = array(
         'name',
         'description',
-        'organizationID',
+        'ownerID',
+        'organizationID'
     );
 
-    public function workspaceUsers() {
-        // TODO: return users assigned to workspace
-
+    public function queryUsers() {
+        return $this->belongsToMany('App\Users\Models\User', 'user_workspace_pivot', 'workspaceID', 'userID');
     }
 
-    public function workspaceProjects() {
-        // TODO: return projects assigned to workspace
+    public function queryProjects() {
+        return $this->hasMany('App\Projects\Models\Project', 'workspaceID');
     }
 
     public function setOrganization() {
         // TODO: set the organization ID for the workspace
+    }
+
+    public function queryClients(){
+        return $this->belongsToMany('App\Clients\Models\Client', 'client_workspace_pivot', 'workspaceID', 'clientID');
     }
 
     public static function updateWorkspace( array $data, $id) {

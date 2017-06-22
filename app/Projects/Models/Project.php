@@ -10,23 +10,17 @@ class Project extends Model
         'clientID',
         'billableType',
         'projectedRevenue',
-        'created_at',
-        'updated_at',
-        'scope',
-        'billableHourlyType',
-        'billableRate',
         'title',
-        'description',
-        'billableType',
-        'projectedRevenue',
         'startDate',
         'endDate',
         'projectedTime',
+        'scope',
+        'billableHourlyType',
+        'billableRate'
     );
 
-    public function projectUsers() {
-        // TODO: return users assigned to projects
-
+    public function queryUsers() {
+        return $this->belongsToMany('App\Users\Models\User', 'project_user_pivot', 'projectID', 'userID');
     }
 
     /**

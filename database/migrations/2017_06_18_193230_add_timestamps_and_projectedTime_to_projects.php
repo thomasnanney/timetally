@@ -30,9 +30,9 @@ class AddTimestampsAndProjectedTimeToProjects extends Migration
     {
         Schema::table('projects', function (Blueprint $table) {
             //
-            $table->date('startDate');
-            $table->date('endDate');
-            $table->integer('projectedTime');
+            $table->dropColumn('startDate');
+            $table->dropColumn('endDate');
+            $table->dropColumn('projectedTime');
         });
     }
 }
