@@ -4,6 +4,8 @@ namespace App\Clients\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use App\Workspaces\Models\Workspace;
+use Illuminate\Support\Facades\Auth;
 
 class Client extends Model
 {
@@ -38,6 +40,12 @@ class Client extends Model
      */
     public function queryProjects(){
         return $this->hasMany('App\Projects\Models\Project', 'clientID');
+    }
+
+    public function queryProjectsByUsersWorkspaces(){
+        $user = Auth::user();
+        $workspaces = $user->queryWorkspaces()->select('workspaces.id')->get();
+        return $this->queryProjects()->whereIn('workspaceID', $workspaces);
     }
 
 

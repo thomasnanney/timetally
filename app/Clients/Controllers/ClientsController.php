@@ -2,9 +2,9 @@
 
 namespace App\Clients\Controllers;
 
-use Validator;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
+use JavaScript;
 use App\Clients\Models\Client;
 
 class ClientsController extends Controller
@@ -100,8 +100,8 @@ class ClientsController extends Controller
         ]);
     }
 
-    public function getEdit(){
-        return view('editClient');
+    public function getEdit(Client $client){
+        return view('editClient', ['client' => $client]);
     }
 
     /**
@@ -127,5 +127,9 @@ class ClientsController extends Controller
             ]
         ]);
 
+    }
+
+    public function getProjectsByUsersWorkspaces(Client $client){
+        return $client->queryProjectsByUsersWorkspaces()->get();
     }
 }

@@ -13,3 +13,10 @@
 @section('js')
 
 @endsection
+
+@section('vars')
+    <script>
+        var tk = {};
+        tk.client = <?php echo json_encode($client, true) ?>;
+    </script>
+@endsection

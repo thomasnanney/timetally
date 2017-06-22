@@ -7,10 +7,26 @@ class ProjectsManager extends Component{
 
     constructor(props){
         super(props);
+        this.state = {
+            projects: [],
+        }
     }
 
     componentDidMount(){
 
+    }
+
+    componentWillMount(){
+        let self = this;
+        axios.post('/users/getAllProjects')
+            .then(function(response){
+                self.setState({projects : response.data});
+            })
+            .catch(function(error){
+                console.log(error);
+                // alert('We were unable to retrieve your projects.  Try reloading the page, or contact your System' +
+                    // ' Administrator');
+            });
     }
 
     componentWillUnmount(){
@@ -24,12 +40,12 @@ class ProjectsManager extends Component{
                 <div className="row">
                     <div className="col-xs-12">
                         <span className="tk-header">Projects</span>
-                        <a href="/projects/add" className="btn tk-btn pull-right">Add Project</a>
+                        <a href="/projects/create" className="btn tk-btn pull-right">Add Project</a>
                     </div>
                 </div>
                 <br></br>
                 <SearchBar />
-                <ProjectsList />
+                <ProjectsList projects={this.state.projects}/>
             </div>
         );
     }

@@ -32,7 +32,7 @@ export default class ListItem extends Component {
         const menuItems = [
             {
                 name: 'View',
-                link: this.props.client.link
+                link: '/clients/edit/' + this.props.client.id
             }
         ];
 

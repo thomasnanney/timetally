@@ -52,9 +52,12 @@ class DatabaseSeeder extends Seeder
         $index = 0;
         $client = 0;
         $workspace = 0;
-        for($i = 0; $i < 16; $i ++){
-            if($index % 4 == 0 && $workspace != 0){
+        for($i = 0; $i < 15; $i ++){
+            if($index % 5 == 0 && $index != 0){
                 $workspace++;
+                if($workspace == 4){
+                    $workspace = 0;
+                }
             }
             if($index % 2 == 0){
                 $client = ($client == 0 ? 1 : 0);

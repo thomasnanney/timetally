@@ -18,7 +18,7 @@ export default class SearchBar extends Component{
         return (
             <div className="row">
                 <div className="col-xs-12">
-                    <div className="search-bar text-right">
+                    <div className="search-bar text-right drop">
                         <i className="fa fa-search" aria-hidden="true"></i>
                         <input type="text" className="search-input" placeholder="Search..."></input>
                     </div>

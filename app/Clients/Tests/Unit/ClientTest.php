@@ -47,7 +47,7 @@ class ClientTest extends TestCase
 
         $this->be($user);
 
-        $response = $this->call('POST', '/clients',
+        $response = $this->call('POST', '/clients/create',
 
             array(
 
@@ -130,6 +130,7 @@ class ClientTest extends TestCase
 
         $this->assertDatabaseHas('clients', [
 
+            'id' => $client->id,
             'name' => 'Client 2'
 
         ]);

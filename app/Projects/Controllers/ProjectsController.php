@@ -5,7 +5,7 @@ namespace App\Projects\Controllers;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use App\Projects\Models\Project;
-use App\Clients\Models\Client;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectsController extends Controller
 {
@@ -46,7 +46,10 @@ class ProjectsController extends Controller
             ]);
         }
 
-        Project::create($data);
+        $project = Project::create($data);
+
+        //since project was created, link the current user
+        $project->queryUsers()->attach(Auth::user()->id);
 
         return response()->json([
            'status' => 'success',
@@ -91,17 +94,23 @@ class ProjectsController extends Controller
 
         if ($v->fails()) {
             return response()->json([
-                'status' => 'success',
+                'status' => 'fail',
                 'errors' => 'true',
                 'messages' => $v->errors()
             ]);
         }
 
         $project->fill($data);
+        $project->save();
 
         return response()->json([
             'status' => 'success',
-            'errors' => 'true',
+            'errors' => 'false',
         ]);
     }
+
+    public function getUsers(Project $project){
+        return $project->queryUsers()->get();
+    }
+
 }

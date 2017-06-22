@@ -31,7 +31,7 @@ export default class ProjectsListItem extends Component{
         const menuItems = [
             {
                 name: 'View',
-                link: this.props.project.link
+                link: '/projects/edit/' + this.props.project.id
             }
         ];
 
@@ -41,9 +41,9 @@ export default class ProjectsListItem extends Component{
                     <i className="fa fa-bars clickable" aria-hidden="true" onClick={ ()=>this.toggleMenu()}>&nbsp;</i>
                     <DropDownMenu items={menuItems} align="align-left"/>
                 </div>
-                <div className="table-cell valign-bottom">{this.props.project.name}<span className={"badge tk-badge tk-badge-" + this.props.project.scope}>{this.props.project.scope}</span></div>
-                <div className="table-cell valign-bottom"></div>
-                <div className="table-cell valign-bottom"></div>
+                <div className="table-cell valign-bottom">{this.props.project.title}<span className={"badge tk-badge tk-badge-" + this.props.project.scope}>{this.props.project.scope}</span></div>
+                <div className="table-cell valign-bottom">{this.props.project.clientName}</div>
+                <div className="table-cell valign-bottom">{this.props.project.workspaceTitle}</div>
             </div>
         );
     }

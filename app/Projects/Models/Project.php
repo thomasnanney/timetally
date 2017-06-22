@@ -7,7 +7,6 @@ class Project extends Model
 {
     //set fillable and guarded
     protected $fillable = array(
-        'id',
         'description',
         'clientID',
         'billableType',
@@ -22,28 +21,31 @@ class Project extends Model
     );
 
     public static function validate($data){
+
+        $tempData = array_filter($data, function($value){
+            return !is_null($value);
+        });
+        var_dump($tempData);
+
         $messages = [
-            'projectTitle.required' => 'Please enter a Project Title',
-            'description.required' => 'Please enter a Project Description',
-            'clientName.required' => 'Please enter a Client Name',
+            'title.required' => 'Please enter a Project Title',
+            'clientID.required' => 'Please enter a Client Name',
             'startDate.required' => 'Please enter a Start Date',
             'endDate.required' => 'Please enter an End Date',
-            'projectedRevenue.required' => 'Please enter Projected Revenue',
-            'projectedTime.required' => 'Please enter Projected Time',
             'billableType.required' => 'Please enter Billable Type',
         ];
         $rules = [
-            'projectTitle' => 'required|string|min:1',
-            'description' => 'sometimes|required|string|min:1',
-            'clientName' => 'required|string|min:1', // needs to be different
-            'startDate' => 'required|string|min:1',
-            'endDate' => 'required|string|min:1',
+            'title' => 'required|string|min:1',
+            'description' => 'sometimes|string|min:1',
+            'clientID' => 'required|integer|exists:clients,id', // needs to exist
+            'startDate' => 'required',
+            'endDate' => 'required',
             'projectedTime' => 'required|integer|',
-            'projectedRevenue' => 'required|decimal',
-            'billableType' => 'sometimes|required|string|min:1',
+            'projectedRevenue' => 'sometimes|numeric',
+            'billableType' => 'required|string|min:1',
         ];
 
-        return Validator::make($data, $rules, $messages);
+        return Validator::make($tempData, $rules, $messages);
     }
 
     public function queryUsers() {

@@ -35,15 +35,15 @@ class WorkspaceManager extends Component {
         const  workspaces = [
             {
                 name: 'Workspace 1',
-                link: '/workspaces/view/1'
+                link: '/workspaces/edit/1'
             },
             {
                 name: 'Workspace 2',
-                link: '/workspaces/view/1'
+                link: '/workspaces/edit/1'
             },
             {
                 name: 'Workspace 3',
-                link: '/workspaces/view/1'
+                link: '/workspaces/edit/1'
             },
         ];
 

@@ -14,3 +14,10 @@
 @section('js')
 
 @endsection
+
+@section('vars')
+    <script>
+        var tk = {};
+        tk.project = {!! json_encode($project) !!};
+    </script>
+@endsection

@@ -18,12 +18,15 @@ class ViewClient extends Component {
 
     }
 
+    componentWillMount(){
+
+    }
+
     componentWillUnmount() {
 
     }
 
     makeTabActive(tab){
-        console.log(tab);
         this.setState({activeView: tab});
     }
     render() {
@@ -34,23 +37,23 @@ class ViewClient extends Component {
             'Projects'
         ];
 
+        console.log(tk.client);
+
         return (
             <div className="tile raise">
-                <div className="tile raise">
-                    <div className="row">
-                        <div className="col-xs-12">
-                            <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
-                                {
-                                    tabs.map((tab, id) =>
-                                        <li className={"tab " + (this.state.activeView == id+1 ? 'active': '')} onClick={() => this.makeTabActive(id+1)} key={id}>{tab}</li>
-                                    )
-                                }
-                            </ul>
-                        </div>
+                <div className="row">
+                    <div className="col-xs-12">
+                        <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
+                            {
+                                tabs.map((tab, id) =>
+                                    <li className={"tab " + (this.state.activeView == id+1 ? 'active': '')} onClick={() => this.makeTabActive(id+1)} key={id}>{tab}</li>
+                                )
+                            }
+                        </ul>
                     </div>
-                    <div className="pane-container">
-                        <ViewClientPane activeView={this.state.activeView} />
-                    </div>
+                </div>
+                <div className="pane-container">
+                    <ViewClientPane activeView={this.state.activeView} />
                 </div>
             </div>
         );

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 
 //components imports
 import ListItem from 'clients/ClientManagerComponents/ListItem';
@@ -11,48 +12,39 @@ class ClientsManager extends Component {
         super(props);
         this.state ={
             addNewActive: false,
+            clients: []
         };
-
-        this.addWorkspace = this.addWorkspace.bind(this);
     }
 
     componentDidMount() {
 
     }
 
+    componentWillMount(){
+        var self=this;
+        //get clients to display
+        axios.post('/users/getAllClients')
+            .then(function (response){
+                self.setState({clients: response.data});
+            })
+            .catch(function(error){
+                alert("It appears there was an error retrieving clients.  Please try again or contact your system" +
+                    " administrator");
+            });
+    }
+
     componentWillUnmount() {
 
     }
 
-    addWorkspace(name){
-        let workspaces = this.state.workspaces.slice();
-        workspaces[this.state.workspaces.length] = name;
-        this.setState({workspaces: workspaces});
-    }
-
     render() {
-
-        const  clients = [
-            {
-                name: 'Client 1',
-                link: '/clients/view/1'
-            },
-            {
-                name: 'Client 2',
-                link: '/clients/view/1'
-            },
-            {
-                name: 'Client 3',
-                link: '/clients/view/1'
-            },
-        ];
 
         return (
             <div>
                 <div className="row">
                     <div className="col-xs-12">
                         <span className="tk-header">Clients</span>
-                        <a href="/clients/add" className="btn tk-btn pull-right">Add Client</a>
+                        <a href="/clients/create" className="btn tk-btn pull-right">Add Client</a>
                     </div>
                 </div>
                 <br></br>
@@ -65,14 +57,14 @@ class ClientsManager extends Component {
                     <div className="list-header table-row thick-border-bottom">
                         <div className="table-cell valign-bottom"></div>
                         <div className="table-cell valign-bottom">
-                            Workspace
+                            Client
                         </div>
                         <div className="table-cell valign bottom">
                         </div>
                     </div>
-                    {clients.length > 0 ?
-                        clients.map((client, id) =>
-                            <ListItem client={client} key={id}/>
+                    {this.state.clients.length > 0 ?
+                        this.state.clients.map((client) =>
+                            <ListItem client={client} key={client.id}/>
                         )
                         :
                         <p>You do not have any clients...Get to Work!</p>

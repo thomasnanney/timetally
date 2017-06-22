@@ -28,20 +28,18 @@ class WorkspaceSettings extends Component {
 
         return (
             <div className="tile raise">
-                <div className="tile raise">
-                    <div className="row">
-                        <div className="col-xs-12">
-                            <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
-                                <li className={"tab " + (this.state.activeView == 1 ? 'active': '')} onClick={() => this.makeTabActive(1)}>Settings</li>
-                                <li className={"tab " + (this.state.activeView == 2 ? 'active': '')} onClick={() => this.makeTabActive(2)}>Users</li>
-                                <li className={"tab " + (this.state.activeView == 3 ? 'active': '')} onClick={() => this.makeTabActive(3)}>Projects</li>
-                                <li className={"tab " + (this.state.activeView == 4 ? 'active': '')} onClick={() => this.makeTabActive(4)}>Clients</li>
-                            </ul>
-                        </div>
+                <div className="row">
+                    <div className="col-xs-12">
+                        <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
+                            <li className={"tab " + (this.state.activeView == 1 ? 'active': '')} onClick={() => this.makeTabActive(1)}>Settings</li>
+                            <li className={"tab " + (this.state.activeView == 2 ? 'active': '')} onClick={() => this.makeTabActive(2)}>Users</li>
+                            <li className={"tab " + (this.state.activeView == 3 ? 'active': '')} onClick={() => this.makeTabActive(3)}>Projects</li>
+                            <li className={"tab " + (this.state.activeView == 4 ? 'active': '')} onClick={() => this.makeTabActive(4)}>Clients</li>
+                        </ul>
                     </div>
-                    <div className="pane-container">
-                        <WorkspaceSettingsPane activeView={this.state.activeView} />
-                    </div>
+                </div>
+                <div className="pane-container">
+                    <WorkspaceSettingsPane activeView={this.state.activeView} />
                 </div>
             </div>
         );
