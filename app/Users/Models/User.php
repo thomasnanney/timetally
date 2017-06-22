@@ -27,16 +27,7 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function addUserToWorkspace($workspaceID) {
-        if(!(DB::table('user_workspace_pivot')
-            ->where('workspaceID', '=', $workspaceID)
-            ->where('userID', '=', $this->id)
-            ->exists())
-        ) {
-            DB::table('user_workspace_pivot')->insert([
-                'userID' => $this->id,
-                'workspaceID' => $workspaceID,
-            ]);
-        }
+    public function queryWorkspaces(){
+        return $this->belongsToMany('App\Workspaces\Models\Workspace', 'user_workspace_pivot', 'userID', 'workspaceID');
     }
 }

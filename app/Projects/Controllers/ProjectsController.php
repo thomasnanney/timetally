@@ -25,12 +25,14 @@ class ProjectsController extends Controller
      */
     public function index()
     {
-        
         return view('projects');
     }
 
+    public function getCreate(){
+        return view('addProject');
+    }
 
-    public function createProject(Request $request) {
+    public function postCreate(Request $request) {
 
         $data = $request->input('data');
 
@@ -70,21 +72,26 @@ class ProjectsController extends Controller
         ]);
     }
 
+    public function getEdit(Project $project){
+        return view('viewProject', ['project' => $project]);
+    }
+
     /**
      * Update the project scope
      * @param $request incoming data
      * @param $project of the client to be deleted
      * @return redirect
      */
-    public function postUpdate(Request $request, Project $project) {
+    public function postEdit(Request $request, Project $project)
+    {
 
         $data = $request->input('data');
 
         $v = Project::validate($data);
 
-        if($v->fails()){
+        if ($v->fails()) {
             return response()->json([
-               'status' => 'success',
+                'status' => 'success',
                 'errors' => 'true',
                 'messages' => $v->errors()
             ]);
@@ -93,7 +100,7 @@ class ProjectsController extends Controller
         $project->fill($data);
 
         return response()->json([
-           'status' => 'success',
+            'status' => 'success',
             'errors' => 'true',
         ]);
     }

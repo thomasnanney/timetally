@@ -1,5 +1,7 @@
 <?php
 Route::get('/projects', "ProjectsController@index")->name('projects');
-Route::post('/projects/views/{project}', "ProjectsController@postUpdateScope")->name('postUpdateScope');
-Route::post('/projects/views/{project}', "ProjectsController@postUpdateProjectedRevenue")->name('postUpdateProjectedRevenue');
-Route::post('/projects/views/{project}', "ProjectsController@postUpdateBillableRate")->name('postUpdateBillableRate');
+Route::post('/projects/edit/{project}', 'ProjectsController@postUpdate')->name('updateProject');
+Route::get('/projects/edit/{project}', "ProjectsController@getView")->name('viewProject');
+Route::post('/projects/create', 'ProjectsController@postCreate');
+Route::get('/projects/create', 'ProjectsController@getCreate');
+Route::delete('/projects/delete/{project}', 'ProjectsController@deleteProject');

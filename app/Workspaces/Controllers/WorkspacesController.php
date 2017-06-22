@@ -3,9 +3,10 @@
 namespace App\Workspaces\Controllers;
 
 use App\Workspaces\Models\Workspace;
-use App\Clients\Models\Client;
-use App\Users\Models\User;
 use App\Core\Controllers\Controller;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 
 class WorkspacesController extends Controller
@@ -41,15 +42,19 @@ class WorkspacesController extends Controller
         return view('workspaces');
     }
 
-    public function updateWorkspace(Request $request, Workspace $workspace)
+    public function getEdit(){
+        return view('editWorkspace');
+    }
+
+    public function postEdit(Request $request, Workspace $workspace)
     {
         $data = $request->input('data');
-        $validator = false;
+
         if(isset($request['data'])) {
-            $validator = Workspace::validateWorkspace($data);
+            $validator = Workspace::validate($data);
 
             if($validator->fails()) {
-                return respones()->json([
+                return response()->json([
                     'status' => 'Fail',
                     'errors' => $validator->errors(),
                 ]);
@@ -69,45 +74,32 @@ class WorkspacesController extends Controller
         ]);
     }
 
-    public function createWorkspace(Request $request) {
-        // Need UserID for entry creation in DB
-        $user->Auth::user();
+    public function postCreate(Request $request) {
 
         // validate info
-        if(isset($request['data'])) {
-            $data = $request['data'];
-            $messages = [
-                'workspaceName.required' => 'Please enter a Workspace Name',
-                'description.required' => 'Please enter a Workspace Description',
-            ];
-            $rules = [
-                'workspaceName' => 'required|string|min:1',
-                'description' => 'sometimes|required|string|min:1',
-            ];
+        $data = $request->input('data');
 
-            $v = Validator::make($data, $rules, $messages);
+        $v = Workspace::validate($data);
 
-            if($v->failes()) {
-                return respones()->json([
-                    'status' => 'Fail',
-                    'errors' => $v->errors(),
-                ]);
-            }
-
-            // workspace information
-            $workspace = new Workspace;
-            $workspace->title = $data['name'];
-            $workspace->description = $data['description'];
-            $workspace->ownerID = $user->id;
-            $workspace->save();
+        if($v->fails()) {
+            return response()->json([
+                'status' => 'Fail',
+                'errors' => $v->errors(),
+            ]);
         }
+
+        // workspace information
+        Workspace::create($data);
+
+        return response()->json([
+           'status' => 'success',
+            'errors' => null
+        ]);
     }
 
     public function deleteWorkspace(Workspace $workspace) {
-
         // Delete workspace from DB
-        $workspace->delete();
+        Workspace::destroy($workspace->id);
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
-
 }

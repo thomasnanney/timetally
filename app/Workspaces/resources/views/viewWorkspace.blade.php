@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="container">
-        <div id="workspaceManager"></div>
+        <div id="workspaceSettings"></div>
     </div>
 
 @endsection

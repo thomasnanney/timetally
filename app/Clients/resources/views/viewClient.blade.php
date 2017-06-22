@@ -5,10 +5,9 @@
 @endsection
 
 @section('content')
-    <div class="container">
-        <div id="workspaceManager"></div>
+    <div class="tk-container">
+        <div id="viewClient"></div>
     </div>
-
 @endsection
 
 @section('js')
