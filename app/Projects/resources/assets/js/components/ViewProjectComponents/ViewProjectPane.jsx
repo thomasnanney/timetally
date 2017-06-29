@@ -66,7 +66,10 @@ export default class ViewProjectPane extends Component {
                                                 value={this.props.project.title}
                                                 onChange={this.onFieldChange.bind(this)}
                                             />
-
+                                            {this.props.errors.title
+                                                ? <small className="error">{this.props.errors.title}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                     <br></br>
@@ -83,6 +86,10 @@ export default class ViewProjectPane extends Component {
                                                 <div className="slider round"></div>
                                             </label>
                                             Private
+                                            {this.props.errors.scope
+                                                ? <small className="error">{this.props.errors.scope}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                     <br></br>
@@ -95,6 +102,10 @@ export default class ViewProjectPane extends Component {
                                                 value={this.props.project.description}
                                                 onChange={this.onFieldChange.bind(this)}
                                             />
+                                            {this.props.errors.description
+                                                ? <small className="error">{this.props.errors.description}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -115,6 +126,10 @@ export default class ViewProjectPane extends Component {
                                                     <option>Add a client</option>
                                             }
                                         </select>
+                                        {this.props.errors.clientID
+                                            ? <small className="error">{this.props.errors.clientID}</small>
+                                            : ''
+                                        }
                                     </div>
                                     <br/>
                                     <div className="row">
@@ -130,6 +145,10 @@ export default class ViewProjectPane extends Component {
                                                     <div className="slider round"></div>
                                             </label>
                                             Billed Hourly
+                                            {this.props.errors.billableType
+                                                ? <small className="error">{this.props.errors.billableType}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                     <br/>
@@ -138,14 +157,20 @@ export default class ViewProjectPane extends Component {
                                             {
                                                 this.props.project.billableType == 'fixed'
                                                     ?
-                                                    <input
-                                                        type="text"
-                                                        name="projectedRevenue"
-                                                        className="tk-form-input"
-                                                        placeholder="$$$ Total Cost..."
-                                                        value={this.props.project.projectedRevenue}
-                                                        onChange={this.onFieldChange.bind(this)}
-                                                    />
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            name="projectedRevenue"
+                                                            className="tk-form-input"
+                                                            placeholder="$$$ Total Cost..."
+                                                            value={this.props.project.projectedRevenue}
+                                                            onChange={this.onFieldChange.bind(this)}
+                                                        />
+                                                        {this.props.errors.projectedRevenue
+                                                            ? <small className="error">{this.props.errors.projectedRevenue}</small>
+                                                            : ''
+                                                        }
+                                                    </div>
                                                     :
                                                     <div>
                                                         Project Hourly Rate
@@ -159,6 +184,10 @@ export default class ViewProjectPane extends Component {
                                                             <div className="slider round"></div>
                                                         </label>
                                                         Employee Hourly Rate
+                                                        {this.props.errors.billableHourlyType
+                                                            ? <small className="error">{this.props.errors.billableHourlyType}</small>
+                                                            : ''
+                                                        }
                                                     </div>
                                             }
                                         </div>
@@ -168,14 +197,20 @@ export default class ViewProjectPane extends Component {
                                             {
                                                 this.props.project.billableHourlyType == 'project' && this.props.project.billableType == 'hourly'
                                                     ?
-                                                    <input
-                                                        type="text"
-                                                        name="billableRate"
-                                                        className="tk-form-input"
-                                                        placeholder="$$$ Hourly Rate"
-                                                        value={this.props.project.billableRate}
-                                                        onChange={this.onFieldChange.bind(this)}
-                                                    />
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            name="billableRate"
+                                                            className="tk-form-input"
+                                                            placeholder="$$$ Hourly Rate"
+                                                            value={this.props.project.billableRate}
+                                                            onChange={this.onFieldChange.bind(this)}
+                                                        />
+                                                        {this.props.errors.billableRate
+                                                            ? <small className="error">{this.props.errors.billableRate}</small>
+                                                            : ''
+                                                        }
+                                                    </div>
                                                     :
 
                                                     ''

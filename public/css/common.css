@@ -243,6 +243,7 @@ li.tab.active{
 
 .error{
     color: red;
+    display: block;
 }
 
 .valign-bottom{

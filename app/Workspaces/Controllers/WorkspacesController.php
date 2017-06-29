@@ -28,17 +28,6 @@ class WorkspacesController extends Controller
      */
     public function index()
     {
-        // get workspaces that belong to organization
-        // pass it to the view
-
-        // Step 1: Get all the workspaces that belong to the organization
-        
-        // Step 2: Get all the projects that belong to each specific workspace
-
-        // Step 3: Get all the users that belong to each specific workspace
-
-        // Step 4: Pass it all to the view
-
         return view('workspaces');
     }
 

@@ -21,7 +21,8 @@ class CreateProject extends Component{
                 users: [],
                 description: ''
             },
-            clients: []
+            clients: [],
+            errors: {}
         }
     }
 
@@ -34,13 +35,11 @@ class CreateProject extends Component{
     }
 
     componentWillMount(){
-        console.log(this.state);
         let self = this;
         axios.post('/users/getAllClients')
             .then(function(response){
                 self.setState({clients: response.data});
                 if(self.state.clients.length > 0){
-                    console.log("Adding initial client");
                     //set initial value for client in state
                     let newProject = self.state.project;
                     newProject.clientID = self.state.clients[0].id
@@ -68,11 +67,20 @@ class CreateProject extends Component{
     }
 
     createProject(){
-        console.log(this.state);
+        let self = this;
         axios.post('/projects/create', {
-            data: this.state.project
+            data: self.state.project
         })
             .then(function(response){
+                console.log(response.data.errors);
+                if(response.data.errors){
+                    console.log("Setting state errors");
+                    console.log(response.data.messages);
+                    let errors = response.data.messages;
+                    self.setState({errors: errors});
+                    self.setState({step: 1});
+                    console.log(this.state);
+                }
                 console.log(response.data);
             })
             .catch(function(error){
@@ -86,7 +94,6 @@ class CreateProject extends Component{
         this.setState((prevState, props) => ({
             project : newProject
         }));
-        console.log(this.state.project);
     };
 
     updateUserName(id, evt){
@@ -154,6 +161,10 @@ class CreateProject extends Component{
                                                 value={this.state.project.title}
                                                 onChange={this.updateInput.bind(this)}
                                             />
+                                            {this.state.errors.title
+                                                ? <small className="error">{this.state.errors.title}</small>
+                                                : ''
+                                            }
 
                                         </div>
                                         <br></br>
@@ -167,9 +178,13 @@ class CreateProject extends Component{
                                                            onChange={this.updateCheckbox.bind(this)}
 
                                                     />
-                                                        <div className="slider round"></div>
+                                                    <div className="slider round"></div>
                                                 </label>
                                                 Private
+                                                {this.state.errors.scope
+                                                    ? <small className="error">{this.state.errors.scope}</small>
+                                                    : ''
+                                                }
                                             </div>
                                         </div>
                                         <br></br>
@@ -198,6 +213,10 @@ class CreateProject extends Component{
                                                     <option>Add a client</option>
                                             }
                                         </select>
+                                        {this.state.errors.clientID
+                                            ? <small className="error">{this.state.errors.clientID}</small>
+                                            : ''
+                                        }
                                     </div>
                                     <br/>
                                     <div className="row">
@@ -213,6 +232,10 @@ class CreateProject extends Component{
                                                 <div className="slider round"></div>
                                             </label>
                                             Billed Hourly
+                                            {this.state.errors.billableType
+                                                ? <small className="error">{this.state.errors.billableType}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                     <br/>
@@ -221,14 +244,20 @@ class CreateProject extends Component{
                                             {
                                                 this.state.project.billableType == 'fixed'
                                                     ?
-                                                    <input
-                                                        type="text"
-                                                        name="projectedRevenue"
-                                                        className="tk-form-input"
-                                                        placeholder="$$$ Total Cost..."
-                                                        value={this.state.project.projectedRevenue}
-                                                        onChange={this.updateInput.bind(this)}
-                                                    />
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            name="projectedRevenue"
+                                                            className="tk-form-input"
+                                                            placeholder="$$$ Total Cost..."
+                                                            value={this.state.project.projectedRevenue}
+                                                            onChange={this.updateInput.bind(this)}
+                                                        />
+                                                        {this.state.errors.projectedRevenue
+                                                            ? <small className="error">{this.state.errors.projectedRevenue}</small>
+                                                            : ''
+                                                        }
+                                                    </div>
                                                     :
                                                     <div>
                                                         Project Hourly Rate
@@ -242,6 +271,10 @@ class CreateProject extends Component{
                                                             <div className="slider round"></div>
                                                         </label>
                                                         Employee Hourly Rate
+                                                        {this.state.errors.projectedRevenue
+                                                            ? <small className="error">{this.state.errors.projectedRevenue}</small>
+                                                            : ''
+                                                        }
                                                     </div>
                                             }
                                         </div>
@@ -252,14 +285,20 @@ class CreateProject extends Component{
                                             {
                                                 this.state.project.billableHourlyType == 'project' && this.state.project.billableType == 'hourly'
                                                     ?
-                                                    <input
-                                                        type="text"
-                                                        name="billableRate"
-                                                        className="tk-form-input"
-                                                        placeholder="$$$ Hourly Rate"
-                                                        value={this.state.project.billableRate}
-                                                        onChange={this.updateInput.bind(this)}
-                                                    />
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            name="billableRate"
+                                                            className="tk-form-input"
+                                                            placeholder="$$$ Hourly Rate"
+                                                            value={this.state.project.billableRate}
+                                                            onChange={this.updateInput.bind(this)}
+                                                        />
+                                                        {this.state.errors.billableRate
+                                                            ? <small className="error">{this.state.errors.billableRate}</small>
+                                                            : ''
+                                                        }
+                                                    </div>
                                                     :
 
                                                     ''
@@ -287,6 +326,10 @@ class CreateProject extends Component{
                                                className="tk-form-input"
                                                onChange={this.updateInput.bind(this)}
                                         />
+                                        {this.state.errors.startDate
+                                            ? <small className="error">{this.state.errors.startDate}</small>
+                                            : ''
+                                        }
                                         <label>
                                             End Date:
                                         </label>
@@ -295,6 +338,10 @@ class CreateProject extends Component{
                                                className="tk-form-input"
                                                onChange={this.updateInput.bind(this)}
                                         />
+                                        {this.state.errors.endDate
+                                            ? <small className="error">{this.state.errors.endDate}</small>
+                                            : ''
+                                        }
                                         <label>
                                             Estimated Completion Time (hours):
                                         </label>
@@ -303,6 +350,10 @@ class CreateProject extends Component{
                                                className="tk-form-input"
                                                onChange={this.updateInput.bind(this)}
                                         />
+                                        {this.state.errors.projectedTime
+                                            ? <small className="error">{this.state.errors.projectedTime}</small>
+                                            : ''
+                                        }
                                     </div>
                                     <br/>
                                     <div className="row">
@@ -341,8 +392,7 @@ class CreateProject extends Component{
                                         <div className="col-xs-12">
                                             <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
                                                 Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right"
-                                                                                                     aria-hidden="true"></i></a>
+                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right" aria-hidden="true"></i></a>
                                         </div>
                                     </div>
                                 </div>);
@@ -354,7 +404,11 @@ class CreateProject extends Component{
                                                   className="tk-form-textarea"
                                                   placeholder="Project Description..."
                                                   onChange={this.updateInput.bind(this)}
-                                        ></textarea>
+                                        />
+                                        {this.state.errors.description
+                                            ? <small className="error">{this.state.errors.description}</small>
+                                            : ''
+                                        }
                                     </div>
                                     <br></br>
                                     <div className="row">

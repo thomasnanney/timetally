@@ -25,7 +25,6 @@ class Project extends Model
         $tempData = array_filter($data, function($value){
             return !is_null($value);
         });
-        var_dump($tempData);
 
         $messages = [
             'title.required' => 'Please enter a Project Title',
@@ -41,7 +40,7 @@ class Project extends Model
             'startDate' => 'required',
             'endDate' => 'required',
             'projectedTime' => 'required|integer|',
-            'projectedRevenue' => 'sometimes|numeric',
+            'projectedRevenue' => 'required|numeric',
             'billableType' => 'required|string|min:1',
         ];
 

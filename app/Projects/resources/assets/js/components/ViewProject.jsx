@@ -16,6 +16,7 @@ class ViewProject extends Component {
             clients: [],
             users: [],
             loading: false,
+            errors: {}
         };
     }
 
@@ -62,11 +63,15 @@ class ViewProject extends Component {
         let self = this;
         this.setState({loading: true});
         axios.post('/projects/edit/'+this.state.project.id, {
-            data: this.state.project
+            data: self.state.project
         })
             .then(function(response){
                 console.log(response.data);
                 self.setState({loading:false});
+                if(response.data.errors){
+                    let errors = response.data.messages;
+                    self.setState({errors: errors});
+                }
             })
             .catch(function(error){
                 alert("We were unable to save your project.  Please try again.");
@@ -89,14 +94,32 @@ class ViewProject extends Component {
                     <div className="row">
                         <div className="col-xs-12">
                             <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
-                                <li className={"tab " + (this.state.activeView == 1 ? 'active': '')} onClick={() => this.makeTabActive(1)}>General</li>
-                                <li className={"tab " + (this.state.activeView == 2 ? 'active': '')} onClick={() => this.makeTabActive(2)}>Details</li>
-                                <li className={"tab " + (this.state.activeView == 3 ? 'active': '')} onClick={() => this.makeTabActive(3)}>Users</li>
+                                <li className={"tab " + (this.state.activeView == 1 ? 'active': '')} onClick={() => this.makeTabActive(1)}>
+                                    {(this.state.errors.title || this.state.errors.scope || this.state.errors.description)
+                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
+                                        :   ''
+                                    }
+                                    General
+                                </li>
+                                <li className={"tab " + (this.state.activeView == 2 ? 'active': '')} onClick={() => this.makeTabActive(2)}>
+                                    {(this.state.errors.clientID || this.state.errors.billableType || this.state.errors.billableRate || this.state.errors.billableHourlyType)
+                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
+                                        :   ''
+                                    }
+                                    Details
+                                </li>
+                                <li className={"tab " + (this.state.activeView == 3 ? 'active': '')} onClick={() => this.makeTabActive(3)}>
+                                    {(this.state.errors.users)
+                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
+                                        :   ''
+                                    }
+                                    Users
+                                </li>
                             </ul>
                         </div>
                     </div>
                     <div className="pane-container">
-                        <ViewProjectPane activeView={this.state.activeView} project={this.state.project} clients={this.state.clients} updateInput={this.updateInput.bind(this)} users={this.state.users}/>
+                        <ViewProjectPane activeView={this.state.activeView} project={this.state.project} clients={this.state.clients} updateInput={this.updateInput.bind(this)} users={this.state.users} errors={this.state.errors}/>
                     </div>
                     <div className="row">
                         <div className="col-xs-12 text-right">
