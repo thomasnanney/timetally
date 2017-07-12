@@ -17,11 +17,13 @@ class CreateTimeEntriesTable extends Migration
             $table->increments('id');
             $table->integer('workspaceID');
             $table->integer('projectID');
-            $table->timeTz('startTime');
-            $table->timeTz('endTime');
-            $table->string('title');
-            $table->text('description');
-            $table->boolean('billable');
+            $table->integer('userID');
+            $table->integer('clientID');
+            $table->dateTimeTz('startTime');
+            $table->dateTimeTz('endTime');
+            $table->string('title')->nullable();
+            $table->text('description')->nullable();
+            $table->boolean('billable')->nullable();
             $table->timestamps();
         });
     }
