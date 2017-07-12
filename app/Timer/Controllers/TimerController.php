@@ -8,6 +8,7 @@ use App\Projects\Models\Project;
 use App\Workspaces\Models\Workspace;
 use Illuminate\Support\Facades\Auth;
 use App\Timer\Models\TimeEntries;
+use Illuminate\Support\Facades\DB;
 
 class TimerController extends Controller
 {
@@ -34,7 +35,12 @@ class TimerController extends Controller
         $workspace = DB::table('user_workspace_pivot')->where('userID', '=', $user->id)->first();
 
         // get all projects from workspace user belongs to
-        $userProjects = Projects::where('workspaceID', '=', $workspace->workspaceID);
+        if($workspace) {
+            $userProjects = Project::where('workspaceID', '=', $workspace->workspaceID);
+        } else {
+            $userProjects = null;
+        }
+
 
         //  get all time entries created by user
         $entries = TimeEntries::where('userID', '=', $user->id);
@@ -61,7 +67,7 @@ class TimerController extends Controller
             'status' => 'fail',
             'errors' => 'true',
             'messages' => [
-                'Unable to find project'
+                'Unable to find time entry'
             ]
         ]);
     }
@@ -88,5 +94,33 @@ class TimerController extends Controller
         ]);
     }
 
+    /**
+     * @param $request incoming data
+     * @param $time entry of the user to be deleted
+     * @return redirect
+     */
+    public function postEdit(Request $request, TimeEntries $timeEntry)
+    {
+
+        $data = $request->input('data');
+
+        $v = TimeEntries::validate($data);
+
+        if ($v->fails()) {
+            return response()->json([
+                'status' => 'fail',
+                'errors' => 'true',
+                'messages' => $v->errors()
+            ]);
+        }
+
+        $timeEntry->fill($data);
+        $timeEntry->save();
+
+        return response()->json([
+            'status' => 'success',
+            'errors' => 'false',
+        ]);
+    }
 
 }
