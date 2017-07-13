@@ -5,6 +5,7 @@ use App\Users\Models\User as Users;
 use App\Workspaces\Models\Workspace as Workspace;
 use App\Projects\Models\Project as Project;
 use App\Clients\Models\Client as Client;
+use App\Timer\Models\TimeEntries as TimeEntry;
 
 class DatabaseSeeder extends Seeder
 {
@@ -78,6 +79,11 @@ class DatabaseSeeder extends Seeder
             //link all 5 users to each of the projects
             foreach($subUsers as $user){
                 $project->queryUsers()->attach($user->id);
+                //create some time entries by each user for each project
+                factory(TimeEntry::class)->create([
+                   'userID' => $user->id,
+                    'projectID' => $project->id
+                ]);
             }
 
             $index++;

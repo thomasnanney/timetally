@@ -15,10 +15,8 @@ class CreateTimeEntriesTable extends Migration
     {
         Schema::create('time_entries', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('workspaceID');
             $table->integer('projectID');
             $table->integer('userID');
-            $table->integer('clientID');
             $table->dateTime('startTime');
             $table->dateTime('endTime');
             $table->text('description')->nullable();

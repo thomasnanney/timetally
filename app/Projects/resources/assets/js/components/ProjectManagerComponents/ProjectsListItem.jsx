@@ -20,7 +20,6 @@ export default class ProjectsListItem extends Component{
     }
 
     toggleMenu(){
-        console.log("TOGGLING");
         this.setState((prevState, props) => ({
             isMenuActive: !prevState.isMenuActive,
         }));
@@ -38,7 +37,7 @@ export default class ProjectsListItem extends Component{
         return (
             <div className="thin-border-bottom table-row">
                 <div className={"table-cell menu-icon-cell valign-bottom tk-dropdown-container relative " + (this.state.isMenuActive ? 'active' :'')}>
-                    <i className="fa fa-bars clickable" aria-hidden="true" onClick={ ()=>this.toggleMenu()}>&nbsp;</i>
+                    <i className="fa fa-bars clickable" aria-hidden="true" onClick={ ()=>this.toggleMenu()}/>
                     <DropDownMenu items={menuItems} align="align-left"/>
                 </div>
                 <div className="table-cell valign-bottom">{this.props.project.title}<span className={"badge tk-badge tk-badge-" + this.props.project.scope}>{this.props.project.scope}</span></div>

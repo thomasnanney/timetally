@@ -14,17 +14,17 @@
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 $factory->define(App\Timer\Models\TimeEntries::class, function (Faker\Generator $faker) {
 
+    $hours = rand(2, 6);
+    $offset = rand(0, 10);
+    $startTime = date('Y-m-d H:i:s', strtotime('-'.$offset.' day', time()));
+    $endTime = date('Y-m-d H:i:s', strtotime('+'.$hours.' hour', strtotime($startTime)));
 
     return [
-
-
-        'workspaceID' => 1,
         'projectID' => 1, //default to one, but this should be over ridden on creation
         'userID' => 1, //default to one, but this should be over ridden on creation
-        'clientID' => 1, //default to one, but this should be over ridden on creation
-        'startTime' => $faker->dateTime,
-        'endTime' => $faker->dateTime,
-        'description' => $faker->paragraph,
-        'billable' => true,
+        'startTime' => $startTime,
+        'endTime' => $endTime,
+        'description' => $faker->sentence(4),
+        'billable' => rand(0,1) ? true : false,
     ];
 });
