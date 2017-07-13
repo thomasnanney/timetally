@@ -32,7 +32,7 @@ class TimerManager extends Component{
     addEntry(entry){
         console.log(entry);
         let newState = this.state;
-        let key = entry.startTime.yyyymmdd();
+        let key = new Date(entry.startTime).yyyymmdd();
         console.log(key);
         console.log(newState);
         if(newState.timeEntries[key]){
@@ -45,8 +45,28 @@ class TimerManager extends Component{
         this.setState(newState);
     }
 
-    removeEntry(){
+    removeEntry(entry){
+        console.log(entry);
+        let self = this;
+        axios.post('/timer/delete/' + entry.id)
+            .then(function(response){
+                console.log(response);
+                if(response.status == 200){
+                    let newState = self.state;
+                    let key = new Date(entry.startTime).yyyymmdd();
+                    console.log(key);
+                    let newArray = newState.timeEntries[key].filter(function(oldEntry){
+                        return ! (oldEntry.id == entry.id);
+                    });
 
+                    newState.timeEntries[key] = newArray;
+                    self.setState(newState);
+                    console.log(newState);
+                }
+            })
+            .catch(function(error){
+               console.log(error);
+            });
     }
 
     render(){
@@ -64,3 +84,13 @@ class TimerManager extends Component{
 if(document.getElementById("timerManager")){
         ReactDOM.render(<TimerManager/>, document.getElementById("timerManager"));
 }
+
+// Date.prototype.yyyymmdd = function() {
+//     let mm = this.getMonth() + 1; // getMonth() is zero-based
+//     let dd = this.getDate();
+//
+//     return [this.getFullYear(),
+//         (mm>9 ? '' : '0') + mm,
+//         (dd>9 ? '' : '0') + dd
+//     ].join('-');
+// };

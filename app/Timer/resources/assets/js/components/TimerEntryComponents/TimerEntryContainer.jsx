@@ -25,7 +25,7 @@ export default class TimerEntryContainer extends Component{
                                     <ul key={key}>
                                         <li key={day}>{printHeader(day)}</li>
                                         {this.props.timeEntries[day].map((entry) => (
-                                            <TimerEntry entry={entry} key={entry.id}/>
+                                            <TimerEntry entry={entry} key={entry.id} removeItem={this.props.removeItem}/>
                                         ))
                                         }
                                     </ul>

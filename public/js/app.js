@@ -16128,7 +16128,7 @@ var TimerEntryContainer = function (_Component) {
                                         printHeader(day)
                                     ),
                                     _this2.props.timeEntries[day].map(function (entry) {
-                                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__TimerEntry__["a" /* default */], { entry: entry, key: entry.id });
+                                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__TimerEntry__["a" /* default */], { entry: entry, key: entry.id, removeItem: _this2.props.removeItem });
                                     })
                                 );
                             })
@@ -16244,7 +16244,7 @@ var TimerManager = function (_Component) {
         value: function addEntry(entry) {
             console.log(entry);
             var newState = this.state;
-            var key = entry.startTime.yyyymmdd();
+            var key = new Date(entry.startTime).yyyymmdd();
             console.log(key);
             console.log(newState);
             if (newState.timeEntries[key]) {
@@ -16258,7 +16258,27 @@ var TimerManager = function (_Component) {
         }
     }, {
         key: 'removeEntry',
-        value: function removeEntry() {}
+        value: function removeEntry(entry) {
+            console.log(entry);
+            var self = this;
+            axios.post('/timer/delete/' + entry.id).then(function (response) {
+                console.log(response);
+                if (response.status == 200) {
+                    var newState = self.state;
+                    var key = new Date(entry.startTime).yyyymmdd();
+                    console.log(key);
+                    var newArray = newState.timeEntries[key].filter(function (oldEntry) {
+                        return !(oldEntry.id == entry.id);
+                    });
+
+                    newState.timeEntries[key] = newArray;
+                    self.setState(newState);
+                    console.log(newState);
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        }
     }, {
         key: 'render',
         value: function render() {
@@ -16279,6 +16299,16 @@ var TimerManager = function (_Component) {
 if (document.getElementById("timerManager")) {
     __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(TimerManager, null), document.getElementById("timerManager"));
 }
+
+// Date.prototype.yyyymmdd = function() {
+//     let mm = this.getMonth() + 1; // getMonth() is zero-based
+//     let dd = this.getDate();
+//
+//     return [this.getFullYear(),
+//         (mm>9 ? '' : '0') + mm,
+//         (dd>9 ? '' : '0') + dd
+//     ].join('-');
+// };
 
 /***/ }),
 /* 149 */

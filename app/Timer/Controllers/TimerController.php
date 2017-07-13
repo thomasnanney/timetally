@@ -46,9 +46,9 @@ class TimerController extends Controller
             ]);
     }
 
-    public function deleteTimeEntry($id) {
-        if(TimeEntries::find($id)){
-            TimeEntries::destroy($id);
+    public function postDelete(TimeEntries $entry) {
+        if(TimeEntries::find($entry->id)){
+            TimeEntries::destroy($entry->id);
             return response()->json([
                 'status' => 'success',
                 'errors' => 'false'
