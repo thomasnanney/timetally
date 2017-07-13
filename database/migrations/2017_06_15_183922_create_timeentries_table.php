@@ -19,8 +19,8 @@ class CreateTimeEntriesTable extends Migration
             $table->integer('projectID');
             $table->integer('userID');
             $table->integer('clientID');
-            $table->dateTimeTz('startTime');
-            $table->dateTimeTz('endTime');
+            $table->dateTime('startTime');
+            $table->dateTime('endTime');
             $table->text('description')->nullable();
             $table->boolean('billable')->nullable();
             $table->timestamps();
