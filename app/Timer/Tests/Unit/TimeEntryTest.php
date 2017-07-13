@@ -61,7 +61,7 @@ class TimeEntryTest extends TestCase
         $workspace = factory(Workspace::class)->make();
         $project = factory(Project::class)->make();
         $timeEntry = factory(TimeEntries::class)->make();
-        $response = $this->call('POST', '/timer/edit'.$timeEntry->id,
+        $response = $this->call('POST', '/timer/edit/'.$timeEntry->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
