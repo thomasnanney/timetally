@@ -66,4 +66,8 @@ class User extends Authenticatable
 
         return $results;
     }
+
+    public function queryProjects(){
+        return $this->belongsToMany('App\Projects\Models\Project', 'project_user_pivot', 'userID', 'projectID');
+    }
 }

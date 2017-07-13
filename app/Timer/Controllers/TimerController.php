@@ -31,16 +31,8 @@ class TimerController extends Controller
     {
         $user = Auth::user();
 
-        // get workspace user belongs to
-        $workspace = DB::table('user_workspace_pivot')->where('userID', '=', $user->id)->first();
-
-        // get all projects from workspace user belongs to
-        if($workspace) {
-            $userProjects = Project::where('workspaceID', '=', $workspace->workspaceID);
-        } else {
-            $userProjects = null;
-        }
-
+        // get projects user belongs to
+        $userProjects = $user->queryProjects();
 
         //  get all time entries created by user
         $entries = TimeEntries::where('userID', '=', $user->id);
