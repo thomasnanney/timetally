@@ -57,7 +57,7 @@ class Project extends Model
      */
     public function addUserToProject($userID) {
         if(!(DB::table('project_user_pivot')
-            ->where('usertID', '=', $userID)
+            ->where('userID', '=', $userID)
             ->where('projectID', '=', $this->id)
             ->exists())
         ) {
