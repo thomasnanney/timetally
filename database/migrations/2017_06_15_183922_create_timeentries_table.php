@@ -21,7 +21,6 @@ class CreateTimeEntriesTable extends Migration
             $table->integer('clientID');
             $table->dateTimeTz('startTime');
             $table->dateTimeTz('endTime');
-            $table->string('title')->nullable();
             $table->text('description')->nullable();
             $table->boolean('billable')->nullable();
             $table->timestamps();

@@ -26,15 +26,14 @@ class TimeEntries extends Model {
         var_dump($tempData);
 
         $messages = [
-            'clientID.required' => 'Please enter a Client Name',
+            'description.required' => 'Please enter a description',
             'projectID.required' => 'Please enter a Project Name',
             'startTime.required' => 'Please enter a Start Date',
             'endTime.required' => 'Please enter an End Date',
             'billableType.required' => 'Please enter Billable Type',
         ];
         $rules = [
-            'title' => 'sometimes|string|min:1',
-            'description' => 'sometimes|string|min:1',
+            'description' => 'required|string|min:1',
             'clientID' => 'required|integer|exists:clients,id', // needs to exist
             'userID' => 'required|integer|exists:users,id', // needs to exist
             'projectID' => 'required|integer|exists:projects,id', // needs to exist
