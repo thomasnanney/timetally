@@ -14,6 +14,10 @@ class TimerManager extends Component{
     }
 
     componentWillMount(){
+        this.updateEntries();
+    }
+
+    updateEntries(){
         let self = this;
         axios.post('/users/getAllTimeEntries')
             .then(function(response){
@@ -31,18 +35,19 @@ class TimerManager extends Component{
 
     addEntry(entry){
         console.log(entry);
-        let newState = this.state;
-        let key = new Date(entry.startTime).yyyymmdd();
-        console.log(key);
-        console.log(newState);
-        if(newState.timeEntries[key]){
-            newState.timeEntries[key].push(entry);
-        }else{
-            newState.timeEntries[key] = [];
-            newState.timeEntries[key].push(entry);
-        }
-
-        this.setState(newState);
+        this.updateEntries();
+        // let newState = this.state;
+        // let key = new Date(entry.startTime).yyyymmdd();
+        // console.log(key);
+        // console.log(newState);
+        // if(newState.timeEntries[key]){
+        //     newState.timeEntries[key].push(entry);
+        // }else{
+        //     newState.timeEntries[key] = [];
+        //     newState.timeEntries[key].push(entry);
+        // }
+        //
+        // this.setState(newState);
     }
 
     removeEntry(entry){
@@ -52,16 +57,7 @@ class TimerManager extends Component{
             .then(function(response){
                 console.log(response);
                 if(response.status == 200){
-                    let newState = self.state;
-                    let key = new Date(entry.startTime).yyyymmdd();
-                    console.log(key);
-                    let newArray = newState.timeEntries[key].filter(function(oldEntry){
-                        return ! (oldEntry.id == entry.id);
-                    });
-
-                    newState.timeEntries[key] = newArray;
-                    self.setState(newState);
-                    console.log(newState);
+                    self.updateEntries();
                 }
             })
             .catch(function(error){
@@ -73,7 +69,7 @@ class TimerManager extends Component{
 
         return (
             <div>
-                <TimerBar addEntry={this.addEntry.bind(this)}/>
+                <TimerBar updateEntries={this.updateEntries.bind(this)}/>
                 <hr/>
                 <TimerEntryContainer timeEntries={this.state.timeEntries} removeItem={this.removeEntry.bind(this)}/>
             </div>

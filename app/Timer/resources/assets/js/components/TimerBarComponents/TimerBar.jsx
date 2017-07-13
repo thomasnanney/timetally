@@ -95,7 +95,7 @@ export default class TimerBar extends Component{
                         console.log("success");
                         let newEntry = self.state.entry;
                         newEntry['project_name'] = self.state.project.title
-                        self.props.addEntry(newEntry);
+                        self.props.updateEntries();
                         let newState = self.state;
                         newState.entry = {
                             description: '',

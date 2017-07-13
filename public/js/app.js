@@ -15757,7 +15757,7 @@ var TimerBar = function (_Component) {
                         console.log("success");
                         var newEntry = self.state.entry;
                         newEntry['project_name'] = self.state.project.title;
-                        self.props.addEntry(newEntry);
+                        self.props.updateEntries();
                         var _newState = self.state;
                         _newState.entry = {
                             description: '',
@@ -16227,6 +16227,11 @@ var TimerManager = function (_Component) {
     _createClass(TimerManager, [{
         key: 'componentWillMount',
         value: function componentWillMount() {
+            this.updateEntries();
+        }
+    }, {
+        key: 'updateEntries',
+        value: function updateEntries() {
             var self = this;
             axios.post('/users/getAllTimeEntries').then(function (response) {
                 console.log(response);
@@ -16243,18 +16248,19 @@ var TimerManager = function (_Component) {
         key: 'addEntry',
         value: function addEntry(entry) {
             console.log(entry);
-            var newState = this.state;
-            var key = new Date(entry.startTime).yyyymmdd();
-            console.log(key);
-            console.log(newState);
-            if (newState.timeEntries[key]) {
-                newState.timeEntries[key].push(entry);
-            } else {
-                newState.timeEntries[key] = [];
-                newState.timeEntries[key].push(entry);
-            }
-
-            this.setState(newState);
+            this.updateEntries();
+            // let newState = this.state;
+            // let key = new Date(entry.startTime).yyyymmdd();
+            // console.log(key);
+            // console.log(newState);
+            // if(newState.timeEntries[key]){
+            //     newState.timeEntries[key].push(entry);
+            // }else{
+            //     newState.timeEntries[key] = [];
+            //     newState.timeEntries[key].push(entry);
+            // }
+            //
+            // this.setState(newState);
         }
     }, {
         key: 'removeEntry',
@@ -16264,16 +16270,7 @@ var TimerManager = function (_Component) {
             axios.post('/timer/delete/' + entry.id).then(function (response) {
                 console.log(response);
                 if (response.status == 200) {
-                    var newState = self.state;
-                    var key = new Date(entry.startTime).yyyymmdd();
-                    console.log(key);
-                    var newArray = newState.timeEntries[key].filter(function (oldEntry) {
-                        return !(oldEntry.id == entry.id);
-                    });
-
-                    newState.timeEntries[key] = newArray;
-                    self.setState(newState);
-                    console.log(newState);
+                    self.updateEntries();
                 }
             }).catch(function (error) {
                 console.log(error);
@@ -16286,7 +16283,7 @@ var TimerManager = function (_Component) {
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__TimerBarComponents_TimerBar__["a" /* default */], { addEntry: this.addEntry.bind(this) }),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__TimerBarComponents_TimerBar__["a" /* default */], { updateEntries: this.updateEntries.bind(this) }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('hr', null),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TimerEntryComponents_TimerEntryContainer__["a" /* default */], { timeEntries: this.state.timeEntries, removeItem: this.removeEntry.bind(this) })
             );
