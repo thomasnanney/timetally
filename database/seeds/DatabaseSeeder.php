@@ -86,6 +86,11 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
+            factory(TimeEntry::class)->create([
+                'userID' => $primaryUser->id,
+                'projectID' => $project->id
+            ]);
+
             $index++;
         }
     }

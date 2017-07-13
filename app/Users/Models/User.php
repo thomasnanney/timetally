@@ -74,4 +74,8 @@ class User extends Authenticatable
     public function queryProjects(){
         return $this->belongsToMany('App\Projects\Models\Project', 'project_user_pivot', 'userID', 'projectID');
     }
+
+    public function queryTimeEntries(){
+        return $this->hasMany('App\Timer\Models\TimeEntries', 'userID', 'id');
+    }
 }

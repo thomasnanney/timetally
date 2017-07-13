@@ -93,6 +93,9 @@ export default class TimerBar extends Component{
                         setTimeout(() => self.removeErrors(), 10000);
                     }else{
                         console.log("success");
+                        let newEntry = self.state.entry;
+                        newEntry['project_name'] = self.state.project.title
+                        self.props.addEntry(newEntry);
                         let newState = self.state;
                         newState.entry = {
                             description: '',
@@ -145,6 +148,7 @@ export default class TimerBar extends Component{
     updateProject(project){
         let newState = this.state;
         newState.project = project;
+        newState.entry.projectID = project.id;
         this.setState(newState);
         this.toggleMenu('isProjectMenuActive');
 
@@ -263,7 +267,7 @@ function msToTime(duration) {
         , minutes = parseInt((duration/(1000*60))%60)
         , hours = parseInt((duration/(1000*60*60))%24);
 
-    hours = (hours < 10 && hours > 0) ? "0" + hours : hours;
+    hours = (hours < 10 && hours >= 0) ? "0" + hours : hours;
     minutes = (minutes < 10 && minutes >= 0) ? "0" + minutes : minutes;
     seconds = (seconds < 10 && seconds >= 0) ? "0" + seconds : seconds;
 

@@ -8,80 +8,50 @@ class TimerManager extends Component{
 
     constructor(props){
         super(props);
+        this.state = {
+            timeEntries: {}
+        }
     }
 
     componentWillMount(){
+        let self = this;
+        axios.post('/users/getAllTimeEntries')
+            .then(function(response){
+                console.log(response);
+                if(response.status == 200){
+                    let newState = self.state;
+                    newState.timeEntries = response.data;
+                    self.setState(newState);
+                }
+            })
+            .catch(function(error){
+                console.log(error);
+            });
+    }
 
+    addEntry(entry){
+        console.log(entry);
+        let newState = this.state;
+        let key = entry.startTime.yyyymmdd();
+        console.log(key);
+        console.log(newState);
+        if(newState.timeEntries[key]){
+            newState.timeEntries[key].push(entry);
+        }else{
+            newState.timeEntries[key] = [];
+            newState.timeEntries[key].push(entry);
+        }
+
+        this.setState(newState);
     }
 
     render(){
 
-        let timeEntryList = [
-            {
-                date: 'Today',
-                entries: [
-                    {
-                        id: 1,
-                        description: 'Description',
-                        client: 'Client 1',
-                        project: 'Project 1',
-                        billable: true,
-                        time: '1:30:00'
-                    },
-                    {
-                        id: 2,
-                        description: 'Description',
-                        client: 'Client 1',
-                        project: 'Project 1',
-                        billable: true,
-                        time: '1:30:00'
-                    },
-                    {
-                        id: 3,
-                        description: 'Description',
-                        client: 'Client 1',
-                        project: 'Project 1',
-                        billable: true,
-                        time: '1:30:00'
-                    },
-                ]
-            },
-            {
-                date: 'Yesterday',
-                entries: [
-                    {
-                        id: 4,
-                        description: 'Description',
-                        client: 'Client 1',
-                        project: 'Project 1',
-                        billable: true,
-                        time: '1:30:00'
-                    },
-                    {
-                        id: 5,
-                        description: 'Description',
-                        client: 'Client 1',
-                        project: 'Project 1',
-                        billable: true,
-                        time: '1:30:00'
-                    },
-                    {
-                        id: 6,
-                        description: 'Description',
-                        client: 'Client 1',
-                        project: 'Project 1',
-                        billable: true,
-                        time: '1:30:00'
-                    },
-                ]
-            }
-        ];
-
         return (
             <div>
-                <TimerBar/>
+                <TimerBar addEntry={this.addEntry.bind(this)}/>
                 <hr/>
-                <TimerEntryContainer timeEntries={timeEntryList}/>
+                <TimerEntryContainer timeEntries={this.state.timeEntries}/>
             </div>
         );
     }

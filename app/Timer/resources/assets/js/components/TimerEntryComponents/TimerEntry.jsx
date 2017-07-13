@@ -14,7 +14,7 @@ export default class TimerEntry extends Component{
                         {this.props.entry.description}
                     </div>
                     <div className="col-xs-4 col-md-2">
-                        {this.props.entry.client} - {this.props.entry.project}
+                        {this.props.entry.project_name}
                     </div>
                     <div className="col-xs-4 col-md-2 text-right">
                         {
@@ -26,10 +26,23 @@ export default class TimerEntry extends Component{
                         }
                     </div>
                     <div className="col-xs-4 col-md-2">
-                        {this.props.entry.time}
+                        {msToTime(new Date(this.props.entry.endTime) - new Date(this.props.entry.startTime))}
                     </div>
                 </div>
             </li>
         )
     }
+}
+
+function msToTime(duration) {
+    let milliseconds = parseInt((duration%1000)/100)
+        , seconds = parseInt((duration/1000)%60)
+        , minutes = parseInt((duration/(1000*60))%60)
+        , hours = parseInt((duration/(1000*60*60))%24);
+
+    hours = (hours < 10 && hours >= 0) ? "0" + hours : hours;
+    minutes = (minutes < 10 && minutes >= 0) ? "0" + minutes : minutes;
+    seconds = (seconds < 10 && seconds >= 0) ? "0" + seconds : seconds;
+
+    return hours + ":" + minutes + ":" + seconds;
 }

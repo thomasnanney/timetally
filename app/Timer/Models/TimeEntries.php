@@ -34,7 +34,7 @@ class TimeEntries extends Model {
             'projectID' => 'required|integer|exists:projects,id', // needs to exist
             'startTime' => 'required',
             'endTime' => 'required',
-            'billable' => 'sometimes|integer',
+            'billableType' => 'sometimes|integer',
         ];
 
         return Validator::make($tempData, $rules, $messages);
