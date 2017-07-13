@@ -84,6 +84,288 @@ class WorkspaceTest extends TestCase
 
     }
 
+    public function testCreateWorkspaceNoName(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => '',
+                    'description' => 'A description',
+                    'ownerID' => '1',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter a Company Name', $data['messages']['name'][0]);
+    }
+
+
+
+    public function testCreateWorkspaceNoDescription(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                'name' => 'Workspace 1',
+                'description' => '',
+                'ownerID' => '1',
+                'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('success', $data['status']);
+
+    }
+
+    public function testCreateWorkspaceNoOwnerID() {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter an Owner ID', $data['messages']['ownerID'][0]);
+    }
+
+    public function testCreateWorkspaceNoOrganizationID(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '1',
+                    'organizaitonID' => ''
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter an Organization ID', $data['messages']['organizationID'][0]);
+
+    }
+
+
+    public function testCreateWorkspaceInvalidOwnerID(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => 'abcd',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter an Owner ID', $data['messages']['ownerID'][0]);
+    }
+
+    public function testCreateWorkspaceInvalidOrganizationID(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '1',
+                    'organizaitonID' => 'abcd'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter an Organization ID', $data['messages']['organizationID'][0]);
+
+    }
+
+    public function testEditWorkspaceNoName(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $workspace = factory(Workspace::class)->create();
+        $response = $this->call('POST', '/workspaces/edit/'.$workspace->id,
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => '',
+                    'description' => 'Description',
+                    'ownerID' => '1',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('workspaces', [
+            'id' => $workspace->id,
+            'name' => 'Workspace 2'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter a Company Name', $data['messages']['name'][0]);
+    }
+
+
+    public function testEditWorkspaceNoDescription(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $workspace = factory(Workspace::class)->create();
+        $response = $this->call('POST', '/workspaces/edit/'.$workspace->id,
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 2',
+                    'description' => '',
+                    'ownerID' => '1',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('workspaces', [
+            'id' => $workspace->id,
+            'name' => 'Workspace 2'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('success', $data['status']);
+
+    }
+
+    public function testEditWorkspaceNoOwnerID() {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/edit',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter an Owner ID', $data['messages']['ownerID'][0]);
+    }
+
+    public function testEditWorkspaceNoOrganizationID(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/edit',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '1',
+                    'organizaitonID' => ''
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter an Organization ID', $data['messages']['organizationID'][0]);
+
+    }
+
+    public function testEditWorkspaceInvalidOwnerID(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/edit',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => 'abcd',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter an Owner ID', $data['messages']['ownerID'][0]);
+
+    }
+
+    public function testEditWorkspaceInvalidOrganizationID(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/edit',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '1',
+                    'organizaitonID' => 'abcd'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter an Organization ID', $data['messages']['organizationID'][0]);
+
+    }
 
     public function testEditWorkspace()
     {
