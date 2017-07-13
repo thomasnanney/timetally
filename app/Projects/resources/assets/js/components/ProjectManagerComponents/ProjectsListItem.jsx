@@ -43,7 +43,7 @@ export default class ProjectsListItem extends Component{
                 </div>
                 <div className="table-cell valign-bottom">{this.props.project.title}<span className={"badge tk-badge tk-badge-" + this.props.project.scope}>{this.props.project.scope}</span></div>
                 <div className="table-cell valign-bottom">{this.props.project.clientName}</div>
-                <div className="table-cell valign-bottom">{this.props.project.workspaceTitle}</div>
+                <div className="table-cell valign-bottom">{this.props.project.workspaceTitle}<i className="fa fa-trash pull-right error clickable" aria-hidden="true" onClick={() => this.props.removeItem(this.props.project)}/></div>
             </div>
         );
     }

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use App\Projects\Models\Project;
 use Illuminate\Support\Facades\Auth;
+use App\Users\Models\User;
 
 class ProjectsController extends Controller
 {
@@ -103,6 +104,8 @@ class ProjectsController extends Controller
         $project->fill($data);
         $project->save();
 
+        var_dump($project);
+
         return response()->json([
             'status' => 'success',
             'errors' => 'false',
@@ -111,6 +114,14 @@ class ProjectsController extends Controller
 
     public function getUsers(Project $project){
         return $project->queryUsers()->get();
+    }
+
+    public function addUser(Project $project, User $user){
+        $project->addUser($user);
+    }
+
+    public function removeUser(Project $project, User $user){
+        $project->removeUser($user);
     }
 
 }

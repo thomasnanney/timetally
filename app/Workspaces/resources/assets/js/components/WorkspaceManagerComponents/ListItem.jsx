@@ -32,21 +32,21 @@ export default class ListItem extends Component {
         const menuItems = [
             {
                 name: 'Settings',
-                link: this.props.workspace.link
+                link: '/workspaces/edit/' + this.props.workspace.id
             },
             {
                 name: 'Leave',
-                link: '#'
+                link: '/workspaces/removeUser'
             }
         ];
 
         return (
             <div className="thin-border-bottom table-row">
                 <div className={"table-cell menu-icon-cell valign-bottom tk-dropdown-container relative " + (this.state.active ? "active " : "")}>
-                    <i className="fa fa-bars clickable" aria-hidden="true" onClick={this.handleClick}></i>
+                    <i className="fa fa-bars clickable" aria-hidden="true" onClick={this.handleClick}/>
                     <DropDownMenu items={menuItems} align="align-left"/>
                 </div>
-                <div className="table-cell valign-bottom">{this.props.workspace.name}</div>
+                <div className="table-cell valign-bottom">{this.props.workspace.title}</div>
                 <div className="table-cell valign-bottom"></div>
             </div>
         );

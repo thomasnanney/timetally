@@ -41,4 +41,10 @@ class UsersController extends Controller
 
         return $user->getAllProjectsByUser();
     }
+
+    public function postGetAllWorkspacesByUser(){
+        $user = Auth::user();
+
+        return $user->queryWorkspaces()->get();
+    }
 }

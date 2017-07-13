@@ -61,8 +61,9 @@ class ViewProject extends Component {
 
     saveProject(){
         let self = this;
+        console.log("saving");
         this.setState({loading: true});
-        axios.post('/projects/edit/'+this.state.project.id, {
+        axios.post('/projects/edit/'+self.state.project.id, {
             data: self.state.project
         })
             .then(function(response){
@@ -74,10 +75,47 @@ class ViewProject extends Component {
                 }
             })
             .catch(function(error){
+                console.log(error);
                 alert("We were unable to save your project.  Please try again.");
             });
     }
 
+    addUser(user){
+        let self = this;
+        axios.post('/projects/'+ this.state.project.id + '/addUser/' + user.id)
+            .then(function(response){
+                if(response.status == 200){
+                    let newUsers = self.state.users;
+
+                    newUsers.push(user);
+
+                    self.setState({users: newUsers});
+                }
+            })
+            .catch(function(error){
+               console.log(error);
+            });
+    }
+
+    removeUser(user){
+        let self = this;
+        axios.post('/projects/'+ this.state.project.id + '/removeUser/' + user.id)
+            .then(function(response){
+                console.log(response);
+                if(response.status == 200){
+                    let newUsers = self.state.users;
+
+                    newUsers.filter(function(oldUser){
+                        return oldUser.id == user.id
+                    });
+
+                    self.setState({users: newUsers});
+                }
+            })
+            .catch(function(error){
+                console.log(error);
+            });
+    }
 
     componentWillUnmount() {
 
@@ -86,6 +124,7 @@ class ViewProject extends Component {
     makeTabActive(tab){
         this.setState({activeView: tab});
     }
+
     render() {
 
         return (
@@ -95,21 +134,21 @@ class ViewProject extends Component {
                         <div className="col-xs-12">
                             <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
                                 <li className={"tab " + (this.state.activeView == 1 ? 'active': '')} onClick={() => this.makeTabActive(1)}>
-                                    {(this.state.errors.title || this.state.errors.scope || this.state.errors.description)
+                                    {(this.state.errors) &&  (this.state.errors.title || this.state.errors.scope || this.state.errors.description)
                                         ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
                                         :   ''
                                     }
                                     General
                                 </li>
                                 <li className={"tab " + (this.state.activeView == 2 ? 'active': '')} onClick={() => this.makeTabActive(2)}>
-                                    {(this.state.errors.clientID || this.state.errors.billableType || this.state.errors.billableRate || this.state.errors.billableHourlyType)
+                                    {(this.state.errors) &&  (this.state.errors.clientID || this.state.errors.billableType || this.state.errors.billableRate || this.state.errors.billableHourlyType)
                                         ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
                                         :   ''
                                     }
                                     Details
                                 </li>
                                 <li className={"tab " + (this.state.activeView == 3 ? 'active': '')} onClick={() => this.makeTabActive(3)}>
-                                    {(this.state.errors.users)
+                                    {(this.state.errors) &&  (this.state.errors.users)
                                         ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
                                         :   ''
                                     }
@@ -119,7 +158,7 @@ class ViewProject extends Component {
                         </div>
                     </div>
                     <div className="pane-container">
-                        <ViewProjectPane activeView={this.state.activeView} project={this.state.project} clients={this.state.clients} updateInput={this.updateInput.bind(this)} users={this.state.users} errors={this.state.errors}/>
+                        <ViewProjectPane activeView={this.state.activeView} project={this.state.project} clients={this.state.clients} updateInput={this.updateInput.bind(this)} users={this.state.users} errors={this.state.errors} addUser={this.addUser.bind(this)} removeUser={this.removeUser.bind(this)}/>
                     </div>
                     <div className="row">
                         <div className="col-xs-12 text-right">

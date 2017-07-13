@@ -10,6 +10,7 @@ class CreateProject extends Component{
             project: {
                 title: '',
                 scope: 'public',
+                workspaceID: '',
                 clientID: '',
                 billableType: 'fixed',
                 startDate: '',
@@ -22,7 +23,8 @@ class CreateProject extends Component{
                 description: ''
             },
             clients: [],
-            errors: {}
+            errors: {},
+            workspaces: []
         }
     }
 
@@ -47,11 +49,25 @@ class CreateProject extends Component{
                 }
             })
             .catch(function(error){
+                console.log(error);
                 alert('We were unable to retrieve all clients, please reload the page or contact your System' +
                     ' Administrator');
             });
 
-
+        axios.post('/users/getAllWorkspaces')
+            .then(function(response){
+                self.setState({workspaces: response.data});
+                if(self.state.workspaces.length >0){
+                    let newProject = self.state.project;
+                    newProject.workspaceID = self.state.workspaces[0].id;
+                    self.setState({project: newProject});
+                }
+            })
+            .catch(function(error){
+                console.log(error);
+                alert('We were unable to retrieve all of your workspaces, please reload the page or contact your' +
+                    ' System Administrator');
+            });
     }
 
     nextStep(){
@@ -68,12 +84,13 @@ class CreateProject extends Component{
 
     createProject(){
         let self = this;
+        console.log(self.state.project);
         axios.post('/projects/create', {
             data: self.state.project
         })
             .then(function(response){
                 console.log(response.data.errors);
-                if(response.data.errors){
+                if(response.data.errors == "true"){
                     console.log("Setting state errors");
                     console.log(response.data.messages);
                     let errors = response.data.messages;
@@ -84,6 +101,7 @@ class CreateProject extends Component{
                 console.log(response.data);
             })
             .catch(function(error){
+                console.log(error);
                alert("We were unable to create your project, please try again");
             });
     }
@@ -165,7 +183,29 @@ class CreateProject extends Component{
                                                 ? <small className="error">{this.state.errors.title}</small>
                                                 : ''
                                             }
-
+                                            {this.state.workspaces.length > 1 &&
+                                                <div>
+                                                    <h1>Workspace</h1>
+                                                    <select className="tk-form-input"
+                                                        value={this.state.project.workspaceID}
+                                                        onChange={this.updateInput.bind(this)}
+                                                        name="workspaceID">
+                                                    {
+                                                        this.state.workspaces.length > 0
+                                                        ?
+                                                        this.state.workspaces.map((workspace) =>
+                                                            <option value={workspace.id} key={workspace.id}>{workspace.title}</option>
+                                                        )
+                                                        :
+                                                        <option>Add a workspace</option>
+                                                    }
+                                                        </select>
+                                                </div>
+                                            }
+                                            {this.state.errors.workspaceID
+                                                ? <small className="error">{this.state.errors.workspaceID}</small>
+                                                : ''
+                                            }
                                         </div>
                                         <br></br>
                                         <div className="row">

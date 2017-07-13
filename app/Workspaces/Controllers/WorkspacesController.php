@@ -91,4 +91,8 @@ class WorkspacesController extends Controller
         Workspace::destroy($workspace->id);
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
+
+    public function getAllUsers(Workspace $workspace){
+        return $workspace->queryUsers()->get();
+    }
 }

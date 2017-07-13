@@ -374,7 +374,7 @@ li.tab.active{
     background: transparent;
     border: none;
     border-bottom: 1px solid #cecece;
-    margin-bottom:15px;
+    margin:15px 0px;
 }
 
 .tk-form-input:focus{

@@ -28,7 +28,7 @@ export default class ProjectsList extends Component{
                 </div>
                 {
                     this.props.projects.map((project) =>
-                        <ProjectsListItem project={project} key={project.id}/>
+                        <ProjectsListItem project={project} key={project.id} removeItem={this.props.removeItem}/>
                     )
                 }
             </div>

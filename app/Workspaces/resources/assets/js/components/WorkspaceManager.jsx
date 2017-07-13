@@ -11,10 +11,25 @@ class WorkspaceManager extends Component {
         super(props);
         this.state ={
             addNewActive: false,
+            workspaces: {}
         };
 
         this.addWorkspace = this.addWorkspace.bind(this);
     }
+
+    componentWillMount(){
+        let self = this;
+        axios.post('/users/getAllWorkspaces')
+            .then(function(response){
+                console.log(response);
+                self.setState({workspaces: response.data});
+            })
+            .catch(function(response){
+               alert("We were unable to retrieve all of your workspaces.  Please reload the page or contact your" +
+                   " System Administrator.");
+            });
+    };
+
 
     componentDidMount() {
 
@@ -32,21 +47,6 @@ class WorkspaceManager extends Component {
 
     render() {
 
-        const  workspaces = [
-            {
-                name: 'Workspace 1',
-                link: '/workspaces/edit/1'
-            },
-            {
-                name: 'Workspace 2',
-                link: '/workspaces/edit/1'
-            },
-            {
-                name: 'Workspace 3',
-                link: '/workspaces/edit/1'
-            },
-        ];
-
         return (
             <div>
                 <h1>Workspaces</h1>
@@ -59,9 +59,9 @@ class WorkspaceManager extends Component {
                         <div className="table-cell valign bottom">
                         </div>
                     </div>
-                    {workspaces.length > 0 ?
-                        workspaces.map((space, id) =>
-                            <ListItem workspace={space} key={id}/>
+                    {this.state.workspaces.length > 0 ?
+                        this.state.workspaces.map((space, id) =>
+                            <ListItem workspace={space} key={space.id}/>
                         )
                         :
                         <p>You do not have any workspaces...</p>

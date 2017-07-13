@@ -29,6 +29,10 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $guarded = [
+        'id'
+    ];
+
     public function queryWorkspaces(){
         return $this->belongsToMany('App\Workspaces\Models\Workspace', 'user_workspace_pivot', 'userID', 'workspaceID');
     }
