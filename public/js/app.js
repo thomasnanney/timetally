@@ -15767,6 +15767,10 @@ var TimerBar = function (_Component) {
                             endTime: null
                         };
 
+                        _newState.project = {
+                            title: ''
+                        };
+
                         self.setState(_newState);
                     }
                 }
@@ -16249,18 +16253,6 @@ var TimerManager = function (_Component) {
         value: function addEntry(entry) {
             console.log(entry);
             this.updateEntries();
-            // let newState = this.state;
-            // let key = new Date(entry.startTime).yyyymmdd();
-            // console.log(key);
-            // console.log(newState);
-            // if(newState.timeEntries[key]){
-            //     newState.timeEntries[key].push(entry);
-            // }else{
-            //     newState.timeEntries[key] = [];
-            //     newState.timeEntries[key].push(entry);
-            // }
-            //
-            // this.setState(newState);
         }
     }, {
         key: 'removeEntry',
@@ -16276,6 +16268,9 @@ var TimerManager = function (_Component) {
                 console.log(error);
             });
         }
+    }, {
+        key: 'promptToDelete',
+        value: function promptToDelete(entry) {}
     }, {
         key: 'render',
         value: function render() {
@@ -16296,16 +16291,6 @@ var TimerManager = function (_Component) {
 if (document.getElementById("timerManager")) {
     __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(TimerManager, null), document.getElementById("timerManager"));
 }
-
-// Date.prototype.yyyymmdd = function() {
-//     let mm = this.getMonth() + 1; // getMonth() is zero-based
-//     let dd = this.getDate();
-//
-//     return [this.getFullYear(),
-//         (mm>9 ? '' : '0') + mm,
-//         (dd>9 ? '' : '0') + dd
-//     ].join('-');
-// };
 
 /***/ }),
 /* 149 */

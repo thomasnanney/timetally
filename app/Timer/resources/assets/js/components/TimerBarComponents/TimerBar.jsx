@@ -103,7 +103,11 @@ export default class TimerBar extends Component{
                             billable: false,
                             startTime: null,
                             endTime: null,
-                        }
+                        };
+
+                        newState. project = {
+                            title: '',
+                        };
 
                         self.setState(newState);
                     }

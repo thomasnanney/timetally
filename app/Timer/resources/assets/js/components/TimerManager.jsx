@@ -9,7 +9,7 @@ class TimerManager extends Component{
     constructor(props){
         super(props);
         this.state = {
-            timeEntries: {}
+            timeEntries: {},
         }
     }
 
@@ -36,18 +36,6 @@ class TimerManager extends Component{
     addEntry(entry){
         console.log(entry);
         this.updateEntries();
-        // let newState = this.state;
-        // let key = new Date(entry.startTime).yyyymmdd();
-        // console.log(key);
-        // console.log(newState);
-        // if(newState.timeEntries[key]){
-        //     newState.timeEntries[key].push(entry);
-        // }else{
-        //     newState.timeEntries[key] = [];
-        //     newState.timeEntries[key].push(entry);
-        // }
-        //
-        // this.setState(newState);
     }
 
     removeEntry(entry){
@@ -65,6 +53,10 @@ class TimerManager extends Component{
             });
     }
 
+    promptToDelete(entry){
+
+    }
+
     render(){
 
         return (
@@ -80,13 +72,3 @@ class TimerManager extends Component{
 if(document.getElementById("timerManager")){
         ReactDOM.render(<TimerManager/>, document.getElementById("timerManager"));
 }
-
-// Date.prototype.yyyymmdd = function() {
-//     let mm = this.getMonth() + 1; // getMonth() is zero-based
-//     let dd = this.getDate();
-//
-//     return [this.getFullYear(),
-//         (mm>9 ? '' : '0') + mm,
-//         (dd>9 ? '' : '0') + dd
-//     ].join('-');
-// };
