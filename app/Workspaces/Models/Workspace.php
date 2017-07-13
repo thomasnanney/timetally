@@ -35,6 +35,7 @@ class Workspace extends Model
         $messages = array(
             'name.required' => 'Please enter a Company Name',
             'description.required' => 'Please enter a Description',
+            'ownerID.required' => 'Please enter an Owner ID',
             'organizationID.required' => 'Please enter an Organziation ID'
         );
 
@@ -42,6 +43,7 @@ class Workspace extends Model
         $rules = array(
             'name' => 'required|string|min:1',
             'description' => 'nullable|string|min:1',
+            'ownerId' => 'sometimes|required|int',
             'organizationID' => 'sometimes|required|int'
         );
 
