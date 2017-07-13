@@ -27,6 +27,7 @@ export default class TimerEntry extends Component{
                     </div>
                     <div className="col-xs-4 col-md-2">
                         {msToTime(new Date(this.props.entry.endTime) - new Date(this.props.entry.startTime))}
+                        <i className="fa fa-trash pull-right error clickable" aria-hidden="true" onClick={() => this.props.removeItem(this.props.entry)}/>
                     </div>
                 </div>
             </li>

@@ -89,16 +89,17 @@ class CreateProject extends Component{
             data: self.state.project
         })
             .then(function(response){
-                console.log(response.data.errors);
-                if(response.data.errors == "true"){
-                    console.log("Setting state errors");
-                    console.log(response.data.messages);
-                    let errors = response.data.messages;
-                    self.setState({errors: errors});
-                    self.setState({step: 1});
-                    console.log(this.state);
+                if(response.status == 200){
+                    if(response.data.errors == "true"){
+                        console.log("Setting state errors");
+                        console.log(response.data.messages);
+                        let errors = response.data.messages;
+                        self.setState({errors: errors});
+                        self.setState({step: 1});
+                    }else{
+                        window.location('/projects');
+                    }
                 }
-                console.log(response.data);
             })
             .catch(function(error){
                 console.log(error);

@@ -45,13 +45,17 @@ class TimerManager extends Component{
         this.setState(newState);
     }
 
+    removeEntry(){
+
+    }
+
     render(){
 
         return (
             <div>
                 <TimerBar addEntry={this.addEntry.bind(this)}/>
                 <hr/>
-                <TimerEntryContainer timeEntries={this.state.timeEntries}/>
+                <TimerEntryContainer timeEntries={this.state.timeEntries} removeItem={this.removeEntry.bind(this)}/>
             </div>
         );
     }

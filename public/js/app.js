@@ -13720,16 +13720,17 @@ var CreateProject = function (_Component) {
             axios.post('/projects/create', {
                 data: self.state.project
             }).then(function (response) {
-                console.log(response.data.errors);
-                if (response.data.errors == "true") {
-                    console.log("Setting state errors");
-                    console.log(response.data.messages);
-                    var errors = response.data.messages;
-                    self.setState({ errors: errors });
-                    self.setState({ step: 1 });
-                    console.log(this.state);
+                if (response.status == 200) {
+                    if (response.data.errors == "true") {
+                        console.log("Setting state errors");
+                        console.log(response.data.messages);
+                        var errors = response.data.messages;
+                        self.setState({ errors: errors });
+                        self.setState({ step: 1 });
+                    } else {
+                        window.location('/projects');
+                    }
                 }
-                console.log(response.data);
             }).catch(function (error) {
                 console.log(error);
                 alert("We were unable to create your project, please try again");
@@ -16013,6 +16014,8 @@ var TimerEntry = function (_Component) {
     _createClass(TimerEntry, [{
         key: "render",
         value: function render() {
+            var _this2 = this;
+
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 "li",
                 { key: this.props.entry.id },
@@ -16037,7 +16040,10 @@ var TimerEntry = function (_Component) {
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         "div",
                         { className: "col-xs-4 col-md-2" },
-                        msToTime(new Date(this.props.entry.endTime) - new Date(this.props.entry.startTime))
+                        msToTime(new Date(this.props.entry.endTime) - new Date(this.props.entry.startTime)),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("i", { className: "fa fa-trash pull-right error clickable", "aria-hidden": "true", onClick: function onClick() {
+                                return _this2.props.removeItem(_this2.props.entry);
+                            } })
                     )
                 )
             );
@@ -16145,22 +16151,30 @@ var TimerEntryContainer = function (_Component) {
 
 function printHeader(date) {
     var todayDate = new Date();
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday = yesterday.yyyymmdd();
     var today = todayDate.yyyymmdd();
-    console.log(today);
     console.log(date);
+    console.log(yesterday);
     console.log(date == today);
-    console.log(date == today - 1);
+    console.log(date == yesterday);
     if (date == today) {
         return 'Today';
-    } else if (date == today - 1) {
+    } else if (date == yesterday) {
         return 'Yesterday';
     } else {
         var options = {
             weekday: "long", year: "numeric", month: "short",
             day: "numeric"
         };
-        var newDate = new Date(date).toLocaleTimeString("en-us", options);
-        return newDate.substr(0, newDate.lastIndexOf(","));
+        var newDate = new Date(date);
+        console.log("NEW DATE 1: " + newDate);
+        newDate = newDate.toLocaleTimeString("en-us", options);
+        console.log("NEW DATE 2: " + newDate);
+        newDate = newDate.substr(0, newDate.lastIndexOf(","));
+        console.log("NEW DATE 3: " + newDate);
+        return newDate;
     }
 }
 
@@ -16243,6 +16257,9 @@ var TimerManager = function (_Component) {
             this.setState(newState);
         }
     }, {
+        key: 'removeEntry',
+        value: function removeEntry() {}
+    }, {
         key: 'render',
         value: function render() {
 
@@ -16251,7 +16268,7 @@ var TimerManager = function (_Component) {
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__TimerBarComponents_TimerBar__["a" /* default */], { addEntry: this.addEntry.bind(this) }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('hr', null),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TimerEntryComponents_TimerEntryContainer__["a" /* default */], { timeEntries: this.state.timeEntries })
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TimerEntryComponents_TimerEntryContainer__["a" /* default */], { timeEntries: this.state.timeEntries, removeItem: this.removeEntry.bind(this) })
             );
         }
     }]);
