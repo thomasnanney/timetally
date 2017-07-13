@@ -13,7 +13,6 @@ class TimeEntries extends Model {
         'clientID',
         'startTime',
         'endTime',
-        'title',
         'description',
         'billable'
     );
