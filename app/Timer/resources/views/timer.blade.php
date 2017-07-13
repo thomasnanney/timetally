@@ -10,7 +10,7 @@
     <div class="timer-container">
         <div class="row">
             <div class="co-xs-12 col-md-8 timer-description">
-                <input type="text" placeholder="Task Description...">
+                <input type="text" class="tk-timer-input" placeholder="Task Description...">
             </div>
             <div class="col-xs-12 col-md-4">
                 <div class="row">

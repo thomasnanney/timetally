@@ -1,0 +1,132 @@
+PHPUnit 5.7.20 by Sebastian Bergmann and contributors.
+
+..F.....................................FEF.FFFEE.F               51 / 51 (100%)
+
+Time: 5.51 seconds, Memory: 14.00MB
+
+There were 3 errors:
+
+1) Tests\Unit\WorkspaceTest::testEditProject
+ErrorException: Undefined variable: project
+
+/home/vagrant/Code/timekeeper/app/Projects/Tests/Unit/ProjectTest.php:107
+
+2) Tests\Unit\OrganizationTest::testEditOrganization
+InvalidArgumentException: Unable to locate factory with name [default] [App\Organizations\Models\Organization].
+
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php:227
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/GuardsAttributes.php:122
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php:233
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php:164
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php:129
+/home/vagrant/Code/timekeeper/app/Organizations/Tests/Unit/OrganizationTest.php:97
+
+3) Tests\Unit\OrganizationTest::testDeleteOrganization
+InvalidArgumentException: Unable to locate factory with name [default] [App\Organizations\Models\Organization].
+
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php:227
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/GuardsAttributes.php:122
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php:233
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php:164
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Database/Eloquent/FactoryBuilder.php:129
+/home/vagrant/Code/timekeeper/app/Organizations/Tests/Unit/OrganizationTest.php:144
+
+--
+
+There were 7 failures:
+
+1) Tests\Unit\ProjectsTest::testPostUpdateBillableType
+Failed asserting that a row in the table [projects] matches the attributes {
+    "id": 22,
+    "billableType": "byProject"
+}.
+
+Found: [
+    {
+        "id": 1,
+        "description": "In eum quia aut consequuntur tempore aliquid ad esse. Velit ut omnis suscipit nobis velit voluptate. Quibusdam aut et adipisci voluptatum illo repellat ad et. Quo aut nisi aut possimus hic inventore reprehenderit.",
+        "clientID": 2,
+        "workspaceID": 1,
+        "billableType": "hourly",
+        "projectedRevenue": "7399.00",
+        "created_at": "2017-07-12 03:37:38",
+        "updated_at": "2017-07-12 03:37:38",
+        "title": "vel",
+        "startDate": "2010-05-01",
+        "endDate": "1983-11-06",
+        "projectedTime": 6,
+        "scope": "public",
+        "billableHourlyType": "project",
+        "billableRate": "667.00"
+    },
+    {
+        "id": 2,
+        "description": "Reprehenderit voluptas sint animi sunt. Et soluta qui laudantium temporibus. Nisi est delectus saepe sunt natus ex porro.",
+        "clientID": 2,
+        "workspaceID": 1,
+        "billableType": "hourly",
+        "projectedRevenue": "9869.00",
+        "created_at": "2017-07-12 03:37:38",
+        "updated_at": "2017-07-12 03:37:38",
+        "title": "ipsa",
+        "startDate": "1985-10-11",
+        "endDate": "1983-08-06",
+        "projectedTime": 8,
+        "scope": "public",
+        "billableHourlyType": "employee",
+        "billableRate": "746.00"
+    },
+    {
+        "id": 3,
+        "description": "Qui vero suscipit quibusdam est. Ducimus quos et est labore et. Qui et debitis dolores libero.",
+        "clientID": 2,
+        "workspaceID": 1,
+        "billableType": "fixed",
+        "projectedRevenue": "3748.00",
+        "created_at": "2017-07-12 03:37:38",
+        "updated_at": "2017-07-12 05:46:54",
+        "title": "occaecati",
+        "startDate": "2003-06-07",
+        "endDate": "1976-09-03",
+        "projectedTime": 4,
+        "scope": "public",
+        "billableHourlyType": "project",
+        "billableRate": "542.00"
+    }
+] and 12 others.
+
+/home/vagrant/Code/timekeeper/vendor/laravel/framework/src/Illuminate/Foundation/Testing/Concerns/InteractsWithDatabase.php:22
+/home/vagrant/Code/timekeeper/tests/Unit/ProjectsTest.php:71
+
+2) Tests\Unit\WorkspaceTest::testCreateProject
+Failed asserting that 405 matches expected 200.
+
+/home/vagrant/Code/timekeeper/app/Projects/Tests/Unit/ProjectTest.php:82
+
+3) Tests\Unit\WorkspaceTest::testDeleteProject
+Failed asserting that 404 matches expected 200.
+
+/home/vagrant/Code/timekeeper/app/Projects/Tests/Unit/ProjectTest.php:162
+
+4) Tests\Unit\WorkspaceTest::testDeleteProjectInvalidId
+Failed asserting that 405 matches expected 200.
+
+/home/vagrant/Code/timekeeper/app/Projects/Tests/Unit/ProjectTest.php:203
+
+5) Tests\Unit\OrganizationTest::testOrganizationIndex
+Failed asserting that 404 matches expected 200.
+
+/home/vagrant/Code/timekeeper/app/Organizations/Tests/Unit/OrganizationTest.php:25
+
+6) Tests\Unit\OrganizationTest::testCreateOrganization
+Failed asserting that 404 matches expected 200.
+
+/home/vagrant/Code/timekeeper/app/Organizations/Tests/Unit/OrganizationTest.php:76
+
+7) Tests\Unit\OrganizationTest::testDeleteOrganizationInvalidId
+Failed asserting that 404 matches expected 200.
+
+/home/vagrant/Code/timekeeper/app/Organizations/Tests/Unit/OrganizationTest.php:195
+
+ERRORS!
+Tests: 51, Assertions: 150, Errors: 3, Failures: 7.

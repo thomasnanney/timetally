@@ -108,19 +108,28 @@ body{
 
 /**********************ICON STYLES*************************/
 
-.fa.fa-usd{
+.fa.fa-usd.active{
     color: #2ca02c;
+}
+
+.fa.fa-play-circle.active{
+    color: #4cae4c;
+}
+
+.timer-container .fa{
+    color: #999;
+}
+
+.fa{
     font-size:20px;
 }
 
 .fa.fa-play-circle{
-    color: #4cae4c;
     font-size:40px;
 }
 
-.fa.fa-tag{
+.fa.fa-tag.active{
     color: #ac2925;
-    font-size:20px;
 }
 
 /***********************STYLES BY ELEMENT*****************/
@@ -378,6 +387,18 @@ li.tab.active{
 }
 
 .tk-form-input:focus{
+    outline:none;
+}
+
+.tk-timer-input{
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: none;
+    margin:0px;
+}
+
+.tk-timer-input:focus{
     outline:none;
 }
 
