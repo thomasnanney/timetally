@@ -16200,6 +16200,7 @@ Date.prototype.yyyymmdd = function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TimerBarComponents_TimerBar__ = __webpack_require__(145);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__TimerEntryComponents_TimerEntryContainer__ = __webpack_require__(147);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_Modal__ = __webpack_require__(133);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -16207,6 +16208,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 
 
 
@@ -16223,7 +16225,9 @@ var TimerManager = function (_Component) {
         var _this = _possibleConstructorReturn(this, (TimerManager.__proto__ || Object.getPrototypeOf(TimerManager)).call(this, props));
 
         _this.state = {
-            timeEntries: {}
+            timeEntries: {},
+            promptDelete: false,
+            promptDeleteEntry: null
         };
         return _this;
     }
@@ -16256,12 +16260,13 @@ var TimerManager = function (_Component) {
         }
     }, {
         key: 'removeEntry',
-        value: function removeEntry(entry) {
-            console.log(entry);
+        value: function removeEntry() {
             var self = this;
+            var entry = this.state.promptDeleteEntry;
             axios.post('/timer/delete/' + entry.id).then(function (response) {
                 console.log(response);
                 if (response.status == 200) {
+                    self.setState({ promptDelete: false });
                     self.updateEntries();
                 }
             }).catch(function (error) {
@@ -16270,17 +16275,35 @@ var TimerManager = function (_Component) {
         }
     }, {
         key: 'promptToDelete',
-        value: function promptToDelete(entry) {}
+        value: function promptToDelete(entry) {
+            var newState = this.state;
+            newState.promptDelete = true;
+            newState.promptDeleteEntry = entry;
+            this.setState(newState);
+        }
+    }, {
+        key: 'cancelDelete',
+        value: function cancelDelete() {
+            var newState = this.state;
+            newState.promptDelete = false;
+            newState.promptDeleteEntry = null;
+            this.setState(newState);
+        }
     }, {
         key: 'render',
         value: function render() {
+            if (this.state.promptDelete) {
+                var header = 'Are you sure?';
+                var body = 'Are you sure you want to delete ' + this.state.promptDeleteEntry.description;
+            }
 
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__TimerBarComponents_TimerBar__["a" /* default */], { updateEntries: this.updateEntries.bind(this) }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('hr', null),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TimerEntryComponents_TimerEntryContainer__["a" /* default */], { timeEntries: this.state.timeEntries, removeItem: this.removeEntry.bind(this) })
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__TimerEntryComponents_TimerEntryContainer__["a" /* default */], { timeEntries: this.state.timeEntries, removeItem: this.promptToDelete.bind(this) }),
+                this.state.promptDelete && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_core_Modal__["a" /* default */], { show: true, header: header, body: body, onConfirm: this.removeEntry.bind(this), onClose: this.cancelDelete.bind(this) })
             );
         }
     }]);
