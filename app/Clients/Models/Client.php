@@ -54,7 +54,7 @@ class Client extends Model
             'name' => 'required|string|min:1',
             'email' => 'required|email',
             'address1' => 'required|string|min:1',
-            'address2' => 'sometimes|string',
+            'address2' => 'required|string',
             'city' => 'required|string|min:1',
             'state' => 'required|string|min:1',
             'postalCode' => 'required|digits:5',
@@ -64,11 +64,13 @@ class Client extends Model
         $messages = array(
             'name.required' => 'Please enter a Company Name',
             'email.required' => 'Please enter an E-Mail',
+            'email.email' => 'Please enter a valid E-Mail',
             'address1.required' => 'Please enter an Address',
-            'address2.string' => 'Please enter an Address2',
+            'address2.required' => 'Please enter an Address2',
             'city.required' => 'Please enter a City',
             'state.required' => 'Please enter a State',
             'postalCode.required' => 'Please enter a Postal Code',
+            'postalCode.digits' => 'Please enter a valid Postal Code',
             'description.required' => 'Please enter a Description'
         );
 
