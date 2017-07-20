@@ -43,7 +43,7 @@ export default class ListItem extends Component {
                     <DropDownMenu items={menuItems} align="align-left"/>
                 </div>
                 <div className="table-cell valign-bottom">{this.props.client.name}</div>
-                <div className="table-cell valign-bottom"></div>
+                <div className="table-cell valign-bottom"><i className="fa fa-trash pull-right error clickable" aria-hidden="true" onClick={() => this.props.removeClient(this.props.client)}/></div>
             </div>
         );
     }

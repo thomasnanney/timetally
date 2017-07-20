@@ -26,7 +26,8 @@ mix.react([
     corePath + '/js/app.jsx',
     workspacesPath + '/js/workspace.jsx',
     projectsPath + '/js/projects.jsx',
-    clientsPath + '/js/clients.jsx'
+    clientsPath + '/js/clients.jsx',
+    timerPath + '/js/timer.jsx'
     ], 'public/js/app.js');
    // .sass('app/Core/resources/assets/sass/app.scss', 'public/css');
 

@@ -29,6 +29,10 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $guarded = [
+        'id'
+    ];
+
     public function queryWorkspaces(){
         return $this->belongsToMany('App\Workspaces\Models\Workspace', 'user_workspace_pivot', 'userID', 'workspaceID');
     }
@@ -65,5 +69,13 @@ class User extends Authenticatable
 //        var_dump($results);
 
         return $results;
+    }
+
+    public function queryProjects(){
+        return $this->belongsToMany('App\Projects\Models\Project', 'project_user_pivot', 'userID', 'projectID');
+    }
+
+    public function queryTimeEntries(){
+        return $this->hasMany('App\Timer\Models\TimeEntries', 'userID', 'id');
     }
 }

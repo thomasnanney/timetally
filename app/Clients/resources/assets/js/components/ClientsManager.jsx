@@ -5,6 +5,7 @@ import axios from 'axios';
 //components imports
 import ListItem from 'clients/ClientManagerComponents/ListItem';
 import SearchBar from 'clients/ClientManagerComponents/SearchBar';
+import Modal from 'core/Modal';
 
 class ClientsManager extends Component {
 
@@ -12,7 +13,9 @@ class ClientsManager extends Component {
         super(props);
         this.state ={
             addNewActive: false,
-            clients: []
+            clients: [],
+            promptDelete: false,
+            promptDeleteClient: null
         };
     }
 
@@ -21,7 +24,15 @@ class ClientsManager extends Component {
     }
 
     componentWillMount(){
-        var self=this;
+        this.updateClients();
+    }
+
+    componentWillUnmount() {
+
+    }
+
+    updateClients(){
+        let self=this;
         //get clients to display
         axios.post('/users/getAllClients')
             .then(function (response){
@@ -33,11 +44,43 @@ class ClientsManager extends Component {
             });
     }
 
-    componentWillUnmount() {
+    promptToDelete(client){
+        let newState = this.state;
+        newState.promptDelete = true;
+        newState.promptDeleteClient = client;
+        this.setState(newState);
+    }
 
+    cancelDelete(){
+        let newState = this.state;
+        newState.promptDelete = false;
+        newState.promptDeleteClient = null;
+        this.setState(newState);
+    }
+
+    removeClient(){
+        let self = this;
+        axios.post('/clients/delete' + this.state.promptDeleteClient.id)
+            .then(function(response){
+                if(response.status == 200){
+                    if(response.data.status == "success"){
+                        self.updateClients();
+                    }
+                }
+            })
+            .catch(function(error){
+               console.log(error)
+            });
     }
 
     render() {
+
+        let header = '';
+        let body = '';
+        if(this.state.promptDelete){
+            header = 'Are you sure?';
+            body = 'Are you sure you want to delete ' + this.state.promptDeleteClient.name;
+        }
 
         return (
             <div>
@@ -64,12 +107,15 @@ class ClientsManager extends Component {
                     </div>
                     {this.state.clients.length > 0 ?
                         this.state.clients.map((client) =>
-                            <ListItem client={client} key={client.id}/>
+                            <ListItem client={client} key={client.id} removeClient={this.promptToDelete.bind(this)}/>
                         )
                         :
                         <p>You do not have any clients...Get to Work!</p>
                     }
                 </div>
+                {this.state.promptDelete &&
+                    <Modal show={true} header={header} body={body} onConfirm={this.removeClient.bind(this)} onClose={this.cancelDelete.bind(this)} />
+                }
             </div>
         );
     }

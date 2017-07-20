@@ -15,6 +15,7 @@ export default class SearchBar extends Component{
     }
 
     render(){
+        //ToDo: Implement search features for projects;
         return (
             <div className="row">
                 <div className="col-xs-12">

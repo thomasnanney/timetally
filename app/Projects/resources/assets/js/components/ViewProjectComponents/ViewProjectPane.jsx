@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import Textarea from 'react-textarea-autosize';
 //components imports
+import AddUserInput from 'projects/ViewProjectComponents/AddUserInput';
 
 export default class ViewProjectPane extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            addingUser: false,
+        }
     }
 
     componentDidMount() {
@@ -13,6 +17,11 @@ export default class ViewProjectPane extends Component {
 
     componentWillUnmount() {
 
+    }
+
+    toggleAddUser(){
+        let newState = !this.state.addingUser;
+        this.setState({addingUser: newState});
     }
 
 
@@ -66,7 +75,10 @@ export default class ViewProjectPane extends Component {
                                                 value={this.props.project.title}
                                                 onChange={this.onFieldChange.bind(this)}
                                             />
-
+                                            {(this.props.errors) &&  this.props.errors.title
+                                                ? <small className="error">{this.props.errors.title}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                     <br></br>
@@ -83,6 +95,10 @@ export default class ViewProjectPane extends Component {
                                                 <div className="slider round"></div>
                                             </label>
                                             Private
+                                            {(this.props.errors) &&  this.props.errors.scope
+                                                ? <small className="error">{this.props.errors.scope}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                     <br></br>
@@ -95,6 +111,10 @@ export default class ViewProjectPane extends Component {
                                                 value={this.props.project.description}
                                                 onChange={this.onFieldChange.bind(this)}
                                             />
+                                            {(this.props.errors) &&  this.props.errors.description
+                                                ? <small className="error">{this.props.errors.description}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -104,7 +124,7 @@ export default class ViewProjectPane extends Component {
                                 <div className="pane medium-container margin-center">
                                     <div>
                                         <h1>Client</h1>
-                                        <select className="tk-form-input" value={this.props.project.client} onChange={this.onFieldChange.bind(this)} name="clientID">
+                                        <select className="tk-form-input" value={this.props.project.clientID} onChange={this.onFieldChange.bind(this)} name="clientID">
                                             {
                                                 this.props.clients.length > 0
                                                 ?
@@ -115,6 +135,10 @@ export default class ViewProjectPane extends Component {
                                                     <option>Add a client</option>
                                             }
                                         </select>
+                                        {(this.props.errors) &&  this.props.errors.clientID
+                                            ? <small className="error">{this.props.errors.clientID}</small>
+                                            : ''
+                                        }
                                     </div>
                                     <br/>
                                     <div className="row">
@@ -130,6 +154,10 @@ export default class ViewProjectPane extends Component {
                                                     <div className="slider round"></div>
                                             </label>
                                             Billed Hourly
+                                            {(this.props.errors) && this.props.errors.billableType
+                                                ? <small className="error">{this.props.errors.billableType}</small>
+                                                : ''
+                                            }
                                         </div>
                                     </div>
                                     <br/>
@@ -138,14 +166,20 @@ export default class ViewProjectPane extends Component {
                                             {
                                                 this.props.project.billableType == 'fixed'
                                                     ?
-                                                    <input
-                                                        type="text"
-                                                        name="projectedRevenue"
-                                                        className="tk-form-input"
-                                                        placeholder="$$$ Total Cost..."
-                                                        value={this.props.project.projectedRevenue}
-                                                        onChange={this.onFieldChange.bind(this)}
-                                                    />
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            name="projectedRevenue"
+                                                            className="tk-form-input"
+                                                            placeholder="$$$ Total Cost..."
+                                                            value={this.props.project.projectedRevenue}
+                                                            onChange={this.onFieldChange.bind(this)}
+                                                        />
+                                                        {(this.props.errors) && this.props.errors.projectedRevenue
+                                                            ? <small className="error">{this.props.errors.projectedRevenue}</small>
+                                                            : ''
+                                                        }
+                                                    </div>
                                                     :
                                                     <div>
                                                         Project Hourly Rate
@@ -159,6 +193,10 @@ export default class ViewProjectPane extends Component {
                                                             <div className="slider round"></div>
                                                         </label>
                                                         Employee Hourly Rate
+                                                        {(this.props.errors) && this.props.errors.billableHourlyType
+                                                            ? <small className="error">{this.props.errors.billableHourlyType}</small>
+                                                            : ''
+                                                        }
                                                     </div>
                                             }
                                         </div>
@@ -168,14 +206,20 @@ export default class ViewProjectPane extends Component {
                                             {
                                                 this.props.project.billableHourlyType == 'project' && this.props.project.billableType == 'hourly'
                                                     ?
-                                                    <input
-                                                        type="text"
-                                                        name="billableRate"
-                                                        className="tk-form-input"
-                                                        placeholder="$$$ Hourly Rate"
-                                                        value={this.props.project.billableRate}
-                                                        onChange={this.onFieldChange.bind(this)}
-                                                    />
+                                                    <div>
+                                                        <input
+                                                            type="text"
+                                                            name="billableRate"
+                                                            className="tk-form-input"
+                                                            placeholder="$$$ Hourly Rate"
+                                                            value={this.props.project.billableRate}
+                                                            onChange={this.onFieldChange.bind(this)}
+                                                        />
+                                                        {(this.props.errors) && this.props.errors.billableRate
+                                                            ? <small className="error">{this.props.errors.billableRate}</small>
+                                                            : ''
+                                                        }
+                                                    </div>
                                                     :
 
                                                     ''
@@ -187,18 +231,32 @@ export default class ViewProjectPane extends Component {
                         case 3:
                             return (
                                 <div className="pane medium-container margin-center">
-                                    <ul className="no-list-style no-margin no-padding list">
-                                        {
-                                            this.props.users.map((user) =>
-                                                <li><a href="/users">{user.name}</a></li>
-                                            )
-                                        }
-                                    </ul>
-                                    <div className="row">
-                                        <div className="col-xs-12 text-center">
-                                            <a href="#">+ Add User</a>
+                                    {this.props.project.scope == "private"
+                                        ?
+                                        <div>
+                                            <ul className="no-list-style no-margin no-padding list">
+                                                {
+                                                    this.props.users.map((user) =>
+                                                        <li key={user.id}>{user.name}<i className="fa fa-trash pull-right error clickable" aria-hidden="true" onClick={() => this.props.removeUser(user)}/></li>
+                                                    )
+                                                }
+                                            </ul>
+                                            <div className="row">
+                                                <div className="col-xs-12 text-center">
+                                                    {this.state.addingUser
+                                                        ?
+                                                        <AddUserInput addUser={this.props.addUser} toggleAddUser={this.toggleAddUser.bind(this)} workspaceID={this.props.project.workspaceID}/>
+                                                        :
+                                                        <a href="#" onClick={this.toggleAddUser.bind(this)}>+ Add User</a>
+                                                    }
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
+                                        :
+                                        <div>
+                                            <p>This project is public, all users in the workspace can see it and add time entries.</p>
+                                        </div>
+                                    }
                                 </div>
                             );
                     }

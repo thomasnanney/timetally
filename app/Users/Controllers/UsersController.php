@@ -5,6 +5,7 @@ namespace App\Users\Controllers;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Projects\Models\Project;
 
 class UsersController extends Controller
 {
@@ -40,5 +41,31 @@ class UsersController extends Controller
         $user = Auth::user();
 
         return $user->getAllProjectsByUser();
+    }
+
+    public function postGetAllWorkspacesByUser(){
+        $user = Auth::user();
+
+        return $user->queryWorkspaces()->get();
+    }
+
+    public function postGetAllTimeEntriesByUser(){
+        $user = Auth::user();
+
+        $timeEntries =  $user->queryTimeEntries()->get();
+
+        $returnEntries = [];
+
+        foreach($timeEntries as $entry){
+            if(!isset($returnEntries[date('Y-m-d', strtotime($entry->startTime))])){
+                $returnEntries[date('Y-m-d', strtotime($entry->startTime))] = [];
+            }
+            $entry['project_name'] = Project::find($entry->projectID)->title;
+            array_push($returnEntries[date('Y-m-d', strtotime($entry->startTime))], $entry);
+        }
+
+        krsort($returnEntries);
+
+        return $returnEntries;
     }
 }

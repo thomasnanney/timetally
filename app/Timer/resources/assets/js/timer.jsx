@@ -1,0 +1,1 @@
+import TimerManager from './components/TimerManager';

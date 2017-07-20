@@ -1,5 +1,6 @@
 <?php
 namespace App\Projects\Models;
+use App\Users\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,8 @@ class Project extends Model
         'projectedTime',
         'scope',
         'billableHourlyType',
-        'billableRate'
+        'billableRate',
+        'workspaceID'
     );
 
     public static function validate($data){
@@ -25,7 +27,6 @@ class Project extends Model
         $tempData = array_filter($data, function($value){
             return !is_null($value);
         });
-        var_dump($tempData);
 
         $messages = [
             'title.required' => 'Please enter a Project Title',
@@ -38,10 +39,11 @@ class Project extends Model
             'title' => 'required|string|min:1',
             'description' => 'sometimes|string|min:1',
             'clientID' => 'required|integer|exists:clients,id', // needs to exist
+            'workspaceID' => 'required|integer|exists:workspaces,id',
             'startDate' => 'required',
             'endDate' => 'required',
             'projectedTime' => 'required|integer|',
-            'projectedRevenue' => 'sometimes|numeric',
+            'projectedRevenue' => 'required|numeric',
             'billableType' => 'required|string|min:1',
         ];
 
@@ -56,19 +58,12 @@ class Project extends Model
      * add a user to a project with the project_user_pivot table
      * @param $userID id of user to be added to the project
      */
-    public function addUserToProject($userID) {
-        if(!(DB::table('project_user_pivot')
-            ->where('usertID', '=', $userID)
-            ->where('projectID', '=', $this->id)
-            ->exists())
-        ) {
-            DB::table('project_user_pivot')->insert([
-                'userID' => $userID,
-                'projectID' => $this->id,
-            ]);
-        }
+    public function addUser(User $user) {
+        $this->queryUsers()->attach($user->id);
+    }
 
-
+    public function removeUser(User $user){
+        $this->queryUsers()->detach($user->id);
     }
 
     public static function deleteProject($id){

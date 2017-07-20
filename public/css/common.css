@@ -106,21 +106,50 @@ body{
     font-size:16px;
 }
 
+.tk-dropdown-list{
+    max-height:300px;
+    overflow-y: scroll;
+}
+
+.timer-container .tk-dropdown{
+    min-width:100%;
+}
+
+.date-time-picker.tk-dropdown{
+    height: auto;
+    max-height:none;
+    width: 600px;
+    overflow: hidden;
+}
+
 /**********************ICON STYLES*************************/
+
+.fa{
+    font-size:20px;
+}
 
 .fa.fa-usd{
     color: #2ca02c;
-    font-size:20px;
 }
 
-.fa.fa-play-circle{
-    color: #4cae4c;
+.fa.fa-play-circle, .fa.fa-pause-circle{
     font-size:40px;
 }
 
-.fa.fa-tag{
+.fa.fa-tag.active{
     color: #ac2925;
-    font-size:20px;
+}
+
+.fa.fa-usd.active{
+    color: #2ca02c;
+}
+
+.timer-container .fa{
+    color: #999;
+}
+
+.timer-container .fa.fa-play-circle{
+    color: #4cae4c;
 }
 
 /***********************STYLES BY ELEMENT*****************/
@@ -242,7 +271,8 @@ li.tab.active{
 }
 
 .error{
-    color: red;
+    color: red !important;
+    display: block;
 }
 
 .valign-bottom{
@@ -271,6 +301,20 @@ li.tab.active{
 
 .menu-icon-cell{
     width:50px;
+}
+
+/**********************ERRORS***************************/
+.error-box{
+    background-color: rgba(255,0,0,0.3);
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.pane-error:after{
+    content: '\f12a';
+    color: red;
+    font-family: FontAwesome;
 }
 
 /*********************MENU CSS*************************/
@@ -373,10 +417,22 @@ li.tab.active{
     background: transparent;
     border: none;
     border-bottom: 1px solid #cecece;
-    margin-bottom:15px;
+    margin:15px 0px;
 }
 
 .tk-form-input:focus{
+    outline:none;
+}
+
+.tk-timer-input{
+    display: block;
+    width: 100%;
+    background: transparent;
+    border: none;
+    margin:0px;
+}
+
+.tk-timer-input:focus{
     outline:none;
 }
 

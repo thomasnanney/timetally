@@ -15,11 +15,11 @@ class CreateProjectsTable extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->integer('clientID');
             $table->integer('workspaceID');
             $table->string('billableType')->nullable();
-            $table->decimal('projectedRevenue', 7, 2)->nullable();
+            $table->decimal('projectedRevenue', 15, 2)->nullable();
             $table->timestamps();
         });
     }
