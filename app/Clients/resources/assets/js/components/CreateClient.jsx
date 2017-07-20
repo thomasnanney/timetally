@@ -7,7 +7,7 @@ class CreateProject extends Component{
         super(props);
         this.state = {
             step: 1,
-            project: {
+            client: {
                 title: '',
                 scope: 'public',
                 workspaceID: '',
@@ -22,9 +22,7 @@ class CreateProject extends Component{
                 users: [],
                 description: ''
             },
-            clients: [],
             errors: {},
-            workspaces: []
         }
     }
 
@@ -37,6 +35,11 @@ class CreateProject extends Component{
     }
 
     componentWillMount(){
+        this.getAllClients();
+        this.getAllWorkspaces();
+    }
+
+    getAllClients(){
         let self = this;
         axios.post('/users/getAllClients')
             .then(function(response){
@@ -53,7 +56,10 @@ class CreateProject extends Component{
                 alert('We were unable to retrieve all clients, please reload the page or contact your System' +
                     ' Administrator');
             });
+    }
 
+    getAllWorkspaces(){
+        let self = this;
         axios.post('/users/getAllWorkspaces')
             .then(function(response){
                 self.setState({workspaces: response.data});
@@ -82,7 +88,7 @@ class CreateProject extends Component{
         }));
     }
 
-    createProject(){
+    createClient(){
         let self = this;
         console.log(self.state.project);
         axios.post('/projects/create', {
@@ -96,14 +102,12 @@ class CreateProject extends Component{
                         let errors = response.data.messages;
                         self.setState({errors: errors});
                         self.setState({step: 1});
-                    }else{
-                        window.location.href = '/projects';
                     }
                 }
             })
             .catch(function(error){
                 console.log(error);
-               alert("We were unable to create your project, please try again");
+                alert("We were unable to create your project, please try again");
             });
     }
 
@@ -186,23 +190,23 @@ class CreateProject extends Component{
                                                 : ''
                                             }
                                             {this.state.workspaces.length > 1 &&
-                                                <div>
-                                                    <h1>Workspace</h1>
-                                                    <select className="tk-form-input"
+                                            <div>
+                                                <h1>Workspace</h1>
+                                                <select className="tk-form-input"
                                                         value={this.state.project.workspaceID}
                                                         onChange={this.updateInput.bind(this)}
                                                         name="workspaceID">
                                                     {
                                                         this.state.workspaces.length > 0
-                                                        ?
-                                                        this.state.workspaces.map((workspace) =>
-                                                            <option value={workspace.id} key={workspace.id}>{workspace.title}</option>
-                                                        )
-                                                        :
-                                                        <option>Add a workspace</option>
+                                                            ?
+                                                            this.state.workspaces.map((workspace) =>
+                                                                <option value={workspace.id} key={workspace.id}>{workspace.title}</option>
+                                                            )
+                                                            :
+                                                            <option>Add a workspace</option>
                                                     }
-                                                        </select>
-                                                </div>
+                                                </select>
+                                            </div>
                                             }
                                             {this.state.errors.workspaceID
                                                 ? <small className="error">{this.state.errors.workspaceID}</small>
@@ -432,9 +436,9 @@ class CreateProject extends Component{
                                     <br></br>
                                     <div className="row">
                                         <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
+                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"/>
                                                 Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right" aria-hidden="true"></i></a>
+                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right" aria-hidden="true"/></a>
                                         </div>
                                     </div>
                                 </div>);
@@ -455,10 +459,10 @@ class CreateProject extends Component{
                                     <br></br>
                                     <div className="row">
                                         <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
+                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"/>
                                                 Back</a>
                                             <a href="#" className="no-link-style pull-right" onClick={() => this.createProject()}>Finish <i className="fa fa-chevron-right"
-                                                                                                       aria-hidden="true"></i></a>
+                                                                                                                                            aria-hidden="true"/></a>
                                         </div>
                                     </div>
                                 </div>);

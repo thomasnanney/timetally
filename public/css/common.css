@@ -311,6 +311,12 @@ li.tab.active{
     border-radius: 5px;
 }
 
+.pane-error:after{
+    content: '\f12a';
+    color: red;
+    font-family: FontAwesome;
+}
+
 /*********************MENU CSS*************************/
 
 .sidebar{

@@ -57,21 +57,21 @@ class Client extends Model
             'address2' => 'required|string',
             'city' => 'required|string|min:1',
             'state' => 'required|string|min:1',
-            'postalCode' => 'required|digits:5',
+            'postalCode' => 'required|regex:/^[0-9]{5}(-[0-9]{4}){0,1}$/',
             'description' => 'nullable|string|min:1'
         );
 
         $messages = array(
-            'name.required' => 'Please enter a Company Name',
-            'email.required' => 'Please enter an E-Mail',
-            'email.email' => 'Please enter a valid E-Mail',
+            'name.required' => 'Please enter a Client Name',
+            'email.required' => 'Please enter an eMail',
+            'email.email' => 'Please enter a valid eMail',
             'address1.required' => 'Please enter an Address',
             'address2.required' => 'Please enter an Address2',
             'city.required' => 'Please enter a City',
             'state.required' => 'Please enter a State',
             'postalCode.required' => 'Please enter a Postal Code',
-            'postalCode.digits' => 'Please enter a valid Postal Code',
-            'description.required' => 'Please enter a Description'
+            'postalCode.regex' => 'Please enter a valid Postal Code. xxxxx[-xxxx]',
+            'description.required' => 'Please enter a description'
         );
 
         return Validator::make($data, $rules, $messages);

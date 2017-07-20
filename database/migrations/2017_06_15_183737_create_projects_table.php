@@ -19,7 +19,7 @@ class CreateProjectsTable extends Migration
             $table->integer('clientID');
             $table->integer('workspaceID');
             $table->string('billableType')->nullable();
-            $table->decimal('projectedRevenue', 7, 2)->nullable();
+            $table->decimal('projectedRevenue', 15, 2)->nullable();
             $table->timestamps();
         });
     }

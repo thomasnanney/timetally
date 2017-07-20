@@ -36,11 +36,6 @@ class TimerManager extends Component{
             });
     }
 
-    addEntry(entry){
-        console.log(entry);
-        this.updateEntries();
-    }
-
     removeEntry(){
         let self = this;
         let entry = this.state.promptDeleteEntry;
@@ -72,9 +67,11 @@ class TimerManager extends Component{
     }
 
     render(){
+        let header = '';
+        let body = '';
         if(this.state.promptDelete){
-            var header = 'Are you sure?';
-            var body = 'Are you sure you want to delete ' + this.state.promptDeleteEntry.description;
+            header = 'Are you sure?';
+            body = 'Are you sure you want to delete ' + this.state.promptDeleteEntry.description;
         }
 
         return (
@@ -93,3 +90,15 @@ class TimerManager extends Component{
 if(document.getElementById("timerManager")){
         ReactDOM.render(<TimerManager/>, document.getElementById("timerManager"));
 }
+
+//*********************GLOBAL JS FUNCTIONS*************
+
+Date.prototype.yyyymmdd = function() {
+    let mm = this.getMonth() + 1; // getMonth() is zero-based
+    let dd = this.getDate();
+
+    return [this.getFullYear(),
+        (mm>9 ? '' : '0') + mm,
+        (dd>9 ? '' : '0') + dd
+    ].join('-');
+};

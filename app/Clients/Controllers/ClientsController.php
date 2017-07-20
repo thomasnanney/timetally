@@ -65,7 +65,7 @@ class ClientsController extends Controller
      * @param $id int ID of the client to be updated
      * @return \Illuminate\Http\JsonResponse On fail, return error messages, on success return success
      */
-    public function postEdit(Request $request, $id){
+    public function postEdit(Request $request, Client $client){
 
         $data = $request->input('data');
 
@@ -80,7 +80,6 @@ class ClientsController extends Controller
         }
 
         // client information
-        $client = Client::find($id);
         if($client){
             $client->fill($data);
             $client->save();
