@@ -27,6 +27,8 @@
     <hr>
     <div class="row">
         <div class="col-xs-12 payroll-report">
+            <h2> <a href="/reports/payrollReport">Payroll Report</a></h2>
+
             <h2> Payroll report for mm-dd-yyyy to mm-dd-yyyy</h2>
             <hr>
             <ul>
