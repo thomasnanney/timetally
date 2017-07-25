@@ -82,7 +82,9 @@ class DatabaseSeeder extends Seeder
                 //create some time entries by each user for each project
                 factory(TimeEntry::class)->create([
                    'userID' => $user->id,
-                    'projectID' => $project->id
+                    'projectID' => $project->id,
+                    'clientID' => $clients->get($client)->id,
+                    'workspaceID' => $workspaces->get($workspace)->id
                 ]);
             }
 
