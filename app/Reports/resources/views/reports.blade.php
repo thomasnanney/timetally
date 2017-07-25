@@ -7,13 +7,10 @@
 
 @section('content')
     <div class="row">
-        <div class="col-xs-12 text-center">
-            <h2>Employee Payroll Report</h2>
+        <div class="col-xs-6">
+            <h2>Time Reports</h2>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="report-date-container text-center">
+        <div class="col-xs-6 text-right">
                 <div class="start-date">
                     <input type='text' class="datepicker" id='datetimepickerStart' placeholder="Start Date..."/>
                 </div>
@@ -21,7 +18,66 @@
                     <input type='text' class="datepicker" id='datetimepickerEnd' placeholder="End Date..."/>
                 </div>
                 <button class="btn btn-default pull-right">Download CSV</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="drop search-bar">
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4 col-md-2 border-right">
+                        <select class="search-input full-width">
+                            <option>Employees</option>
+                            <option>1</option>
+                            <option>1</option>
+                            <option>1</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-2 border-right">
+                        <select class="search-input full-width">
+                            <option>Clients</option>
+                            <option>1</option>
+                            <option>1</option>
+                            <option>1</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-12 col-sm-4 col-md-2 border-right">
+                        <select class="search-input full-width">
+                            <option>Projects</option>
+                            <option>1</option>
+                            <option>1</option>
+                            <option>1</option>
+                        </select>
+                    </div>
+                    <div class="col-xs-12 col-md-4">
+                        <input type="search" class="search-input">
+                    </div>
+                    <div class="col-xs-12 col-md-2">
+                        <button class="tk-btn-success full-width">Apply</button>
+                    </div>
+                </div>
             </div>
+        </div>
+    </div>
+    <div class="row filter-box">
+        {{--Show current filters and clear--}}
+    </div>
+    <div>
+        {{--show totals and export options--}}
+    </div>
+    <div>
+        {{--show bar chart--}}
+    </div>
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            {{--show list items--}}
+        </div>
+        <div class="col-xs-12 col-md-6">
+            {{--show chart--}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+
         </div>
     </div>
     <hr>
