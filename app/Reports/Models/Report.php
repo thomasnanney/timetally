@@ -9,57 +9,68 @@
 namespace App\Reports\Models;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 
 class Report
 {
     public static function generateReport($data, $user){
-        $clientFilter = array_get($data, 'filters.client');
-        $projectFilter = array_get($data, 'filters.project');
-        $userFilter = array_get($data, 'filters.user');
-        $dateRange = array_get($data, 'filters.dateRange');
-        $groupBy = array_get($data, 'groupBy');
-        $subGroup = array_get($data, 'subGroup');
-        $subGroupBy = array_get($data, 'subGroupBy');
+        $clientFilter = $data['filters']['client'];
+        $projectFilter = $data['filters']['project'];
+        $userFilter = $data['filters']['user'];
+        $dateRange = $data['filters']['dateRange'];
+        $groupBy = $data['groupBy'];
+        $subGroup = $data['subGroup'];
+        $subGroupBy = $data['subGroupBy'];
 
         //$user = Auth::user();
 
+
         $workspace = $user->current_workspace_id;
 
-        $timeEntries = $user->queryTimeEntries()->join('users', 'time_entries.userID', '=', 'users.id')
-            ->join('workspaces', 'time_entries.workspaceID', '=', 'workspaces.id')
-            ->join('projects', 'time_entries.projectID', '=', 'projects.ID')
-            ->select('time_entries.title', 'time_entries.description', 'time_entries.startTime',
-                'time_entries.workspaceID', 'time_entries.projectID', 'time_entries.userID',
-                'users.name', 'workspaces.title', 'projects.title')->get();
-
-        if($clientFilter != null){
-           // $timeEntries->whereIn('clientID', $clientFilter);
-        }
-        if($projectFilter != null){
-           // $timeEntries->whereIn('projectID', $projectFilter);
-        }
-        if($userFilter != null){
-            //$timeEntries->whereIn('userID', $userFilter);
-        }
-        if($dateRange == null){
-            $startDate = strtotime('Monday this week');
-            $endDate = strtotime('now');
-            $timeEntries->where('time_entries.startTime', '>=', $startDate)
-                ->where('time_entries.endTime', '<=', $endDate);
+        $timeEntries = DB::table('timereports')->select('*')->where('workspaceID', $workspace);
+        $timeEntries->where(function ($timeEntries) use ($clientFilter, $projectFilter, $userFilter) {
+            if (!is_null($clientFilter)) {
+                $timeEntries->orWhereIn('clientID', $clientFilter);
+            }
+            if (!is_null($projectFilter)) {
+                $timeEntries->orWhereIn('projectID', $projectFilter);
+            }
+            if (!is_null($userFilter)) {
+                $timeEntries->orWhereIn('userID', $userFilter);
+            }
+        });
+        if(is_null($dateRange)){
+            $startDate = Carbon::parse('Monday this week')->format('y-m-d');
+            $endDate = Carbon::parse('now')->format('y-m-d');
+            $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }else{
-           // $timeEntries->where('time_entries.startTime', '>=', '');
+            $startDate = Carbon::parse($dateRange['startTime'])->format('Y-m-d');
+            $endDate = Carbon::parse($dateRange['endTime'])->format('Y-m-d');
+            $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }
-        if($groupBy == 'Client'){
-            //$timeEntries->orderBy('time_entries.clientID');
+        if($groupBy == 'client'){
+            $timeEntries->orderBy('clientID');
         }
-        if($groupBy == 'Project'){
-            $timeEntries->orderBy('time_entries.projectID');
+        if($groupBy == 'project'){
+            $timeEntries->orderBy('projectID');
         }
-        if($groupBy == 'User'){
-            $timeEntries->orderBy('time_entries.projectID');
+        if($groupBy == 'user'){
+            $timeEntries->orderBy('projectID');
         }
-        //$timeEntries->get();
+        if($subGroup == 'true'){
+            if($subGroupBy == 'client'){
+                $timeEntries->orderBy('clientID');
+            }
+            if($subGroupBy == 'project'){
+                $timeEntries->orderBy('projectID');
+            }
+            if($subGroupBy == 'user'){
+                $timeEntries->orderBy('usersID');
+            }
+        }
+        $timeEntries = $timeEntries->get();
         return $timeEntries;
 
 
