@@ -63,7 +63,7 @@ class Report extends Model
 
 
         $data = array(
-            'shop' => $reportData
+            'data' => $reportData
         );
 
         // Set some content to print
