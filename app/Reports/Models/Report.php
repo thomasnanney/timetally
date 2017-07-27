@@ -10,15 +10,15 @@ class Report extends Model
     {
         // set document information
         PDF::SetAuthor('Org Name');
-        PDF::SetTitle('Payroll Report');
-        PDF::SetSubject('Employee Payroll');
+        PDF::SetTitle('Time Entry Report');
+        PDF::SetSubject('Employee Hours');
 
         // set custom header and footer data
         PDF::setHeaderCallback(function($pdf){
             // Set font
             $pdf->SetFont('helvetica', 'B', 20);
             // Title
-            $pdf->Cell(0, 10, 'Test Org', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+            $pdf->Cell(0, 10, 'Time Entry Report', 0, false, 'C', 0, '', 0, false, 'M', 'M');
             //separator line
             $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
             $pdf->Line(10, 12, 200, 12, $style);
@@ -74,7 +74,8 @@ class Report extends Model
         // Print text using writeHTMLCell()
         //PDF::writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
         //PDF::writeHtml(view('payrollReport', $data)->render());
-        PDF::writeHTML($html, true, false, true, false, '');
+        PDF::writeHTML($html, true, false, false, false, '');
+
 
         // ---------------------------------------------------------
 
