@@ -72,6 +72,6 @@ class Report extends Model
 
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.
-        PDF::Output('Time_Entry_Report.pdf', 'I');
+        PDF::Output('Time_Entry_Report.pdf', 'D');
     }
 }
