@@ -35,211 +35,6 @@ export default class StandardReportManager extends Component{
         // retrieve data
         this.getReportData();
 
-        // let data = {
-        //     groupByType: "client",
-        //     subGroup: true,
-        //     subGroupType: "project",
-        //     totalTime: '156',
-        //     groups: [
-        //         {
-        //             title: 'Group 1',
-        //             totalTime: '128 Hours',
-        //             subGroups: [
-        //                 {
-        //                     title: 'Sub Group 1',
-        //                     totalTime: '50 Hours',
-        //                     entries: [
-        //                         {
-        //                             title: 'Entry 1',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 2',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 3',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 4',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 5',
-        //                             time: '5 hours',
-        //                         },
-        //                     ]
-        //                 },
-        //                 {
-        //                     title: 'Sub Group 2',
-        //                     totalTime: '55 Hours',
-        //                     entries: [
-        //                         {
-        //                             title: 'Entry 1',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 2',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 3',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 4',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 5',
-        //                             time: '5 hours',
-        //                         },
-        //                     ]
-        //                 },
-        //                 {
-        //                     title: 'Sub Group 3',
-        //                     totalTime: '60 Hours',
-        //                     entries: [
-        //                         {
-        //                             title: 'Entry 1',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 2',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 3',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 4',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 5',
-        //                             time: '5 hours',
-        //                         },
-        //                     ]
-        //                 },
-        //             ]
-        //         },
-        //         {
-        //             title: 'Group 2',
-        //             totalTime: '28 Hours',
-        //             subGroups: [
-        //                 {
-        //                     title: 'Sub Group 1',
-        //                     totalTime: '50 Hours',
-        //                     entries: [
-        //                         {
-        //                             title: 'Entry 1',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 2',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 3',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 4',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 5',
-        //                             time: '5 hours',
-        //                         },
-        //                     ]
-        //                 },
-        //                 {
-        //                     title: 'Sub Group 2',
-        //                     totalTime: '55 Hours',
-        //                     entries: [
-        //                         {
-        //                             title: 'Entry 1',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 2',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 3',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 4',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 5',
-        //                             time: '5 hours',
-        //                         },
-        //                     ]
-        //                 },
-        //                 {
-        //                     title: 'Sub Group 3',
-        //                     totalTime: '60 Hours',
-        //                     entries: [
-        //                         {
-        //                             title: 'Entry 1',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 2',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 3',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 4',
-        //                             time: '5 hours',
-        //                         },
-        //                         {
-        //                             title: 'Entry 5',
-        //                             time: '5 hours',
-        //                         },
-        //                     ]
-        //                 },
-        //             ]
-        //         },
-        //         {
-        //             title: 'Group 3',
-        //             totalTime: '28 Hours',
-        //             entries: [
-        //                 {
-        //                     title: 'Entry 1',
-        //                     time: '5 hours',
-        //                 },
-        //                 {
-        //                     title: 'Entry 2',
-        //                     time: '5 hours',
-        //                 },
-        //                 {
-        //                     title: 'Entry 3',
-        //                     time: '5 hours',
-        //                 },
-        //                 {
-        //                     title: 'Entry 4',
-        //                     time: '5 hours',
-        //                 },
-        //                 {
-        //                     title: 'Entry 5',
-        //                     time: '5 hours',
-        //                 },
-        //             ]
-        //         }
-        //     ]
-        // };
-        //
-        // this.setState({data: data});
-
         let barData = [
             {name: 'Day 1', hours: 40, amt: 2400},
             {name: 'Day 2', hours: 60, amt: 2400},
@@ -269,6 +64,7 @@ export default class StandardReportManager extends Component{
     }
 
     getReportData(){
+        console.log(this.state.params);
         let self = this;
         axios.post('/reports/getReport/standard', {data: this.state.params})
             .then(function(response){
@@ -288,6 +84,9 @@ export default class StandardReportManager extends Component{
     }
 
     updateFilters(type, id, value){
+        console.log(type);
+        console.log(id);
+        console.log(value);
         let self = this;
         if(value){
             let newState = this.state;

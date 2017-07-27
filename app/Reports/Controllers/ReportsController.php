@@ -31,7 +31,7 @@ class ReportsController extends Controller
     public function getReport(Request $request){
         $data = $request->input('data');
 
-        $report = Report::generateReport($data);
+        $report = Report::generateReportData($data);
 
         return response()->json(['data' => $report]);
 

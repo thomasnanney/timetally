@@ -15,7 +15,7 @@
 $factory->define(App\Clients\Models\Client::class, function (Faker\Generator $faker) {
 
     return [
-        'name' => $faker->name,
+        'name' => $faker->company,
         'email' => $faker->unique()->safeEmail,
         'address1' => $faker->streetAddress,
         'address2' => $faker->streetAddress,

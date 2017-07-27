@@ -8,40 +8,56 @@ export default class ReportFilters extends Component{
         this.state = {
             employeesMenu: false,
             clientsMenu: false,
-            projectsMenu: false
+            projectsMenu: false,
+            clients: [],
+            users: [],
+            projects: [],
         }
     }
 
     componentWillMount(){
-        let data = [
-            {
-                value: 0,
-                title: 'Option 1',
-                selected: false,
-            },
-            {
-                value: 1,
-                title: 'Option 2',
-                selected: false,
-            },
-            {
-                value: 2,
-                title: 'Option 3',
-                selected: false,
-            },
-            {
-                value: 3,
-                title: 'Option 4',
-                selected: false,
-            },
-            {
-                value: 4,
-                title: 'Option 5',
-                selected: false,
-            },
-        ];
+        this.getAllUsers();
+        this.getAllClients();
+        this.getAllProjects();
+    }
 
-        this.setState({data: data});
+    getAllClients(){
+        let self = this;
+        axios.post('/workspaces/getAllClients')
+            .then(function(response){
+                let newState = self.state;
+                newState.clients = response.data;
+                self.setState(newState);
+            })
+            .catch(function(response){
+                console.log(response);
+            })
+    }
+
+    getAllUsers(){
+        let self = this;
+        axios.post('/workspaces/getAllUsers')
+            .then(function(response){
+                let newState = self.state;
+                newState.users = response.data;
+                self.setState(newState);
+            })
+            .catch(function(response){
+                console.log(response);
+            })
+    }
+
+    getAllProjects(){
+        let self = this;
+        axios.post('/workspaces/getAllProjects')
+            .then(function(response){
+                let newState = self.state;
+                newState.projects = response.data;
+                self.setState(newState);
+            })
+            .catch(function(response){
+                console.log(response);
+            })
     }
 
     toggleMenu(menu){
@@ -51,8 +67,12 @@ export default class ReportFilters extends Component{
     }
 
     updateInput(type, ele){
+        console.log(type);
+        console.log(ele.target.name);
+        console.log(ele.target.checked);
+        console.log(this.state);
         let newState = this.state;
-        newState.data[ele.target.name].selected = ele.target.checked;
+        newState[type][ele.target.name].selected = ele.target.checked;
         this.setState(newState);
         this.props.updateFilters(type, ele.target.name, ele.target.checked);
     }
@@ -73,7 +93,7 @@ export default class ReportFilters extends Component{
                                                 : <i className="fa fa-chevron-down pull-right" aria-hidden="true"/>
                                         }
                                     </div>
-                                    <DropDownCheckList align="right" show={this.state.employeesMenu} collapse={this.toggleMenu.bind(this, 'employeesMenu')} updateInput={this.updateInput.bind(this, 'users')} data={this.state.data}/>
+                                    <DropDownCheckList align="right" show={this.state.employeesMenu} collapse={this.toggleMenu.bind(this, 'employeesMenu')} updateInput={this.updateInput.bind(this, 'users')} data={this.state.users}/>
                                 </div>
                                 <div className="col-xs-12 col-sm-4 col-md-2 border-right">
                                     <div className="search-input full-width" onClick={() => this.toggleMenu('clientsMenu')}>Clients
@@ -82,7 +102,7 @@ export default class ReportFilters extends Component{
                                                 ? <i className="fa fa-chevron-up pull-right" aria-hidden="true"/>
                                                 : <i className="fa fa-chevron-down pull-right" aria-hidden="true"/>
                                         }</div>
-                                    <DropDownCheckList align="right" show={this.state.clientsMenu} collapse={this.toggleMenu.bind(this, 'clientsMenu')} updateInput={this.updateInput.bind(this, 'clients')} data={this.state.data}/>
+                                    <DropDownCheckList align="right" show={this.state.clientsMenu} collapse={this.toggleMenu.bind(this, 'clientsMenu')} updateInput={this.updateInput.bind(this, 'clients')} data={this.state.clients}/>
                                 </div>
                                 <div className="col-xs-12 col-sm-4 col-md-2 border-right">
                                     <div className="search-input full-width" onClick={() => this.toggleMenu('projectsMenu')}>Projects
@@ -92,7 +112,7 @@ export default class ReportFilters extends Component{
                                                 : <i className="fa fa-chevron-down pull-right" aria-hidden="true"/>
                                         }
                                     </div>
-                                    <DropDownCheckList align="right" show={this.state.projectsMenu} collapse={this.toggleMenu.bind(this, 'projectsMenu')} updateInput={this.updateInput.bind(this, 'projects')} data={this.state.data}/>
+                                    <DropDownCheckList align="right" show={this.state.projectsMenu} collapse={this.toggleMenu.bind(this, 'projectsMenu')} updateInput={this.updateInput.bind(this, 'projects')} data={this.state.projects}/>
                                 </div>
                                 <div className="col-xs-12 col-md-4">
                                     <input type="search" className="search-input"/>

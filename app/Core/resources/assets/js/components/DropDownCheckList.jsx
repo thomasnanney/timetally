@@ -40,11 +40,11 @@ export default class DropDownCheckList extends Component{
                         <div className="col-xs-12">
                             <ul className="no-list-style no-padding list">
                             {
-                                this.props.data.map((item) => (
+                                this.props.data.map((item, id) => (
                                     <li key={item.value} className="">
                                         <label className="switch">
                                             <input type="checkbox"
-                                                   name={item.value}
+                                                   name={id}
                                                    checked={item.selected}
                                                    onChange={this.props.updateInput}
                                             />

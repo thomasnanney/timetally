@@ -16,7 +16,7 @@ use App\Users\Models\User;
 
 class Report
 {
-    public static function generateReport($data){
+    public static function generateReportData($data){
         $clientFilter = $data['filters']['clients'];
         $projectFilter = $data['filters']['projects'];
         $userFilter = $data['filters']['users'];

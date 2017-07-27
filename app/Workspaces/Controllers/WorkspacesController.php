@@ -6,7 +6,6 @@ use App\Workspaces\Models\Workspace;
 use App\Core\Controllers\Controller;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 
 
 class WorkspacesController extends Controller
@@ -92,7 +91,71 @@ class WorkspacesController extends Controller
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
 
-    public function getAllUsers(Workspace $workspace){
-        return $workspace->queryUsers()->get();
+    public function getAllUsers($workspace = null){
+
+        if(!$workspace){
+            $user = Auth::user();
+            $workspaceId = $user->getCurrentWorkspace();
+            $workspace = Workspace::find($workspaceId);
+        }else{
+            $workspace = Workspace::find($workspace);
+        }
+
+        $users = $workspace->queryUsers()->get();
+
+        $users = $users->transform(function($user, $key){
+            return[
+                'value' => $user->id,
+                'title' => $user->name,
+                'selected' => false
+            ];
+        })->values();
+
+        return $users;
+    }
+
+    public function getAllClients($workspace = null){
+        if(!$workspace){
+            $user = Auth::user();
+            $workspaceId = $user->getCurrentWorkspace();
+            $workspace = Workspace::find($workspaceId);
+        }else{
+            $workspace = Workspace::find($workspace);
+        }
+
+        $clients = $workspace->queryClients()->get();
+
+        $clients = $clients->transform(function($user, $key){
+            return[
+                'value' => $user->id,
+                'title' => $user->name,
+                'selected' => false
+            ];
+        })->values();
+
+        return $clients;
+    }
+
+    public function getAllProjects($workspace = null){
+
+        if(!$workspace){
+            $user = Auth::user();
+            $workspaceId = $user->getCurrentWorkspace();
+            $workspace = Workspace::find($workspaceId);
+        }else{
+            $workspace = Workspace::find($workspace);
+        }
+
+        $projects = $workspace->queryProjects()->get();
+
+        $projects = $projects->transform(function($user, $key){
+            return[
+                'value' => $user->id,
+                'title' => $user->title,
+                'selected' => false
+            ];
+        })->values();
+
+        return $projects;
     }
 }
