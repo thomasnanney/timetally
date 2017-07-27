@@ -3,7 +3,10 @@
 namespace App\Reports\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use App\Reports\Models\Report;
+use App\Users\Models\User;
+use App\Timer\Models\TimeEntries;
 use App\Core\Controllers\Controller;
 use PDF;
 
@@ -28,6 +31,33 @@ class ReportsController extends Controller
     {
         return view('reports');
         //return view('payrollReport');
+    }
+
+    public function downloadCSV()
+    {
+        $headers = [
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+            ,   'Content-type'        => 'text/csv'
+            ,   'Content-Disposition' => 'attachment; filename=Time_Entry_Report.csv'
+            ,   'Expires'             => '0'
+            ,   'Pragma'              => 'public'
+        ];
+
+        $list = TimeEntries::all()->toArray();
+
+        # add headers for each column in the CSV download
+        array_unshift($list, array_keys($list[0]));
+
+        $callback = function() use ($list)
+        {
+            $FH = fopen('php://output', 'w');
+            foreach ($list as $row) {
+                fputcsv($FH, $row);
+            }
+            fclose($FH);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public function createPayrollReport()
