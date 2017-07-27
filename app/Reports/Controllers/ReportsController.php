@@ -28,8 +28,9 @@ class ReportsController extends Controller
         return view('reports');
     }
 
-    public function getReports(Request $request){
+    public function getReport(Request $request){
         $data = $request->input('data');
+
         $report = Report::generateReport($data);
 
         return response()->json(['data' => $report]);

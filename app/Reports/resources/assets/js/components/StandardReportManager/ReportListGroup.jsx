@@ -10,22 +10,19 @@ export default class ReportListGroup extends Component{
     }
 
     componentWillMount(){
+    }
 
+    componentDidUpdate() {
     }
 
     toggleExpand(){
-        console.log("toggling expand");
         let newState = this.state;
         newState.expanded = !this.state.expanded;
         let self = this;
-        this.setState(newState, function(){
-            console.log(self.state);
-        });
+        this.setState(newState);
     }
 
     render(){
-
-
 
         return (
             <li>
@@ -42,8 +39,8 @@ export default class ReportListGroup extends Component{
                             ?
                             <div>
                                 {
-                                    this.state.expanded && this.props.data.subGroups.map((group, id) => (
-                                       <ReportListGroup data={group} key={id}/>
+                                    this.state.expanded && Object.keys(this.props.data.subGroups).map((group, id) => (
+                                       <ReportListGroup data={this.props.data.subGroups[group]} key={id}/>
                                     ))
                                 }
                             </div>
@@ -51,7 +48,7 @@ export default class ReportListGroup extends Component{
                             <div>
                                 {
                                     this.state.expanded && this.props.data.entries.map((entry, id) => (
-                                        <li key={id}>{entry.title} <span className="list-item-time pull-right">{entry.time}</span></li>
+                                        <li key={id}>{entry.description} <span className="list-item-time pull-right">{entry.time}</span></li>
                                     ))
                                 }
                             </div>

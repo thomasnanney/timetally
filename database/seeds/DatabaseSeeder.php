@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
            'email' => 'test@example.com'
         ]);
         //create 4 sub users
-        $subUsers = factory(Users::class, 4)->create();
+        $subUsers = factory(Users::class, 8)->create();
 
         //create three workspaces for that user
         $workspaces = factory(Workspace::class, 3)->create([
@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         //create clients for the workspaces
-        $clients = factory(Client::class, 2)->create();
+        $clients = factory(Client::class, 4)->create();
 
         //attach users and clients to workspaces
         foreach($workspaces as $workspace){
@@ -60,9 +60,7 @@ class DatabaseSeeder extends Seeder
                     $workspace = 0;
                 }
             }
-            if($index % 2 == 0){
-                $client = ($client == 0 ? 1 : 0);
-            }
+            $client = $index % 4;
 
             echo "PROJECT: $index \t WORKSPACE: $workspace \t CLIENT: $client\n";
 
@@ -80,7 +78,7 @@ class DatabaseSeeder extends Seeder
             foreach($subUsers as $user){
                 $project->queryUsers()->attach($user->id);
                 //create some time entries by each user for each project
-                factory(TimeEntry::class)->create([
+                factory(TimeEntry::class, 3)->create([
                    'userID' => $user->id,
                     'projectID' => $project->id,
                     'clientID' => $clients->get($client)->id,
@@ -88,7 +86,7 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
-            factory(TimeEntry::class)->create([
+            factory(TimeEntry::class, 4)->create([
                 'userID' => $primaryUser->id,
                 'projectID' => $project->id,
             ]);

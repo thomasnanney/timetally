@@ -41,8 +41,8 @@ export default class ReportList extends Component{
                 <hr/>
                 <ul className="no-list-style main-list no-padding">
                     {
-                        this.props.data.groups.map((group, id) => (
-                            <ReportListGroup data={group} key={id}/>
+                        Object.keys(this.props.data.groups).map((group, id) => (
+                            <ReportListGroup data={this.props.data.groups[group]} key={id}/>
                         ))
                     }
                 </ul>
