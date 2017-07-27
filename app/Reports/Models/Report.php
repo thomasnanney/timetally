@@ -11,11 +11,12 @@ namespace App\Reports\Models;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Users\Models\User;
 
 
 class Report
 {
-    public static function generateReport($data, $user){
+    public static function generateReport($data){
         $clientFilter = $data['filters']['client'];
         $projectFilter = $data['filters']['project'];
         $userFilter = $data['filters']['user'];
@@ -24,7 +25,7 @@ class Report
         $subGroup = $data['subGroup'];
         $subGroupBy = $data['subGroupBy'];
 
-        //$user = Auth::user();
+        $user = Auth::user();
 
 
         $workspace = $user->current_workspace_id;
@@ -32,13 +33,13 @@ class Report
         $timeEntries = DB::table('timereports')->select('*')->where('workspaceID', $workspace);
         $timeEntries->where(function ($timeEntries) use ($clientFilter, $projectFilter, $userFilter) {
             if (!is_null($clientFilter)) {
-                $timeEntries->orWhereIn('clientID', $clientFilter);
+                $timeEntries->whereIn('clientID', $clientFilter);
             }
             if (!is_null($projectFilter)) {
-                $timeEntries->orWhereIn('projectID', $projectFilter);
+                $timeEntries->whereIn('projectID', $projectFilter);
             }
             if (!is_null($userFilter)) {
-                $timeEntries->orWhereIn('userID', $userFilter);
+                $timeEntries->whereIn('userID', $userFilter);
             }
         });
         if(is_null($dateRange)){
@@ -55,42 +56,114 @@ class Report
         if ($groupBy == 'client') {
             if ($subGroup == 'true') {
                 if ($subGroupBy == 'project') {
-                    $timeEntries = $timeEntries->groupBy('clientID')->->transform(function($item, $key){return $item->groupBy('projectID');});
+                    $timeEntries = ['groups' => $timeEntries->groupBy('clientName')->transform(function($item, $key){
+                        return ['totalTime' => $item->sum('time') / 60,
+                            'subGroups' => $item->groupBy('projectTitle')->transform(function($entry, $key){
+                                return [
+                                    'totalTime' => ($entry->sum('time') / 60),
+                                    'entries' => [$entry->transform(function($item, $k){
+                                        return ['description' => $item->description, 'time' => ($item->time / 60)];
+                                    })->toArray()]];
+                            })->toArray()];
+                    })->toArray()];
                 }
                 if ($subGroupBy == 'user') {
-                    $timeEntries = $timeEntries->groupBy('clientID')->transform(function($item, $key){return $item->groupBy('userID');});
+                    $timeEntries = ['groups' => $timeEntries->groupBy('clientName')->transform(function($item, $key){
+                        return ['totalTime' => $item->sum('time') / 60,
+                            'subGroups' => $item->groupBy('userName')->transform(function($entry, $key){
+                                return [
+                                    'totalTime' => ($entry->sum('time') / 60),
+                                    'entries' => [$entry->transform(function($item, $k){
+                                        return ['description' => $item->description, 'time' => ($item->time / 60)];
+                                    })->toArray()]];
+                            })->toArray()];
+                    })->toArray()];
                 }
             }else{
-                $timeEntries = $timeEntries->groupBy('clientID');
+                $timeEntries = ['groups' => $timeEntries->groupBy('clientName')->transform(function($entry, $key){
+                    return [
+                        'totalTime' => ($entry->sum('time') / 60),
+                        'entries' => [$entry->transform(function($item, $k){
+                            return ['description' => $item->description, 'time' => ($item->time / 60)];})->toArray()]];
+                })->toArray()];
             }
         }
         if ($groupBy == 'project') {
             if($subGroup == 'true'){
                 if($subGroupBy == 'client'){
-                    $timeEntries = $timeEntries->groupBy('projectID')->transform(function($item, $key){return $item->groupBy('clientID');});
+                    $timeEntries = ['groups' => $timeEntries->groupBy('projectTitle')->transform(function($item, $key){
+                        return ['totalTime' => $item->sum('time') / 60,
+                            'subGroups' => $item->groupBy('clientName')->transform(function($entry, $key){
+                                return [
+                                    'totalTime' => ($entry->sum('time') / 60),
+                                    'entries' => [$entry->transform(function($item, $k){
+                                        return ['description' => $item->description, 'time' => ($item->time / 60)];
+                                    })->toArray()]];
+                            })->toArray()];
+                    })->toArray()];
                 }
                 if($subGroupBy == 'user'){
-                    $timeEntries = $timeEntries->groupBy('projectID')->transform(function($item, $key){return $item->groupBy('userID');});
+                    $timeEntries = ['groups' => $timeEntries->groupBy('projectTitle')->transform(function($item, $key){
+                        return ['totalTime' => $item->sum('time') / 60,
+                            'subGroups' => $item->groupBy('userName')->transform(function($entry, $key){
+                                return [
+                                    'totalTime' => ($entry->sum('time') / 60),
+                                    'entries' => [$entry->transform(function($item, $k){
+                                        return ['description' => $item->description, 'time' => ($item->time / 60)];
+                                    })->toArray()]];
+                            })->toArray()];
+                    })->toArray()];
                 }
             }else{
-                $timeEntries = $timeEntries->groupBy('projectID');
+                $timeEntries = ['groups' => $timeEntries->groupBy('projectTitle')->transform(function($entry, $key){
+                    return [
+                        'totalTime' => ($entry->sum('time') / 60),
+                        'entries' => [$entry->transform(function($item, $k){
+                            return ['description' => $item->description, 'time' => ($item->time / 60)];})->toArray()]];
+                })];
             }
         }
         if ($groupBy == 'user') {
             if ($subGroup == 'true') {
                 if ($subGroupBy == 'client') {
-                    $timeEntries = $timeEntries->groupBy('userID')->transform(function($item, $key){return $item->groupBy('clientID');});
+                    $timeEntries = ['groups' => $timeEntries->groupBy('userName')->transform(function($item, $key){
+                        return ['totalTime' => $item->sum('time') / 60,
+                            'subGroups' => $item->groupBy('clientName')->transform(function($entry, $key){
+                            return [
+                            'totalTime' => ($entry->sum('time') / 60),
+                            'entries' => [$entry->transform(function($item, $k){
+                                return ['description' => $item->description, 'time' => ($item->time / 60)];
+                            })->toArray()]];
+                        })->toArray()];
+                    })->toArray()];
                 }
                 if ($subGroupBy == 'project') {
-                    $timeEntries = $timeEntries->groupBy('userID')->transform(function($item, $key){return $item->groupBy('projectID');});
+                    $timeEntries = ['groups' => $timeEntries->groupBy('userName')->transform(function($item, $key){
+                        return ['totalTime' => $item->sum('time') / 60,
+                            'subGroups' => $item->groupBy('projectTitle')->transform(function($entry, $key){
+                                return [
+                                    'totalTime' => ($entry->sum('time') / 60),
+                                    'entries' => [$entry->transform(function($item, $k){
+                                        return ['description' => $item->description, 'time' => ($item->time / 60)];
+                                    })->toArray()]];
+                            })->toArray()];
+                    })->toArray()];
                 }
+            }else{
+            $timeEntries = ['groups' => $timeEntries->groupBy('userName')->transform(function($entry, $key){
+                return [
+                'totalTime' => ($entry->sum('time') / 60),
+                'entries' => [$entry->transform(function($item, $k){
+                    return ['description' => $item->description, 'time' => ($item->time / 60)];})->toArray()]];
+            })->toArray()];
             }
-            $timeEntries = $timeEntries->groupBy('userID');
         }
 
+        $report = array_add($timeEntries, 'groupByType', $groupBy);
+        $report = array_add($report, 'subGroupBy', $subGroup);
+        $report = array_add($report, 'subGroupByType', $subGroupBy);
 
-
-        return $timeEntries;
+        return $report;
 
 
 
