@@ -3,9 +3,7 @@
 namespace App\Reports\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use App\Reports\Models\Report;
-use App\Users\Models\User;
 use App\Timer\Models\TimeEntries;
 use App\Core\Controllers\Controller;
 use PDF;
@@ -60,31 +58,30 @@ class ReportsController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 
-    public function createPayrollReport()
+    public function createTimeEntryReportPDF(Request $request)
     {
-        $subgroup = true;
+        /*$data = $request->input('data');*/
+        /*$subgroup = false;
         if(!$subgroup) {
             $data = array(
-                'subGroup' => 'false',       // true/false,
+                'subGroup' => false,       // true/false,
+                'totalTime' => '159',
                 'groups' => [
                     'client1' => [
                         'title' => 'Client 1',
                         'totalTime' => '20',
                         'entries' => [
                             array(
-                                'projectid' => '1',
-                                'userid' => '1',
-                                'userTime' => '5',
+                                'description' => 'test',
+                                'time' => '1',
                             ),
                             array(
-                                'projectid' => '2',
-                                'userid' => '2',
-                                'userTime' => '5',
+                                'description' => 'test',
+                                'time' => '1',
                             ),
                             array(
-                                'projectid' => '3',
-                                'userid' => '3',
-                                'userTime' => '10',
+                                'description' => 'test',
+                                'time' => '1',
                             )
                         ],
                     ],
@@ -93,19 +90,16 @@ class ReportsController extends Controller
                         'totalTime' => '27',
                         'entries' => [
                             array(
-                                'projectid' => '1',
-                                'userid' => '1',
-                                'userTime' => '5',
+                                'description' => 'test',
+                                'time' => '1',
                             ),
                             array(
-                                'projectid' => '2',
-                                'userid' => '2',
-                                'userTime' => '10',
+                                'description' => 'test',
+                                'time' => '1',
                             ),
                             array(
-                                'projectid' => '3',
-                                'userid' => '3',
-                                'userTime' => '12',
+                                'description' => 'test',
+                                'time' => '1',
                             )
                         ],
                     ],
@@ -114,19 +108,16 @@ class ReportsController extends Controller
                         'totalTime' => '50',
                         'entries' => [
                             array(
-                                'projectid' => '1',
-                                'userid' => '1',
-                                'userTime' => '15',
+                                'description' => 'test',
+                                'time' => '1',
                             ),
                             array(
-                                'projectid' => '2',
-                                'userid' => '2',
-                                'userTime' => '15',
+                                'description' => 'test',
+                                'time' => '1',
                             ),
                             array(
-                                'projectid' => '3',
-                                'userid' => '3',
-                                'userTime' => '20',
+                                'description' => 'test',
+                                'time' => '1',
                             )
                         ],
                     ]
@@ -134,32 +125,26 @@ class ReportsController extends Controller
             );
         } else {
             $data = array(
-                'subGroup' => 'true',       // true/false,
-                'title' => 'Projects',
-                'totalTime' => '100',
                 'groups' => [
-                    'subGroup1' => [
+                    'Clients' => [
                         'title' => 'Clients',
                         'totalTime' => 'totalTime for subGroup',
-                        'detail' => [
+                        'subGroups' => [ //was detail
                             'client1' => [
                                 'title' => 'Client 1',
                                 'totalTime' => '20',
                                 'entries' => [
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '1',
-                                        'userTime' => '5',
+                                        'description' => 'test',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '2',
-                                        'userTime' => '5',
+                                        'description' => '1',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '3',
-                                        'userTime' => '10',
+                                        'description' => '1',
+                                        'time' => '10',
                                     )
                                 ],
                             ],
@@ -168,19 +153,16 @@ class ReportsController extends Controller
                                 'totalTime' => '27',
                                 'entries' => [
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '1',
-                                        'userTime' => '5',
+                                        'description' => 'test',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '2',
-                                        'userTime' => '10',
+                                        'description' => '1',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '3',
-                                        'userTime' => '12',
+                                        'description' => '1',
+                                        'time' => '10',
                                     )
                                 ],
                             ],
@@ -189,46 +171,40 @@ class ReportsController extends Controller
                                 'totalTime' => '50',
                                 'entries' => [
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '1',
-                                        'userTime' => '15',
+                                        'description' => 'test',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '2',
-                                        'userTime' => '15',
+                                        'description' => '1',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '1',
-                                        'userid' => '3',
-                                        'userTime' => '20',
+                                        'description' => '1',
+                                        'time' => '10',
                                     )
                                 ],
                             ]
                         ]
                     ],
-                    'subgroup2' => [
+                    'Users' => [
                         'title' => 'Users',
                         'totalTime' => 'totalTime for subGroup',
-                        'detail' => [
+                        'subGroups' => [ //was detail
                             'user1' => [
                                 'title' => 'User 1',
                                 'totalTime' => '20',
                                 'entries' => [
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '1',
-                                        'userTime' => '5',
+                                        'description' => 'test',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '2',
-                                        'userTime' => '5',
+                                        'description' => '1',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '3',
-                                        'userTime' => '10',
+                                        'description' => '1',
+                                        'time' => '10',
                                     )
                                 ],
                             ],
@@ -237,19 +213,16 @@ class ReportsController extends Controller
                                 'totalTime' => '27',
                                 'entries' => [
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '1',
-                                        'userTime' => '5',
+                                        'description' => 'test',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '2',
-                                        'userTime' => '10',
+                                        'description' => '1',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '3',
-                                        'userTime' => '12',
+                                        'description' => '1',
+                                        'time' => '10',
                                     )
                                 ],
                             ],
@@ -258,29 +231,56 @@ class ReportsController extends Controller
                                 'totalTime' => '50',
                                 'entries' => [
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '1',
-                                        'userTime' => '15',
+                                        'description' => 'test',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '2',
-                                        'userTime' => '15',
+                                        'description' => '1',
+                                        'time' => '5',
                                     ),
                                     array(
-                                        'projectid' => '2',
-                                        'userid' => '3',
-                                        'userTime' => '20',
+                                        'description' => '1',
+                                        'time' => '10',
                                     )
                                 ],
                             ]
                         ]
                     ]
-                ]
+                ],
+                'subGroup' => 'true',       // true/false,
+                'subGroupType' => 'client',
+                'title' => 'Projects',
+                'totalTime' => '100',
             );
-        }
+        }*/
 
-        $report = new Report;
-        $report->createPayrollReport($data);
+        //$data = $request->input('data');
+        /*$data = json_decode('{
+              "data": {
+                "startDate": "2017-07-24T17:46:36.143Z",
+                "endDate": "2017-07-30T17:46:36.143Z",
+                "filters": {
+                  "users": [
+                    "0",
+                    "2"
+                  ],
+                  "clients": [
+                    
+                  ],
+                  "projects": [
+                    
+                  ]
+                },
+                "groupBy": "client",
+                "subGroup": false,
+                "subGroupBy": ""
+              }
+            }', TRUE);*/
+
+        //$report = new Report();
+        $data = $request->input('data');
+        $report = Report::generateReport($data);
+
+        $report->createTimeEntryReport($data);
     }
 }

@@ -36,7 +36,7 @@
 
 <?php if (count($data) > 0): ?>
 <table>
-    @if ($data['subGroup'] == 'true')
+    @if ($data['subGroup'] == true)
         <tr>
             <td class="head"><?php echo $data['title']; ?></td>
             <td class="head"></td>
@@ -48,34 +48,32 @@
                 <td class="subhead"></td>
                 <td class="subhead"></td>
             </tr>
-        <?php   foreach($subgroup['detail'] as $item): ?>
+        <?php   foreach($subgroup['subGroups'] as $item): ?>
                     <tr>
                         <td class="detailTitle" align="center">   <?php echo $item['title']; ?></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="entry">    Project ID:</td>
-                        <td class="entry">    User ID:</td>
-                        <td class="entry">    User Time:</td>
+                        <td class="entry">    Description:</td>
+                        <td class="entry">    Time:</td>
+                        <td></td>
                     </tr>
-                    <?php   $projectid = array();
-                            $userid = array();
-                            $usertime = array();
+                    <?php   $description = array();
+                            $time = array();
                             foreach($item['entries'] as $entry):
-                                $projectid[] = $entry['projectid'];
-                                $userid[] = $entry['userid'];
-                                $usertime[] = $entry['userTime'];
+                                $description[] = $entry['description'];
+                                $time[] = $entry['time'];
                             endforeach; ?>
                             <tr>
-                                <td class="entry"><?php echo implode("<br>", $projectid); ?></td>
-                                <td class="entry"><?php echo implode("<br>", $userid); ?></td>
-                                <td class="entry"><?php echo implode("<br>", $usertime); ?></td>
+                                <td class="entry"><?php echo implode("<br>", $description); ?></td>
+                                <td class="entry"><?php echo implode("<br>", $time); ?></td>
+                                <td></td>
                             </tr>
                             <tr>
                                 <td></td>
+                                <td class="total">Total: <?php echo $item['totalTime']; ?></td>
                                 <td></td>
-                                <td class="total">Total Hours: <?php echo $item['totalTime']; ?></td>
                             </tr>
                 <?php endforeach; ?>
             <?php endforeach; ?>
@@ -83,31 +81,31 @@
         <?php foreach($data['groups'] as $group): ?>
             <tr>
                 <td class="head"><?php echo $group['title']; ?></td>
-                <td></td>
-                <td></td>
+                <td class="head"></td>
+                <td class="head" align="center">Total Hours: <?php echo $data['totalTime']; ?></td>
             </tr>
             <tr>
-                <td class="entry">    Project ID:</td>
-                <td class="entry">    User ID:</td>
-                <td class="entry">    User Time:</td>
+                <td class="entry">    Description:</td>
+                <td class="entry">    Time:</td>
+                <td></td>
             </tr>
-            <?php $projectid = array();
-                $userid = array();
-                $usertime = array();
+            <?php
+                $description = array();
+                $time= array();
                 foreach($group['entries'] as $entry):
-                    $projectid[] = $entry['projectid'];
-                    $userid[] = $entry['userid'];
-                    $usertime[] = $entry['userTime'];
+                    $description[] = $entry['description'];
+                    $time[] = $entry['time'];
                 endforeach; ?>
                 <tr>
-                    <td class="entry"><?php echo implode("<br>", $projectid); ?></td>
-                    <td class="entry"><?php echo implode("<br>", $userid); ?></td>
-                    <td class="entry"><?php echo implode("<br>", $usertime); ?></td>
+                    <td class="entry"><?php echo implode("<br>", $description); ?></td>
+                    <td class="entry"><?php echo implode("<br>", $time); ?></td>
+                    <td></td>
+
                 </tr>
                 <tr>
                     <td></td>
+                    <td class="total">Total: <?php echo $group['totalTime']; ?></td>
                     <td></td>
-                    <td class="total">Total Hours: <?php echo $group['totalTime']; ?></td>
                 </tr>
         <?php endforeach ?>
     @endif

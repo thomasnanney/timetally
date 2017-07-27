@@ -1,4 +1,4 @@
 <?php
 Route::get('/reports', "ReportsController@index")->name('timer');
-Route::get('/reports/payrollReport', "ReportsController@createPayrollReport")->name('payrollReport');
-Route::get('/reports/payrollReportCSV', "ReportsController@downloadCSV")->name('payrollReportCSV');
+Route::get('/reports/timeEntryReportPDF', "ReportsController@createTimeEntryReportPDF")->name('timeEntryReportPDF');
+Route::get('/reports/timeEntryReportCSV', "ReportsController@downloadCSV")->name('payrollReportCSV');

@@ -8,8 +8,8 @@
 @section('content')
     <div class="row">
         <div class="col-xs-12 payroll-report">
-            <h2> <a href="/reports/payrollReport">PDF report</a></h2>
-            <h2> <a href="/reports/payrollReportCSV">CSV report</a></h2>
+            <h2> <a href="/reports/timeEntryReportPDF">PDF report</a></h2>
+            <h2> <a href="/reports/timeEntryReportCSV">CSV report</a></h2>
         </div>
     </div>
 @endsection
