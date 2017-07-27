@@ -1,0 +1,1 @@
+import ReportManager from './components/ReportManager.jsx';
