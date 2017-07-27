@@ -50,27 +50,46 @@ class Report
             $endDate = Carbon::parse($dateRange['endTime'])->format('Y-m-d');
             $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }
-        if($groupBy == 'client'){
-            $timeEntries->orderBy('clientID');
-        }
-        if($groupBy == 'project'){
-            $timeEntries->orderBy('projectID');
-        }
-        if($groupBy == 'user'){
-            $timeEntries->orderBy('projectID');
-        }
-        if($subGroup == 'true'){
-            if($subGroupBy == 'client'){
-                $timeEntries->orderBy('clientID');
-            }
-            if($subGroupBy == 'project'){
-                $timeEntries->orderBy('projectID');
-            }
-            if($subGroupBy == 'user'){
-                $timeEntries->orderBy('usersID');
-            }
-        }
         $timeEntries = $timeEntries->get();
+
+        if ($groupBy == 'client') {
+            if ($subGroup == 'true') {
+                if ($subGroupBy == 'project') {
+                    $timeEntries = $timeEntries->groupBy('clientID')->->transform(function($item, $key){return $item->groupBy('projectID');});
+                }
+                if ($subGroupBy == 'user') {
+                    $timeEntries = $timeEntries->groupBy('clientID')->transform(function($item, $key){return $item->groupBy('userID');});
+                }
+            }else{
+                $timeEntries = $timeEntries->groupBy('clientID');
+            }
+        }
+        if ($groupBy == 'project') {
+            if($subGroup == 'true'){
+                if($subGroupBy == 'client'){
+                    $timeEntries = $timeEntries->groupBy('projectID')->transform(function($item, $key){return $item->groupBy('clientID');});
+                }
+                if($subGroupBy == 'user'){
+                    $timeEntries = $timeEntries->groupBy('projectID')->transform(function($item, $key){return $item->groupBy('userID');});
+                }
+            }else{
+                $timeEntries = $timeEntries->groupBy('projectID');
+            }
+        }
+        if ($groupBy == 'user') {
+            if ($subGroup == 'true') {
+                if ($subGroupBy == 'client') {
+                    $timeEntries = $timeEntries->groupBy('userID')->transform(function($item, $key){return $item->groupBy('clientID');});
+                }
+                if ($subGroupBy == 'project') {
+                    $timeEntries = $timeEntries->groupBy('userID')->transform(function($item, $key){return $item->groupBy('projectID');});
+                }
+            }
+            $timeEntries = $timeEntries->groupBy('userID');
+        }
+
+
+
         return $timeEntries;
 
 
