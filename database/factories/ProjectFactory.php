@@ -30,15 +30,15 @@ $factory->define(App\Projects\Models\Project::class, function (Faker\Generator $
     ];
 
     return [
-        'description' => $faker->paragraph,
+        'description' => $faker->paragraph(2, true),
         'clientID' => 1, //default to one, but this should be over ridden on creation
         'workspaceID' => 1,
         'billableType' => $billableTypes[rand(0,1)],
         'projectedRevenue' => $faker->numberBetween(0,10000),
-        'scope' => 'public', //$scopes[rand(0, 1)],
+        'scope' => $scopes[rand(0, 1)],
         'title' => $faker->word,
-        'startDate' => $faker->dateTime,
-        'endDate' => $faker->dateTime,
+        'startDate' => $faker->date('Y-m-d'),
+        'endDate' => $faker->date('Y-m-d'),
         'projectedTime' => $faker->randomDigitNotNull,
         'billableHourlyType' => $billableHourlyType[rand(0, 1)],
         'billableRate' => $faker->numberBetween(0,1000),
