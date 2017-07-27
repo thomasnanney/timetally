@@ -57,11 +57,6 @@ class Report extends Model
         // This method has several options, check the source code documentation for more information.
         PDF::AddPage();
 
-        // set text shadow effect
-        //PDF::setTextShadow(array('enabled'=>true, 'depth_w'=>0.2, 'depth_h'=>0.2, 'color'=>array(196,196,196), 'opacity'=>1, 'blend_mode'=>'Normal'));
-
-
-
         $data = array(
             'data' => $reportData
         );
@@ -69,13 +64,9 @@ class Report extends Model
         // Set some content to print
         $view = view('payrollReport')->with($data); //add $data here to pass to view
         $html = $view->render();
-        //$html = view('payrollReport', $data)->render();
 
         // Print text using writeHTMLCell()
-        //PDF::writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, true, '', true);
-        //PDF::writeHtml(view('payrollReport', $data)->render());
         PDF::writeHTML($html, true, false, false, false, '');
-
 
         // ---------------------------------------------------------
 
