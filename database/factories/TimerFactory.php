@@ -26,5 +26,7 @@ $factory->define(App\Timer\Models\TimeEntries::class, function (Faker\Generator 
         'endTime' => $endTime,
         'description' => $faker->sentence(4),
         'billable' => rand(0,1) ? true : false,
+        'clientID' => 1,
+        'workspaceID' => 1
     ];
 });
