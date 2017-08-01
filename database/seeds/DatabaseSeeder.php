@@ -17,20 +17,26 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
 
+        $num_projects = 30;
+        $num_clients = 6;
+        $num_workspaces = 1;
+
         //create a primary user to log in as
         $primaryUser = factory(Users::class)->create([
-           'email' => 'test@example.com'
+            'email' => 'test@example.com',
+            'current_workspace_id' => 1
+        ]);
+        //create three workspaces for that user
+        $workspaces = factory(Workspace::class, $num_workspaces)->create([
+            'ownerID' => $primaryUser->id,
         ]);
         //create 4 sub users
-        $subUsers = factory(Users::class, 8)->create();
-
-        //create three workspaces for that user
-        $workspaces = factory(Workspace::class, 3)->create([
-            'ownerID' => $primaryUser->id,
+        $subUsers = factory(Users::class, 8)->create([
+            'current_workspace_id' => 1
         ]);
 
         //create clients for the workspaces
-        $clients = factory(Client::class, 4)->create();
+        $clients = factory(Client::class, $num_clients)->create();
 
         //attach users and clients to workspaces
         foreach($workspaces as $workspace){
@@ -51,16 +57,15 @@ class DatabaseSeeder extends Seeder
         $projects = [];
 
         $index = 0;
-        $client = 0;
         $workspace = 0;
-        for($i = 0; $i < 15; $i ++){
-            if($index % 5 == 0 && $index != 0){
+        for($i = 0; $i < $num_projects; $i ++){
+            if($index % $num_workspaces == 0 && $index != 0){
                 $workspace++;
-                if($workspace == 4){
+                if($workspace == $num_workspaces){
                     $workspace = 0;
                 }
             }
-            $client = $index % 4;
+            $client = $index % $num_clients;
 
             echo "PROJECT: $index \t WORKSPACE: $workspace \t CLIENT: $client\n";
 
@@ -68,6 +73,7 @@ class DatabaseSeeder extends Seeder
                 'clientID' => $clients->get($client)->id,
                 'workspaceID' => $workspaces->get($workspace)->id
             ]);
+
             array_push($projects, $project);
 
             //link users to project
@@ -78,7 +84,8 @@ class DatabaseSeeder extends Seeder
             foreach($subUsers as $user){
                 $project->queryUsers()->attach($user->id);
                 //create some time entries by each user for each project
-                factory(TimeEntry::class, 3)->create([
+                $num_entries = rand(7,15);
+                factory(TimeEntry::class, $num_entries)->create([
                    'userID' => $user->id,
                     'projectID' => $project->id,
                     'clientID' => $clients->get($client)->id,
@@ -86,7 +93,8 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
-            factory(TimeEntry::class, 4)->create([
+            $num_entries = rand(7,15);
+            factory(TimeEntry::class, $num_entries)->create([
                 'userID' => $primaryUser->id,
                 'projectID' => $project->id,
             ]);

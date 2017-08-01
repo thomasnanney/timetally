@@ -35,18 +35,6 @@ export default class StandardReportManager extends Component{
         // retrieve data
         this.getReportData();
 
-        let barData = [
-            {name: 'Day 1', hours: 40, amt: 2400},
-            {name: 'Day 2', hours: 60, amt: 2400},
-            {name: 'Day 3', hours: 30, amt: 2400},
-            {name: 'Day 4', hours: 10, amt: 2400},
-            {name: 'Day 5', hours: 90, amt: 2400},
-            {name: 'Day 6', hours: 0, amt: 2400},
-            {name: 'Day 7', hours: 0, amt: 2400},
-        ];
-
-        this.setState({barData: barData});
-
         let pieData = [
             {name: 'Client 1', value: 40},
             {name: 'Client 2', value: 30},
@@ -71,12 +59,17 @@ export default class StandardReportManager extends Component{
                 console.log(response.data.data);
                 let newState = self.state;
                 newState.data = response.data.data;
+                console.log(response.data.data.barData);
                 newState.data.barData = response.data.data.barData.sort(function(a, b){
-                   return new Date(a.name).getDate() - new Date(b.name).getDate();
+                    console.log("COMPARING");
+                    console.log(new Date(a.name));
+                    console.log(new Date(b.name));
+                    console.log(new Date(a.name) > new Date(b.name));
+                    console.log("************************************");
+                   return new Date(a.name) > new Date(b.name);
                 });
-                self.setState(newState, function(){
-                    console.log(self.state.data);
-                });
+                console.log(newState.data.barData);
+                self.setState(newState);
             })
             .catch(function(error){
                 console.log(error);
@@ -112,18 +105,21 @@ export default class StandardReportManager extends Component{
         this.setState(newState);
     }
 
+    // ToDo: Remove and use update Param
     updateStartDate(startDate){
         let newState = this.state;
         newState.params.startDate = startDate;
         this.setState(newState);
     }
 
+    // ToDo: Remove and use update Param
     updateEndDate(endDate){
         let newState = this.state;
         newState.params.endtDate = endDate;
         this.setState(newState);
     }
 
+    //ToDo: upon successfully setting state make this update the data instead of hitting apply
     updateGroupings(item, value){
         let self = this;
         if(item == 'subGroupBy'){
@@ -135,10 +131,12 @@ export default class StandardReportManager extends Component{
             }
             newState.params.subGroupBy = value;
             self.setState(newState);
+            self.getReportData();
         }else{
             let newState = self.state;
             newState.params[item] = value;
             self.setState(newState);
+            self.getReportData();
         }
     }
 

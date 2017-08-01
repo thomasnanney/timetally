@@ -42615,10 +42615,6 @@ var StandardReportManager = function (_Component) {
             // retrieve data
             this.getReportData();
 
-            var barData = [{ name: 'Day 1', hours: 40, amt: 2400 }, { name: 'Day 2', hours: 60, amt: 2400 }, { name: 'Day 3', hours: 30, amt: 2400 }, { name: 'Day 4', hours: 10, amt: 2400 }, { name: 'Day 5', hours: 90, amt: 2400 }, { name: 'Day 6', hours: 0, amt: 2400 }, { name: 'Day 7', hours: 0, amt: 2400 }];
-
-            this.setState({ barData: barData });
-
             var pieData = [{ name: 'Client 1', value: 40 }, { name: 'Client 2', value: 30 }, { name: 'Client 3', value: 90 }, { name: 'Client 4', value: 5 }];
 
             this.setState({ pieData: pieData });
@@ -42639,12 +42635,17 @@ var StandardReportManager = function (_Component) {
                 console.log(response.data.data);
                 var newState = self.state;
                 newState.data = response.data.data;
+                console.log(response.data.data.barData);
                 newState.data.barData = response.data.data.barData.sort(function (a, b) {
-                    return new Date(a.name).getDate() - new Date(b.name).getDate();
+                    console.log("COMPARING");
+                    console.log(new Date(a.name));
+                    console.log(new Date(b.name));
+                    console.log(new Date(a.name) > new Date(b.name));
+                    console.log("************************************");
+                    return new Date(a.name) > new Date(b.name);
                 });
-                self.setState(newState, function () {
-                    console.log(self.state.data);
-                });
+                console.log(newState.data.barData);
+                self.setState(newState);
             }).catch(function (error) {
                 console.log(error);
             });
@@ -42679,6 +42680,9 @@ var StandardReportManager = function (_Component) {
             newState.params[param] = value;
             this.setState(newState);
         }
+
+        // ToDo: Remove and use update Param
+
     }, {
         key: 'updateStartDate',
         value: function updateStartDate(startDate) {
@@ -42686,6 +42690,9 @@ var StandardReportManager = function (_Component) {
             newState.params.startDate = startDate;
             this.setState(newState);
         }
+
+        // ToDo: Remove and use update Param
+
     }, {
         key: 'updateEndDate',
         value: function updateEndDate(endDate) {
@@ -42693,6 +42700,9 @@ var StandardReportManager = function (_Component) {
             newState.params.endtDate = endDate;
             this.setState(newState);
         }
+
+        //ToDo: upon successfully setting state make this update the data instead of hitting apply
+
     }, {
         key: 'updateGroupings',
         value: function updateGroupings(item, value) {
@@ -42706,10 +42716,12 @@ var StandardReportManager = function (_Component) {
                 }
                 newState.params.subGroupBy = value;
                 self.setState(newState);
+                self.getReportData();
             } else {
                 var _newState2 = self.state;
                 _newState2.params[item] = value;
                 self.setState(_newState2);
+                self.getReportData();
             }
         }
     }, {
@@ -97146,7 +97158,7 @@ var HIDDEN_TEXTAREA_STYLE = {
   right: '0'
 };
 
-var SIZING_STYLE = ['letter-spacing', 'line-height', 'font-family', 'font-weight', 'font-size', 'font-style', 'text-rendering', 'text-transform', 'width', 'text-indent', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'box-sizing'];
+var SIZING_STYLE = ['letter-spacing', 'line-height', 'font-family', 'font-weight', 'font-size', 'text-rendering', 'text-transform', 'width', 'text-indent', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'border-top-width', 'border-right-width', 'border-bottom-width', 'border-left-width', 'box-sizing'];
 
 var computedStyleCache = {};
 

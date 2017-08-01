@@ -79,6 +79,7 @@ class Report
                 $timeEntries->whereIn('userID', $userFilter);
             }
         });
+
         if(is_null($startDate) || is_null($endDate)){
             $startDate = Carbon::parse('Monday this week')->format('y-m-d');
             $endDate = Carbon::parse('now')->format('y-m-d');
@@ -122,6 +123,7 @@ class Report
         $finalBarData = $finalBarData->union($paddedBarData)->values()->all();
 
         //get pie data
+
         if ($subGroup) {
             $timeEntries = ['groups' => $timeEntries->groupBy($groupField)->transform(function ($item, $key) use($subGroupField) {
                 return [
