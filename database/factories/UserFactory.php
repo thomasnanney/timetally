@@ -20,6 +20,6 @@ $factory->define(App\Users\Models\User::class, function (Faker\Generator $faker)
         'email' => $faker->unique()->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => str_random(10),
-        'current_workspace_id' => 0
+        'current_workspace_id' => 1
     ];
 });

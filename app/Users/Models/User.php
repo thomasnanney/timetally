@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'current_workspace_id'
     ];
 
     /**
@@ -69,6 +69,10 @@ class User extends Authenticatable
 //        var_dump($results);
 
         return $results;
+    }
+
+    public function getCurrentWorkspace(){
+        return $this->current_workspace_id;
     }
 
     public function queryProjects(){

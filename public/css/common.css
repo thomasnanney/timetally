@@ -40,8 +40,12 @@ body{
 .datepicker.datepicker-inline, .datepicker table{
     width:100%;
 }
+
+.inline-block{
+    display: inline-block !important;
+}
 /********************DROPDOWN MENU STYLES*********************/
-.tk-dropdown-container[class*="active"] .tk-dropdown, .tk-dropdown-container[class*="active"] .tk-arrow{
+.tk-dropdown[class*="active"], .tk-dropdown[class*="active"] + .tk-arrow{
     display: block !important;
 }
 
@@ -309,6 +313,16 @@ li.tab.active{
 
 .full-width{
     width: 100%;
+}
+
+.width-auto{
+    width: auto !important;
+}
+
+.main-list > li{
+    border-bottom: 1px solid #777;
+    margin-bottom: 15px;
+    padding-bottom:15px;
 }
 /**********************ERRORS***************************/
 .error-box{
@@ -591,4 +605,12 @@ input:checked + .slider:before {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 5vmax !important;
+}
+
+/************************CHARTS***********************/
+.pie-chart-tooltip{
+    padding: 5px 15px;
+    border: 1px solid #777;
+    border-radius: 5px;
+    background-color: #fff;
 }
