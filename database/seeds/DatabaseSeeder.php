@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 
         //create a primary user to log in as
         $primaryUser = factory(Users::class)->create([
-           'email' => 'test@example.com'
+           'email' => 'test@example.com',
         ]);
         //create 4 sub users
         $subUsers = factory(Users::class, 4)->create();
@@ -36,10 +36,10 @@ class DatabaseSeeder extends Seeder
         foreach($workspaces as $workspace){
 //            var_dump($workspace);
             //attach primary user
-            $workspace->queryUsers()->attach($primaryUser->id);
+            $workspace->queryUsers()->attach($primaryUser->id, ['admin' => 1]);
             //attach sub users
             foreach($subUsers as $user){
-                $workspace->queryUsers()->attach($user->id);
+                $workspace->queryUsers()->attach($user->id, ['admin' => 0]);
             }
             //attach clients
             foreach($clients as $client){
