@@ -53,8 +53,8 @@ class ProjectsController extends Controller
         $project->queryUsers()->attach(Auth::user()->id);
 
         return response()->json([
-           'status' => 'success',
-            'errors' => 'false'
+            'status' => 'success',
+            'errors' => 'false',
         ]);
     }
 
@@ -62,8 +62,11 @@ class ProjectsController extends Controller
         if(Project::find($id)){
             Project::destroy($id);
             return response()->json([
-               'status' => 'success',
-                'errors' => 'false'
+                'status' => 'success',
+                'errors' => 'false',
+                'messages' => [
+                    'Project deleted'
+                ]
             ]);
         }
 
@@ -71,7 +74,7 @@ class ProjectsController extends Controller
             'status' => 'fail',
             'errors' => 'true',
             'messages' => [
-                'Unable to find project'
+                'Project not found'
             ]
         ]);
     }
@@ -81,9 +84,10 @@ class ProjectsController extends Controller
     }
 
     /**
-     * Update the project scope
+     * Update an existing project
+     *
      * @param $request incoming data
-     * @param $project of the client to be deleted
+     * @param $project to be edited
      * @return redirect
      */
     public function postEdit(Request $request, Project $project)
@@ -109,6 +113,7 @@ class ProjectsController extends Controller
         return response()->json([
             'status' => 'success',
             'errors' => 'false',
+            'messages' => 'Project successfully updated'
         ]);
     }
 
@@ -118,10 +123,22 @@ class ProjectsController extends Controller
 
     public function addUser(Project $project, User $user){
         $project->addUser($user);
+
+        return response()->json([
+            'status' => 'success',
+            'errors' => 'false',
+            'messages' => 'User added'
+        ]);
     }
 
     public function removeUser(Project $project, User $user){
         $project->removeUser($user);
+
+        return response()->json([
+            'status' => 'success',
+            'errors' => 'false',
+            'messages' => 'User removed'
+        ]);
     }
 
 }

@@ -303,6 +303,13 @@ li.tab.active{
     width:50px;
 }
 
+.border-right{
+    border-right: 1px solid #999;
+}
+
+.full-width{
+    width: 100%;
+}
 /**********************ERRORS***************************/
 .error-box{
     background-color: rgba(255,0,0,0.3);
@@ -538,7 +545,6 @@ input:checked + .slider:before {
     padding: 10px 15px;
     border:none;
     border-radius: 2vmax;
-    min-width:400px;
     background: transparent;
 }
 

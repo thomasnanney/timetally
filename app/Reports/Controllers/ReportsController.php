@@ -4,6 +4,7 @@ namespace App\Reports\Controllers;
 
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
+use App\Reports\Models\Report;
 
 class ReportsController extends Controller
 {
@@ -25,5 +26,14 @@ class ReportsController extends Controller
     public function index()
     {
         return view('reports');
+    }
+
+    public function getReports(Request $request){
+        $data = $request->input('data');
+        $report = Report::generateReport($data);
+
+        return response()->json(['data' => $report]);
+
+
     }
 }

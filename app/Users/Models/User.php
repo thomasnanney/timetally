@@ -78,4 +78,8 @@ class User extends Authenticatable
     public function queryTimeEntries(){
         return $this->hasMany('App\Timer\Models\TimeEntries', 'userID', 'id');
     }
+
+    public function queryTimeEntriesByWorkspace($workspaceId){
+        return $this->queryTimeEntries()->where('workspaceID', $workspaceId);
+    }
 }
