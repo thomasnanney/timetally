@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a07d9e585358928eb5a5245ec6e5980",
+    "content-hash": "323c171b2b4c437f0a2e276481d70fc8",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -147,6 +147,38 @@
                 "parser"
             ],
             "time": "2017-05-14T14:47:48+00:00"
+        },
+        {
+            "name": "goat1000/svggraph",
+            "version": "2.24.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/goat1000/SVGGraph.git",
+                "reference": "4cdeedb93ed8bf9a1b1c14bf8622fa59258c6bdc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/goat1000/SVGGraph/zipball/4cdeedb93ed8bf9a1b1c14bf8622fa59258c6bdc",
+                "reference": "4cdeedb93ed8bf9a1b1c14bf8622fa59258c6bdc",
+                "shasum": ""
+            },
+            "require": {
+                "lib-pcre": "*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "SVGGraph.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Generates SVG graphs",
+            "homepage": "http://www.goat1000.com/svggraph.php",
+            "time": "2017-01-31T21:29:33+00:00"
         },
         {
             "name": "jakub-onderka/php-console-color",

@@ -1,115 +1,111 @@
 <style>
     table {
         border-collapse: collapse;
-        padding: 4px;
+        padding: 3px;
     }
-    td.head{
+    td.head {
         background-color: #395870;
         color: #fff;
         font-weight:bold;
-        border-bottom: 2px solid black;
+        border: 2px solid black;
         font-size: 20px;
     }
-    td.subhead{
+    td.subhead {
         background-color: #75a3a3;
         color: #fff;
         font-weight:bold;
-        border-bottom: 2px solid black;
+        border: 1px solid black;
         font-size: 17px;
     }
-    td.detailTitle{
-        background-color: #AAB7B8;
-        color: #fff;
-        font-weight:bold;
-        border: 1px solid black
-    }
-    td.total{
+    td.total {
         border-top: 1px solid black;
         border-bottom: 1px solid black;
         text-align: center;
     }
-    td.entry {
+    td.entryTitle {
         text-align: center;
-        border: 1px solid black
+        background-color: #90a1a2;
+        color: #fff;
+        font-weight:bold;
+        border: 1px solid black;
+    }
+
+    td.entryLeft {
+        text-align: left;
+        border: 1px solid black;
+    }
+    td.entryCenter {
+        text-align: center;
+        border: 1px solid black;
+    }
+    .blank_row
+    {
+        height: 1px; /* overwrites any other rules */
+        line-height: 30%;
+        background-color: #FFFFFF;
     }
 </style>
 
 <?php if (count($data) > 0): ?>
-<table>
+{{--<table>--}}
     @if ($data['subGroup'] == true)
-        <tr>
-            <td class="head"><?php echo $data['title']; ?></td>
-            <td class="head"></td>
-            <td class="head" align="center">Total Hours: <?php echo $data['totalTime']; ?></td>
-        </tr>
         <?php foreach($data['groups'] as $subgroup): ?>
-            <tr>
-                <td class="subhead">    <?php echo $subgroup['title']; ?></td>
-                <td class="subhead"></td>
-                <td class="subhead"></td>
-            </tr>
-        <?php   foreach($subgroup['subGroups'] as $item): ?>
+            <table>
+                <tr style="outline: solid">
+                    <td class="head" align="center" colspan="2"><?php echo $subgroup['title']; ?></td>
+                    <td class="head" align="center">Total Hours: <?php echo $subgroup['totalTime']; ?></td>
+                </tr>
+                <?php foreach($subgroup['subGroups'] as $item): ?>
                     <tr>
-                        <td class="detailTitle" align="center">   <?php echo $item['title']; ?></td>
-                        <td></td>
-                        <td></td>
+                        <td class="subhead" align="center" colspan="3"><?php echo $item['title']; ?></td>
                     </tr>
+                    {{--<tr>
+                        <td class="entryTitle" colspan="2">Description</td>
+                        <td class="entryTitle">Hours</td>
+                    </tr>--}}
+                    <?php foreach($item['entries'] as $entry): ?>
+                        <tr>
+                            <td class="entryLeft" colspan="2"><?php echo $entry['description']; ?></td>
+                            <td class="entryCenter"><?php echo $entry['time']; ?></td>
+                        </tr>
+                    <?php endforeach; ?>
                     <tr>
-                        <td class="entry">    Description:</td>
-                        <td class="entry">    Time:</td>
-                        <td></td>
+                        <td colspan="2"></td>
+                        <td class="total">Hours: <?php echo $item['totalTime']; ?></td>
                     </tr>
-                    <?php   $description = array();
-                            $time = array();
-                            foreach($item['entries'] as $entry):
-                                $description[] = $entry['description'];
-                                $time[] = $entry['time'];
-                            endforeach; ?>
-                            <tr>
-                                <td class="entry"><?php echo implode("<br>", $description); ?></td>
-                                <td class="entry"><?php echo implode("<br>", $time); ?></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td class="total">Total: <?php echo $item['totalTime']; ?></td>
-                                <td></td>
-                            </tr>
+                    <tr class="blank_row">
+                        <td colspan="3"></td>
+                    </tr>
                 <?php endforeach; ?>
-            <?php endforeach; ?>
+            </table>
+        <?php endforeach; ?>
     @else
         <?php foreach($data['groups'] as $group): ?>
             <tr>
-                <td class="head"><?php echo $group['title']; ?></td>
-                <td class="head"></td>
+                <td class="head" colspan="2"><?php echo $group['title']; ?></td>
                 <td class="head" align="center">Total Hours: <?php echo $data['totalTime']; ?></td>
             </tr>
             <tr>
-                <td class="entry">    Description:</td>
-                <td class="entry">    Time:</td>
-                <td></td>
+                <td class="entryTitle" colspan="2">Description</td>
+                <td class="entryTitle">Hours</td>
             </tr>
             <?php
-                $description = array();
-                $time= array();
-                foreach($group['entries'] as $entry):
-                    $description[] = $entry['description'];
-                    $time[] = $entry['time'];
-                endforeach; ?>
+                foreach($group['entries'] as $entry): ?>
+                    <tr>
+                        <td class="entryLeft" colspan="2"><?php echo $entry['description']; ?></td>
+                        <td class="entryCenter"><?php echo $entry['time']; ?></td>
+                    </tr>
+                <?php endforeach; ?>
                 <tr>
-                    <td class="entry"><?php echo implode("<br>", $description); ?></td>
-                    <td class="entry"><?php echo implode("<br>", $time); ?></td>
-                    <td></td>
-
-                </tr>
-                <tr>
-                    <td></td>
+                    <td colspan="2"></td>
                     <td class="total">Total: <?php echo $group['totalTime']; ?></td>
-                    <td></td>
+                </tr>
+                <tr class="blank_row">
+                    <td colspan="3"></td>
                 </tr>
         <?php endforeach ?>
     @endif
-</table>
+{{--</table>--}}
 
 <br><br>
 <table>

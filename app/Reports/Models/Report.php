@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use \SVGGraph;
 use PDF;
 
 class Report extends Model
@@ -53,7 +54,6 @@ class Report extends Model
                     break;
             }
         }
-        var_dump($groupField);
         //Retrieve entries from DB
         $user = Auth::user();
         $workspace = $user->current_workspace_id;
@@ -148,7 +148,7 @@ class Report extends Model
         PDF::SetSubject('Employee Hours');
 
         // set custom header and footer data
-        PDF::setHeaderCallback(function($pdf){
+        PDF::setHeaderCallback(function ($pdf) {
             // Set font
             $pdf->SetFont('helvetica', 'B', 20);
             // Title
@@ -157,14 +157,14 @@ class Report extends Model
             $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
             $pdf->Line(10, 12, 200, 12, $style);
         });
-        PDF::setFooterCallback(function($pdf){
+        PDF::setFooterCallback(function ($pdf) {
             // Position at 15 mm from bottom
             $pdf->SetY(-15);
             // Set font
             $pdf->SetFont('helvetica', 'I', 8);
             // Page number
             $pdf->SetDrawColor(0, 0, 0);
-            $pdf->Cell(0, 10, 'Page '.$pdf->getAliasNumPage().'/'.$pdf->getAliasNbPages(), 'T', 0, 'C', 0, '', 0, false, 'C', 'C');
+            $pdf->Cell(0, 10, 'Page ' . $pdf->getAliasNumPage() . '/' . $pdf->getAliasNbPages(), 'T', 0, 'C', 0, '', 0, false, 'C', 'C');
         });
 
         // set header and footer fonts
@@ -175,7 +175,7 @@ class Report extends Model
         PDF::SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
         // set margins
-        PDF::SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP-10, PDF_MARGIN_RIGHT);
+        PDF::SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP - 10, PDF_MARGIN_RIGHT);
         PDF::SetHeaderMargin(PDF_MARGIN_HEADER);
         PDF::SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -185,20 +185,47 @@ class Report extends Model
         // set image scale factor
         PDF::setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-        PDF::setCellPaddings(2,2,2,2);
+        PDF::setCellPaddings(2, 2, 2, 2);
 
-        $data = array(
-            'data' => $reportData
+        // ----------------------------------------------------------
+
+        /*
+         * Create Bar graph
+         */
+        $bars = array();
+        foreach($reportData['barData'] as $values) {
+            $bars[$values['name']] = $values['value'];
+        }
+        //var_dump($bars);
+        PDF::AddPage();
+        $settings = array(
+            'graph_title' => 'Time Entry By Day',
+            'graph_title_font_size' => 25,
+            'label_v' => 'Number of Hours',
+            'label_h' => 'Date',
+            'label_font_size' => 20,
+            'label_space' => 20
         );
+        $graph = new SVGGraph(950, 500, $settings);
+        $graph->colours = array('#75a3a3');
+        $graph->Values($bars);
+        $output = $graph->Fetch('BarGraph');
+
+        PDF::ImageSVG('@' . $output, $x=7, $y=20, $w='', $h=100, $link='', $align='', $palign='', $border=0, $fitonpage=false);
+
+        /*
+         * Create data tables
+         */
+        $data = array('data' => $reportData);
 
         PDF::AddPage();
+        PDF::setPage(2, true);
         PDF::SetTextColor(0,0,0);
-        // Set some content to print
         $view = view('payrollReport')->with($data); //add $data here to pass to view
         $html = $view->render();
 
-        // Print text using writeHTMLCell()
         PDF::writeHTML($html, true, false, false, false, '');
+
 
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.

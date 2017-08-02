@@ -59,8 +59,27 @@ class ReportsController extends Controller
 
     public function createTimeEntryReportPDF(Request $request)
     {
-        $data = $request->input('data');
+        //$data = $request->input('data');
+        $data = [
+            "startDate" => "2017-07-24T17:46:36.143Z",
+            "endDate" => "2017-07-30T17:46:36.143Z",
+            "filters" => [
+                "users" => [
+                    "0",
+                    "2"
+                ],
+                "clients" => [
+                ],
+                "projects" => [
+                ]
+            ],
+            "groupBy" => "user",
+            "subGroup" => true,
+            "subGroupBy" => "client"
+        ];
+
         $report = Report::generateReport($data);
+        //var_dump($report);
         $pdf = Report::createTimeEntryReport($report);
 
         return response()->json(['data' => $pdf]);
