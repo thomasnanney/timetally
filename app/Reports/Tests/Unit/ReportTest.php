@@ -35,77 +35,29 @@ class ReportsTest extends TestCase
             array(
                 '_token' => csrf_token(),
                 'data' => array(
-                    'subGroup' => 'false',
-                    'groups' => [
-                        'client1' => [
-                            'title' => 'Client 1',
-                            'totalTime' => '20',
-                            'entries' => [
-                                array(
-                                    'projectid' => '1',
-                                    'userid' => '1',
-                                    'userTime' => '5',
-                                ),
-                                array(
-                                    'projectid' => '2',
-                                    'userid' => '2',
-                                    'userTime' => '5',
-                                ),
-                                array(
-                                    'projectid' => '3',
-                                    'userid' => '3',
-                                    'userTime' => '10',
-                                )
-                            ],
+                    'startDate' => '2017-07-24T17:46:36.143Z',
+                    'endDate' => '2017-07-30T17:46:36.143Z',
+                    'filters' => array(
+                        'users' => [
+                            '0',
+                            '2'
                         ],
-                        'client2' => [
-                            'title' => 'Client 2',
-                            'totalTime' => '27',
-                            'entries' => [
-                                array(
-                                    'projectid' => '1',
-                                    'userid' => '1',
-                                    'userTime' => '5',
-                                ),
-                                array(
-                                    'projectid' => '2',
-                                    'userid' => '2',
-                                    'userTime' => '10',
-                                ),
-                                array(
-                                    'projectid' => '3',
-                                    'userid' => '3',
-                                    'userTime' => '12',
-                                )
-                            ],
+                        'clients' => [
+
                         ],
-                        'client3' => [
-                            'title' => 'Client 3',
-                            'totalTime' => '50',
-                            'entries' => [
-                                array(
-                                    'projectid' => '1',
-                                    'userid' => '1',
-                                    'userTime' => '15',
-                                ),
-                                array(
-                                    'projectid' => '2',
-                                    'userid' => '2',
-                                    'userTime' => '15',
-                                ),
-                                array(
-                                    'projectid' => '3',
-                                    'userid' => '3',
-                                    'userTime' => '20',
-                                )
-                            ],
+                        'projects' => [
+
                         ]
-                    ]
+                    ),
+                    'groupBy' => 'client',
+                    'subGroup' => false,
+                    'subGroupBy' => ''
                 )
             ));
 
+        //var_dump($response);
         //$this->assertFileExists(__DIR__ . '/Time_Entry_Report.pdf');
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(302, $response->getStatusCode());
         /*$this->assertDatabaseHas('projects', [
             'title' => 'Project 1',
         ]);

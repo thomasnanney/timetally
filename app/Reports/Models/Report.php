@@ -53,6 +53,7 @@ class Report extends Model
                     break;
             }
         }
+        var_dump($groupField);
         //Retrieve entries from DB
         $user = Auth::user();
         $workspace = $user->current_workspace_id;
@@ -139,7 +140,7 @@ class Report extends Model
         return $report;
     }
 
-    public function createTimeEntryReport($reportData)
+    public static function createTimeEntryReport($reportData)
     {
         // set document information
         PDF::SetAuthor('Org Name');
@@ -186,30 +187,6 @@ class Report extends Model
 
         PDF::setCellPaddings(2,2,2,2);
 
-        // Add a page
-        // This method has several options, check the source code documentation for more information.
-        PDF::AddPage();
-        PDF::Write(0, 'Time Entry Breakdown:');
-
-        $xc = 105;
-        $yc = 100;
-        $r = 50;
-
-        PDF::SetFillColor(0, 0, 255);
-        PDF::PieSector($xc, $yc, $r, 20, 120, 'FD', false, 0, 2);
-
-        PDF::SetFillColor(0, 255, 0);
-        PDF::PieSector($xc, $yc, $r, 120, 250, 'FD', false, 0, 2);
-
-        PDF::SetFillColor(255, 0, 0);
-        PDF::PieSector($xc, $yc, $r, 250, 20, 'FD', false, 0, 2);
-
-        // write labels
-        PDF::SetTextColor(255,255,255);
-        PDF::Text(105, 65, 'BLUE');
-        PDF::Text(60, 95, 'GREEN');
-        PDF::Text(120, 115, 'RED');
-
         $data = array(
             'data' => $reportData
         );
@@ -222,14 +199,6 @@ class Report extends Model
 
         // Print text using writeHTMLCell()
         PDF::writeHTML($html, true, false, false, false, '');
-
-        // add a page
-        /*PDF::AddPage();
-        PDF::setPage(2, true);*/
-
-
-
-        // ---------------------------------------------------------
 
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.

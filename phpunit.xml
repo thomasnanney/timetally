@@ -10,15 +10,15 @@
          stopOnFailure="false">
     <testsuites>
         <testsuite name="Feature Tests">
-            <!--<directory suffix="Test.php">./tests/Feature</directory>-->
+            <directory suffix="Test.php">./tests/Feature</directory>
         </testsuite>
 
         <testsuite name="Unit Tests">
-            <!--<directory suffix="Test.php">./tests/Unit</directory>
+            <directory suffix="Test.php">./tests/Unit</directory>
             <directory suffix="Test.php">app/Clients/Tests/Unit</directory>
             <directory suffix="Test.php">app/Projects/Tests/Unit</directory>
             <directory suffix="Test.php">app/Organizations/Tests/Unit</directory>
-            <directory suffix="Test.php">app/Timer/Tests/Unit</directory>-->
+            <directory suffix="Test.php">app/Timer/Tests/Unit</directory>
             <directory suffix="Test.php">app/Reports/Tests/Unit</directory>
         </testsuite>
     </testsuites>
