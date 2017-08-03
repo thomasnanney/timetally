@@ -6,7 +6,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use \SVGGraph;
+use Excel;
 use PDF;
+use PHPExcel_Worksheet_Drawing;
 
 class Report extends Model
 {
@@ -140,7 +142,7 @@ class Report extends Model
         return $report;
     }
 
-    public static function createTimeEntryReport($reportData)
+    public static function createTimeEntryReportPDF($reportData)
     {
         // set document information
         PDF::SetAuthor('Org Name');
@@ -196,7 +198,7 @@ class Report extends Model
         foreach($reportData['barData'] as $values) {
             $bars[$values['name']] = $values['value'];
         }
-        //var_dump($bars);
+
         PDF::AddPage();
         $settings = array(
             'graph_title' => 'Time Entry By Day',
@@ -221,7 +223,7 @@ class Report extends Model
         PDF::AddPage();
         PDF::setPage(2, true);
         PDF::SetTextColor(0,0,0);
-        $view = view('payrollReport')->with($data); //add $data here to pass to view
+        $view = view('timeEntryReportPDF')->with($data); //add $data here to pass to view
         $html = $view->render();
 
         PDF::writeHTML($html, true, false, false, false, '');
@@ -229,7 +231,26 @@ class Report extends Model
 
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.
-        //PDF::Output(__DIR__ . '/Time_Entry_Report.pdf', 'F');
         PDF::Output('Time_Entry_Report.pdf', 'I');
+    }
+
+    public static function createTimeEntryReportXLS($reportData){
+        $data = array('data' => $reportData);
+
+        Excel::create('Time_Entry_Report', function($excel) use($data) {
+            $excel->sheet('Detail', function($sheet) use($data) {
+                $sheet->loadView('timeEntryReportXLS', $data);
+            });
+        })->export('xls');
+    }
+
+    public static function createTimeEntryReportCSV($reportData){
+        $data = array('data' => $reportData);
+
+        Excel::create('Time_Entry_Report', function($excel) use($data) {
+            $excel->sheet('Detail', function($sheet) use($data) {
+                $sheet->loadView('timeEntryReportXLS', $data);
+            });
+        })->export('csv');
     }
 }

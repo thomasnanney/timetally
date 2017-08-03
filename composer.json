@@ -9,6 +9,7 @@
         "goat1000/svggraph": "^2.24",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
+        "maatwebsite/excel": "~2.1.0",
         "symfony/process": "^3.3",
         "twbs/bootstrap": "4.0.0-alpha.6"
     },
