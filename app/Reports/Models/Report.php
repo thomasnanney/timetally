@@ -149,8 +149,12 @@ class Report
                             'title' => $key,
                             'totalTime' => ($entry->sum('time') / 60),
                             'entries' => $entry->transform(function ($item, $k) {
-                                return ['description' => $item->description, 'time' => ($item->time / 60)];
-                            })->toArray()];
+                                return [
+                                    'date' => date('Y-m-d', strtotime($item->startTime)),
+                                    'description' => $item->description,
+                                    'time' => ($item->time / 60)];
+                            })->sortBy('date')->values()->toArray()
+                        ];
                     })->toArray()];
             })->toArray()];
         }else{
@@ -160,8 +164,12 @@ class Report
                 return [
                     'title' => $key,
                     'totalTime' => ($entry->sum('time') / 60),
-                    'entries' => $entry->transform(function($item, $k){
-                        return ['description' => $item->description, 'time' => ($item->time / 60)];})->toArray()
+                    'entries' => $entry->transform(function($item){
+                        return [
+                            'date' => date('Y-m-d', strtotime($item->startTime)),
+                            'description' => $item->description,
+                            'time' => ($item->time / 60)];
+                    })->sortBy('date')->values()->toArray()
                 ];
             })->toArray()];
         }

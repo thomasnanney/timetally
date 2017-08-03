@@ -42355,6 +42355,8 @@ var ReportListGroup = function (_Component) {
                             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 "li",
                                 { key: id },
+                                entry.date,
+                                " - ",
                                 entry.description,
                                 " ",
                                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -42618,7 +42620,6 @@ var StandardReportManager = function (_Component) {
         value: function getReportData() {
             var self = this;
             var data = this.state.params;
-            console.log(data);
             data.startDate = new Date(data.startDate).toUTCString();
             data.endDate = new Date(data.endDate).toUTCString();
             axios.post('/reports/getReport/standard', { data: data }).then(function (response) {
@@ -42626,7 +42627,9 @@ var StandardReportManager = function (_Component) {
                 data.endDate = new Date(data.endDate);
                 var newState = self.state;
                 newState.data = response.data;
-                self.setState(newState);
+                self.setState(newState, function () {
+                    console.log(self.state.data);
+                });
             }).catch(function (error) {
                 console.log(error);
             });

@@ -46,9 +46,11 @@ export default class ReportListGroup extends Component{
                             </div>
                             :
                             <div>
+                                {/*{console.log(this.props.data.entries)}*/}
                                 {
+
                                     this.state.expanded && this.props.data.entries.map((entry, id) => (
-                                        <li key={id}>{entry.description} <span className="list-item-time pull-right">{entry.time} hours</span></li>
+                                        <li key={id}>{entry.date} - {entry.description} <span className="list-item-time pull-right">{entry.time} hours</span></li>
                                     ))
                                 }
                             </div>

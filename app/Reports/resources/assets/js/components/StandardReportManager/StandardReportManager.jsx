@@ -45,7 +45,6 @@ export default class StandardReportManager extends Component{
     getReportData(){
         let self = this;
         let data = this.state.params;
-        console.log(data);
         data.startDate = new Date(data.startDate).toUTCString();
         data.endDate = new Date(data.endDate).toUTCString();
         axios.post('/reports/getReport/standard', {data: data})
@@ -54,7 +53,9 @@ export default class StandardReportManager extends Component{
                 data.endDate = new Date(data.endDate);
                 let newState = self.state;
                 newState.data = response.data;
-                self.setState(newState);
+                self.setState(newState, () => {
+                    console.log(self.state.data);
+                });
             })
             .catch(function(error){
                 console.log(error);
