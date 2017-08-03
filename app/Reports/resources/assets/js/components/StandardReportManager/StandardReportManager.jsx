@@ -130,26 +130,10 @@ export default class StandardReportManager extends Component{
             if(typeof data.payload[0] !== 'undefined'){
                 return (
                     <div className="raise pie-chart-tooltip">
-                        <font>{data.payload[0].value} Hours</font>
+                        <font>{data.payload[0].payload.name}</font>
+                        <br/>
+                        <font>{data.payload[0].payload.value} Hours</font>
                     </div>
-                )
-            }
-        };
-
-        const customLabel = (data) => {
-            if(typeof data.name !== 'undefined'){
-                return (
-                    <text fill={data.fill} stroke={data.stroke} x={data.x} y={data.y} alignmentBaseline="middle" className="recharts-text recharts-pie-label-text" textAnchor={data.textAnchor}><tspan x={data.x} dy="0em">{data.name}</tspan></text>
-                )
-            }
-        };
-
-        const customBarLabel = (data) => {
-            if(typeof data.payload !== 'undefined'){
-                return (
-                <g className="recharts-layer recharts-cartesian-axis-tick">
-                    <text width={data.width} height={data.height} x={data.x} y={data.y} stroke={data.stroke} fill={data.fill} className="recharts-text recharts-cartesian-axis-tick-value" textAnchor={data.textAnchor}><tspan x={data.payload.coordinate} dy="0.71em">{DateFormat(data.payload.value, "mm/dd/yy")}</tspan></text>
-                </g>
                 )
             }
         };
@@ -189,19 +173,25 @@ export default class StandardReportManager extends Component{
                             </div>
                         </div>
                         <ReportFilters updateReport={this.getReportData.bind(this)} updateFilters={this.updateFilters.bind(this)}/>
-                            <ResponsiveContainer minHeight={400}>
-                                <BarChart  width={600} height={300}
-                                           data={this.state.data.barData}
-                                           margin={{top: 5, right: 30, left: 20, bottom: 5}}
-                                >
-                                    <XAxis dataKey="name"/>
-                                    <YAxis/>
-                                    <CartesianGrid strokeDasharray="3 3"/>
-                                    <Tooltip content={customBarTooltip.bind(this)}/>
-                                    <Legend />
-                                    <Bar dataKey="value" fill="#0088FE" />
-                                </BarChart>
-                            </ResponsiveContainer>
+                        <div className="row">
+                            <div className="col-xs-12 text-center">
+                                <h3>Hours per day</h3>
+                                <ResponsiveContainer minHeight={400}>
+                                    <BarChart  width={600} height={300}
+                                               data={this.state.data.barData}
+                                               margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                                    >
+                                        <XAxis dataKey="name"/>
+                                        <YAxis/>
+                                        <CartesianGrid strokeDasharray="3 3"/>
+                                        <Tooltip content={customBarTooltip.bind(this)}/>
+                                        <Legend />
+                                        <Bar dataKey="value" fill="#0088FE" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
                         <div className="row">
                             <div className="col-xs-12 col-md-6">
                                 <p><strong>Total Hours:</strong> {this.state.data.totalTime} hours</p>
@@ -216,20 +206,22 @@ export default class StandardReportManager extends Component{
                             <div className="col-xs-12 col-md-7">
                                 <ReportList data={this.state.data} updateGroupings={this.updateGroupings.bind(this)} params={this.state.params}/>
                             </div>
-                            <div className="col-xs-12 col-md-5">
-                                <ResponsiveContainer minHeight={400}>
+                            <div className="col-xs-12 col-md-5 text-center">
+                                <h3>Hours per client</h3>
+                                <ResponsiveContainer minHeight={600}>
                                     <PieChart width={600} height={600}>
                                         <Pie
                                             data={this.state.data.pieData}
                                             outerRadius={150}
-                                            fill="#8884d8"
                                             dataKey="value"
-                                            label={customLabel.bind(this)}
+                                            label={false}
+                                            labelLine={false}
                                         >
                                             {
                                                 this.state.data.pieData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)
                                             }
                                         </Pie>
+                                        <Legend layout="vertical"/>
                                         <Tooltip content={customTooltip.bind(this)}/>
                                     </PieChart>
                                 </ResponsiveContainer>

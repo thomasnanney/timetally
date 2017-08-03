@@ -82,33 +82,13 @@ export default class ReportFilters extends Component{
                         <div className="drop search-bar">
                             <div className="row">
                                 <div className="col-xs-12 col-sm-4 col-md-2 border-right">
-                                    <div className="search-input full-width" onClick={() => this.toggleMenu('employeesMenu')}>Employees
-                                        {
-                                            this.state.employeesMenu
-                                                ? <i className="fa fa-chevron-up pull-right" aria-hidden="true"/>
-                                                : <i className="fa fa-chevron-down pull-right" aria-hidden="true"/>
-                                        }
-                                    </div>
-                                    <DropDownCheckList align="right" show={this.state.employeesMenu} collapse={this.toggleMenu.bind(this, 'employeesMenu')} updateInput={this.updateInput.bind(this, 'users')} data={this.state.users}/>
+                                    <DropDownCheckList updateInput={this.updateInput.bind(this, 'users')} data={this.state.users} triggerName="Employees"/>
                                 </div>
                                 <div className="col-xs-12 col-sm-4 col-md-2 border-right">
-                                    <div className="search-input full-width" onClick={() => this.toggleMenu('clientsMenu')}>Clients
-                                        {
-                                            this.state.clientsMenu
-                                                ? <i className="fa fa-chevron-up pull-right" aria-hidden="true"/>
-                                                : <i className="fa fa-chevron-down pull-right" aria-hidden="true"/>
-                                        }</div>
-                                    <DropDownCheckList align="right" show={this.state.clientsMenu} collapse={this.toggleMenu.bind(this, 'clientsMenu')} updateInput={this.updateInput.bind(this, 'clients')} data={this.state.clients}/>
+                                    <DropDownCheckList updateInput={this.updateInput.bind(this, 'clients')} data={this.state.clients} triggerName="Clients"/>
                                 </div>
                                 <div className="col-xs-12 col-sm-4 col-md-2 border-right">
-                                    <div className="search-input full-width" onClick={() => this.toggleMenu('projectsMenu')}>Projects
-                                        {
-                                            this.state.projectsMenu
-                                                ? <i className="fa fa-chevron-up pull-right" aria-hidden="true"/>
-                                                : <i className="fa fa-chevron-down pull-right" aria-hidden="true"/>
-                                        }
-                                    </div>
-                                    <DropDownCheckList align="right" show={this.state.projectsMenu} collapse={this.toggleMenu.bind(this, 'projectsMenu')} updateInput={this.updateInput.bind(this, 'projects')} data={this.state.projects}/>
+                                    <DropDownCheckList updateInput={this.updateInput.bind(this, 'projects')} data={this.state.projects} triggerName="Projects"/>
                                 </div>
                                 <div className="col-xs-12 col-md-4">
                                     <input type="search" className="search-input"/>
