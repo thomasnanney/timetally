@@ -35,7 +35,7 @@ export default class DropDownCheckList extends Component{
 
         return(
             <div tabIndex="0" onBlur={this.handleBlur.bind(this)} ref="self" className="full-width">
-                <div className={"tk-dropdown tk-root" + this.props.align + " " + (this.props.show ? 'active' : '')}>
+                <div className={"tk-dropdown tk-root " + this.props.align + " " + (this.props.show ? 'active' : '')}>
                     <div className="row">
                         <div className="col-xs-12">
                             <ul className="no-list-style no-padding list">
@@ -45,6 +45,7 @@ export default class DropDownCheckList extends Component{
                                         <label className="switch">
                                             <input type="checkbox"
                                                    name={id}
+                                                   value={item.value}
                                                    checked={item.selected}
                                                    onChange={this.props.updateInput}
                                             />

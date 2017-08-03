@@ -67,14 +67,10 @@ export default class ReportFilters extends Component{
     }
 
     updateInput(type, ele){
-        console.log(type);
-        console.log(ele.target.name);
-        console.log(ele.target.checked);
-        console.log(this.state);
         let newState = this.state;
         newState[type][ele.target.name].selected = ele.target.checked;
         this.setState(newState);
-        this.props.updateFilters(type, ele.target.name, ele.target.checked);
+        this.props.updateFilters(type, ele.target.value, ele.target.checked);
     }
 
     render(){

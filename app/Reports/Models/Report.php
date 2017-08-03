@@ -63,6 +63,9 @@ class Report
             }
         }
 
+//        var_dump(!is_null($userFilter));
+//        var_dump(!empty($userFilter));
+
         //Retrieve entries from DB
         $user = Auth::user();
         $workspace = $user->current_workspace_id;
@@ -75,14 +78,14 @@ class Report
             if (!is_null($projectFilter) && !empty($projectFilter)) {
                 $timeEntries->whereIn('projectID', $projectFilter);
             }
-            if (!is_null($userFilter) && !empty($userFilterFilter)) {
+            if (!is_null($userFilter) && !empty($userFilter)) {
                 $timeEntries->whereIn('userID', $userFilter);
             }
         });
 
         if(is_null($startDate) || is_null($endDate)){
             $startDate = Carbon::parse('Monday this week')->format('y-m-d');
-            $endDate = Carbon::parse('now')->format('y-m-d');
+            $endDate = Carbon::parse('Sunday this week')->format('y-m-d');
             $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }else{
             $startDate = Carbon::parse($startDate)->format('Y-m-d');
@@ -120,12 +123,24 @@ class Report
             $chartDate = date('Y-m-d', strtotime('+1 days', strtotime($chartDate )));
         }
 
-        $finalBarData = $finalBarData->union($paddedBarData)->values()->all();
+        $finalBarData = $finalBarData->union($paddedBarData)->sortBy(function($entry, $key){
+            return $key;
+        })->values();
 
         //get pie data
+        //get bar data
+        $finalPieData = $pieData->groupBy('clientID')->transform(function($entry){
+            return [
+                'name'=> $entry[0]->clientName,
+                'value' => $entry->sum('time')/60
+            ];
+        })->values();
+
 
         if ($subGroup) {
-            $timeEntries = ['groups' => $timeEntries->groupBy($groupField)->transform(function ($item, $key) use($subGroupField) {
+            $timeEntries = [
+                'totalTime' => ($timeEntries->sum('time')/60),
+                'groups' => $timeEntries->groupBy($groupField)->transform(function ($item, $key) use($subGroupField) {
                 return [
                     'title' => $key,
                     'totalTime' => $item->sum('time') / 60,
@@ -155,6 +170,7 @@ class Report
         $report = array_add($report, 'subGroup', $subGroup);
         $report = array_add($report, 'subGroupType', $subGroupBy);
         $report = array_add($report, 'barData', $finalBarData);
+        $report = array_add($report, 'pieData', $finalPieData);
 
         return $report;
 

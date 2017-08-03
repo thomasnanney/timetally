@@ -34,15 +34,6 @@ export default class StandardReportManager extends Component{
     componentWillMount(){
         // retrieve data
         this.getReportData();
-
-        let pieData = [
-            {name: 'Client 1', value: 40},
-            {name: 'Client 2', value: 30},
-            {name: 'Client 3', value: 90},
-            {name: 'Client 4', value: 5},
-        ];
-
-        this.setState({pieData: pieData});
     }
 
     toggleMenu(menu){
@@ -52,23 +43,17 @@ export default class StandardReportManager extends Component{
     }
 
     getReportData(){
-        console.log(this.state.params);
         let self = this;
-        axios.post('/reports/getReport/standard', {data: this.state.params})
+        let data = this.state.params;
+        console.log(data);
+        data.startDate = new Date(data.startDate).toUTCString();
+        data.endDate = new Date(data.endDate).toUTCString();
+        axios.post('/reports/getReport/standard', {data: data})
             .then(function(response){
-                console.log(response.data.data);
+                data.startDate = new Date(data.startDate);
+                data.endDate = new Date(data.endDate);
                 let newState = self.state;
-                newState.data = response.data.data;
-                console.log(response.data.data.barData);
-                newState.data.barData = response.data.data.barData.sort(function(a, b){
-                    console.log("COMPARING");
-                    console.log(new Date(a.name));
-                    console.log(new Date(b.name));
-                    console.log(new Date(a.name) > new Date(b.name));
-                    console.log("************************************");
-                   return new Date(a.name) > new Date(b.name);
-                });
-                console.log(newState.data.barData);
+                newState.data = response.data;
                 self.setState(newState);
             })
             .catch(function(error){
@@ -77,9 +62,6 @@ export default class StandardReportManager extends Component{
     }
 
     updateFilters(type, id, value){
-        console.log(type);
-        console.log(id);
-        console.log(value);
         let self = this;
         if(value){
             let newState = this.state;
@@ -162,6 +144,26 @@ export default class StandardReportManager extends Component{
             }
         };
 
+        const customBarLabel = (data) => {
+            if(typeof data.payload !== 'undefined'){
+                return (
+                <g className="recharts-layer recharts-cartesian-axis-tick">
+                    <text width={data.width} height={data.height} x={data.x} y={data.y} stroke={data.stroke} fill={data.fill} className="recharts-text recharts-cartesian-axis-tick-value" textAnchor={data.textAnchor}><tspan x={data.payload.coordinate} dy="0.71em">{DateFormat(data.payload.value, "mm/dd/yy")}</tspan></text>
+                </g>
+                )
+            }
+        };
+
+        const customBarTooltip = (data) => {
+            if(typeof data.payload[0] !== 'undefined'){
+                return (
+                    <div className="raise pie-chart-tooltip">
+                        <font>{data.payload[0].value} Hours</font>
+                    </div>
+                )
+            }
+        };
+
         return (
             <div>
                 {
@@ -176,31 +178,33 @@ export default class StandardReportManager extends Component{
                             <div className="col-xs-12">
                                 <div className={"start-date inline-block relative tk-dropdown-container "}>
                                     <label>From:  </label>
-                                    <input type="text" value={this.state.params.startDate ? DateFormat(this.state.params.startDate, "mm/dd/yy") : ''} className="tk-timer-input inline-block width-auto" onClick={ ()=>this.toggleMenu('isStartDateMenuActive')} placeholder="Start Date"/>
-                                    <DropDownDatePicker updateInput={this.updateParam.bind(this, 'startDate')} collapse={this.toggleMenu.bind(this, 'isStartDateMenuActive')} show={this.state.isStartDateMenuActive} align="align-right"/>
+                                    <input type="text" value={this.state.params.startDate ? DateFormat(this.state.params.startDate, "mm/dd/yy") : ''} className="tk-timer-input inline-block width-auto" onClick={ this.toggleMenu.bind(this, 'isStartDateMenuActive')} placeholder="Start Date" readOnly={true}/>
+                                    <DropDownDatePicker updateInput={this.updateParam.bind(this, 'startDate')} collapse={this.toggleMenu.bind(this, 'isStartDateMenuActive')} show={this.state.isStartDateMenuActive} align="align-right" date={this.state.params.startDate}/>
                                 </div>
                                 <div className={"start-date inline-block relative tk-dropdown-container "}>
                                     <label className="inline-block">To:  </label>
-                                    <input type="text" value={this.state.params.endDate ? DateFormat(this.state.params.endDate, "mm/dd/yy") : ''} className="tk-timer-input  inline-block width-auto" onClick={ ()=>this.toggleMenu('isEndDateMenuActive')} placeholder="End Date"/>
-                                    <DropDownDatePicker updateInput={this.updateParam.bind(this, 'endDate')} collapse={this.toggleMenu.bind(this, 'isEndDateMenuActive')} show={this.state.isEndDateMenuActive} align="align-right"/>
+                                    <input type="text" value={this.state.params.endDate ? DateFormat(this.state.params.endDate, "mm/dd/yy") : ''} className="tk-timer-input  inline-block width-auto" onClick={ this.toggleMenu.bind(this, 'isEndDateMenuActive')} placeholder="End Date" readOnly={true}/>
+                                    <DropDownDatePicker updateInput={this.updateParam.bind(this, 'endDate')} collapse={this.toggleMenu.bind(this, 'isEndDateMenuActive')} show={this.state.isEndDateMenuActive} align="align-right" date={this.state.params.endDate}/>
                                 </div>
                             </div>
                         </div>
                         <ReportFilters updateReport={this.getReportData.bind(this)} updateFilters={this.updateFilters.bind(this)}/>
                             <ResponsiveContainer minHeight={400}>
-                                <BarChart  width={600} height={300} data={this.state.data.barData}
-                                          margin={{top: 5, right: 30, left: 20, bottom: 5}}>
+                                <BarChart  width={600} height={300}
+                                           data={this.state.data.barData}
+                                           margin={{top: 5, right: 30, left: 20, bottom: 5}}
+                                >
                                     <XAxis dataKey="name"/>
                                     <YAxis/>
                                     <CartesianGrid strokeDasharray="3 3"/>
-                                    <Tooltip/>
+                                    <Tooltip content={customBarTooltip.bind(this)}/>
                                     <Legend />
-                                    <Bar dataKey="value" fill="#8884d8" />
+                                    <Bar dataKey="value" fill="#0088FE" />
                                 </BarChart>
                             </ResponsiveContainer>
                         <div className="row">
                             <div className="col-xs-12 col-md-6">
-                                <p>Total Hours: {this.state.data.totalTime}</p>
+                                <p><strong>Total Hours:</strong> {this.state.data.totalTime} hours</p>
                             </div>
                             <div className="col-xs-12 col-md-6 text-right">
                                 <button><i className="fa fa-file-pdf-o" aria-hidden="true"/>  PDF</button>
@@ -216,13 +220,14 @@ export default class StandardReportManager extends Component{
                                 <ResponsiveContainer minHeight={400}>
                                     <PieChart width={600} height={600}>
                                         <Pie
-                                            data={this.state.pieData}
+                                            data={this.state.data.pieData}
                                             outerRadius={150}
                                             fill="#8884d8"
+                                            dataKey="value"
                                             label={customLabel.bind(this)}
                                         >
                                             {
-                                                this.state.pieData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)
+                                                this.state.data.pieData.map((entry, index) => <Cell key={index} fill={COLORS[index % COLORS.length]} />)
                                             }
                                         </Pie>
                                         <Tooltip content={customTooltip.bind(this)}/>
@@ -239,10 +244,12 @@ export default class StandardReportManager extends Component{
 
 function getStartDate(){
     let today = new Date();
+    today.setHours(0,0,0,0);
     return today.setDate(today.getDate()-(today.getDay() - 1));
 }
 
 function getEndDate(){
     let today = new Date();
+    today.setHours(0,0,0,0);
     return today.setDate(today.getDate()+(7-today.getDay()));
 }

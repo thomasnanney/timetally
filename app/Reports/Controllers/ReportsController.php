@@ -33,7 +33,7 @@ class ReportsController extends Controller
 
         $report = Report::generateReportData($data);
 
-        return response()->json(['data' => $report]);
+        return response()->json($report);
 
 
     }

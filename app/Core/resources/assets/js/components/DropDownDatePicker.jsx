@@ -22,17 +22,13 @@ export default class DropDownDatePicker extends Component{
     }
 
     componentDidUpdate(){
-        console.log("Firing update");
         if(this.props.show){
             ReactDOM.findDOMNode(this).focus();
         }
     }
 
     handleDayClick(day){
-        let self = this;
-        this.setState({selectedDay: day}, () => {
-            self.props.updateInput(self.state.selectedDay.toDateString());
-        });
+        this.props.updateInput(day);
     }
 
     handleBlur(e) {
@@ -51,7 +47,7 @@ export default class DropDownDatePicker extends Component{
                 <div className={"date-picker tk-dropdown tk-root " + this.props.align + " " + (this.props.show ? 'active' : '')}>
                     <div className="row">
                         <div className="col-xs-12">
-                            <DayPicker onDayClick={this.handleDayClick.bind(this)} selectedDays={this.state.selectedDay}/>
+                            <DayPicker onDayClick={this.handleDayClick.bind(this)} selectedDays={this.props.date}/>
                         </div>
                     </div>
                 </div>

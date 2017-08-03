@@ -32,7 +32,7 @@ export default class ReportListGroup extends Component{
                         : <i className="fa fa-plus-square-o clickable" aria-hidden="true" onClick={() => this.toggleExpand()}/>
                 }
                 {" " + this.props.data.title}
-                <span className="list-item-time pull-right"><strong><u>{this.props.data.totalTime}</u></strong></span>
+                <span className="list-item-time pull-right"><strong><u>{this.props.data.totalTime} hours</u></strong></span>
                 <ul className="no-list-style">
                     {
                         this.props.data.subGroups
@@ -48,7 +48,7 @@ export default class ReportListGroup extends Component{
                             <div>
                                 {
                                     this.state.expanded && this.props.data.entries.map((entry, id) => (
-                                        <li key={id}>{entry.description} <span className="list-item-time pull-right">{entry.time}</span></li>
+                                        <li key={id}>{entry.description} <span className="list-item-time pull-right">{entry.time} hours</span></li>
                                     ))
                                 }
                             </div>
