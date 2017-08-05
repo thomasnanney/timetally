@@ -6,19 +6,24 @@ export default class WorkspaceSettingsPane extends Component {
     constructor(props) {
         super(props);
         this.state ={
-
+            workspace: tk.workspace
         };
     }
 
-    componentDidMount() {
+    componentWillMount(){
+        //get all users, get all projects and get all clients
 
     }
 
-    componentWillUnmount() {
-
+    updateInput(evt){
+        let newState = this.state;
+        newState.workspace[evt.target.name] = evt.target.value;
+        this.setState(newState);
     }
 
     render() {
+
+        console.log(this.state.workspace);
 
         return (
             <div>
@@ -30,7 +35,13 @@ export default class WorkspaceSettingsPane extends Component {
                                 <div className="row">
                                     <div className="col-xs-12 ">
                                         <label>Workspace Name:</label>
-                                        <input type="text" className="tk-form-input"></input>
+                                        <input
+                                            type="text"
+                                            className="tk-form-input"
+                                            name="name"
+                                            value={this.state.workspace.name}
+                                            onChange={this.updateInput.bind(this)}
+                                        />
                                     </div>
                                 </div>
                             </div>

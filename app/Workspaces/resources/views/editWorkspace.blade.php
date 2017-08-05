@@ -14,3 +14,10 @@
 @section('js')
 
 @endsection
+
+@section('vars')
+    <script>
+        var tk = {};
+        tk.workspace = {!! json_encode($workspace) !!};
+    </script>
+@endsection

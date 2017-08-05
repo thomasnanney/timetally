@@ -61,14 +61,22 @@ export default class AddWorkspaceWizard extends Component {
     }
 
     addWorkspace(){
+        let self = this;
         if(this.state.error){
             alert("You must fix the errors before saving");
             return;
         }else{
-            this.setState((prevState, props) => ({
-                step: 1,
-            }));
-            this.props.updateWorkspaces();
+            axios.post('/workspaces/create', {
+                data: {
+                    name: self.state.name                },
+                users: self.state.users
+            }).then(function(response){
+                self.setState({step: 1});
+                self.props.updateWorkspaces();
+            }).catch(function(error){
+                console.log(error);
+                alert("There was an error creating your workspace, please try reloading the page.");
+            });
         }
     }
 
@@ -110,7 +118,7 @@ export default class AddWorkspaceWizard extends Component {
                             return (
                                 <div>
                                     <p>Give your workspace a name</p>
-                                    <input type="text" className="tk-form-input" value={this.state.name} placeholder="Workspace name..." onChange={this.setName}></input>
+                                    <input type="text" className="tk-form-input" value={this.state.name} placeholder="Workspace name..." onChange={this.setName}/>
                                     <button onClick={this.nextStep} className="btn tk-btn">Continue</button>
                                 </div >
                             );
@@ -120,7 +128,7 @@ export default class AddWorkspaceWizard extends Component {
                                     <p>Add Users</p>
                                     {
                                         this.state.users.map((user, id) => (
-                                            <input type="text" className="tk-form-input" placeholder="User's Email..." value={this.state.users[id]} onChange={this.updateUserName.bind(this, id)}></input>
+                                            <input type="text" className="tk-form-input" placeholder="User's Email..." value={this.state.users[id]} onChange={this.updateUserName.bind(this, id)}/>
                                         ))
                                     }
                                     <button onClick={this.addUserField} className="btn tk-btn">Add User</button>

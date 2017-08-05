@@ -6,6 +6,7 @@ use App\Workspaces\Models\Workspace;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Clients\Models\Client;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -85,5 +86,12 @@ class User extends Authenticatable
 
     public function queryTimeEntriesByWorkspace($workspaceId){
         return $this->queryTimeEntries()->where('workspaceID', $workspaceId);
+    }
+
+    public function isAdmin(){
+        return DB::table('user_workspace_pivot')
+            ->where('userID', '=', $this->id)
+            ->where('workspaceID', '=', $this->current_workspace_id)
+            ->value('admin');
     }
 }

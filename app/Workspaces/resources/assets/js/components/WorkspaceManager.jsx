@@ -14,7 +14,6 @@ class WorkspaceManager extends Component {
             workspaces: {}
         };
 
-        this.addWorkspace = this.addWorkspace.bind(this);
     }
 
     componentWillMount(){
@@ -34,10 +33,10 @@ class WorkspaceManager extends Component {
         let self = this;
         axios.post('/users/getAllWorkspaces')
             .then(function(response){
-                console.log(response);
                 self.setState({workspaces: response.data});
             })
             .catch(function(response){
+                console.log(response);
                 alert("We were unable to retrieve all of your workspaces.  Please reload the page or contact your" +
                     " System Administrator.");
             });

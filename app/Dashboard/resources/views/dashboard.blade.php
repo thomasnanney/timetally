@@ -6,6 +6,11 @@
 @endsection
 
 @section('content')
+    @if (session('warning'))
+        <div class="error-box error text-center">
+            {{ session('warning') }}
+        </div>
+    @endif
     <div class="row">
         <div class="timer-container col-xs-12">
             <h1>Dashboard</h1>

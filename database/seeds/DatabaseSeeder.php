@@ -42,10 +42,10 @@ class DatabaseSeeder extends Seeder
         foreach($workspaces as $workspace){
 //            var_dump($workspace);
             //attach primary user
-            $workspace->queryUsers()->attach($primaryUser->id);
+            $workspace->queryUsers()->attach($primaryUser->id, ['admin' => 1]);
             //attach sub users
             foreach($subUsers as $user){
-                $workspace->queryUsers()->attach($user->id);
+                $workspace->queryUsers()->attach($user->id, ['admin' => 0]);
             }
             //attach clients
             foreach($clients as $client){

@@ -44366,20 +44366,31 @@ var WorkspaceSettingsPane = function (_Component) {
 
         var _this = _possibleConstructorReturn(this, (WorkspaceSettingsPane.__proto__ || Object.getPrototypeOf(WorkspaceSettingsPane)).call(this, props));
 
-        _this.state = {};
+        _this.state = {
+            workspace: tk.workspace
+        };
         return _this;
     }
 
     _createClass(WorkspaceSettingsPane, [{
-        key: "componentDidMount",
-        value: function componentDidMount() {}
+        key: "componentWillMount",
+        value: function componentWillMount() {
+            //get all users, get all projects and get all clients
+
+        }
     }, {
-        key: "componentWillUnmount",
-        value: function componentWillUnmount() {}
+        key: "updateInput",
+        value: function updateInput(evt) {
+            var newState = this.state;
+            newState.workspace[evt.target.name] = evt.target.value;
+            this.setState(newState);
+        }
     }, {
         key: "render",
         value: function render() {
             var _this2 = this;
+
+            console.log(this.state.workspace);
 
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 "div",
@@ -44401,7 +44412,13 @@ var WorkspaceSettingsPane = function (_Component) {
                                             null,
                                             "Workspace Name:"
                                         ),
-                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", { type: "text", className: "tk-form-input" })
+                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement("input", {
+                                            type: "text",
+                                            className: "tk-form-input",
+                                            name: "name",
+                                            value: _this2.state.workspace.name,
+                                            onChange: _this2.updateInput.bind(_this2)
+                                        })
                                     )
                                 )
                             );
@@ -44581,7 +44598,6 @@ var WorkspaceManager = function (_Component) {
             workspaces: {}
         };
 
-        _this.addWorkspace = _this.addWorkspace.bind(_this);
         return _this;
     }
 
@@ -44601,9 +44617,9 @@ var WorkspaceManager = function (_Component) {
         value: function getWorkspaces() {
             var self = this;
             axios.post('/users/getAllWorkspaces').then(function (response) {
-                console.log(response);
                 self.setState({ workspaces: response.data });
             }).catch(function (response) {
+                console.log(response);
                 alert("We were unable to retrieve all of your workspaces.  Please reload the page or contact your" + " System Administrator.");
             });
         }
@@ -44758,16 +44774,22 @@ var AddWorkspaceWizard = function (_Component) {
     }, {
         key: 'addWorkspace',
         value: function addWorkspace() {
+            var self = this;
             if (this.state.error) {
                 alert("You must fix the errors before saving");
                 return;
             } else {
-                this.setState(function (prevState, props) {
-                    return {
-                        step: 1
-                    };
+                axios.post('/workspaces/create', {
+                    data: {
+                        name: self.state.name },
+                    users: self.state.users
+                }).then(function (response) {
+                    self.setState({ step: 1 });
+                    self.props.updateWorkspaces();
+                }).catch(function (error) {
+                    console.log(error);
+                    alert("There was an error creating your workspace, please try reloading the page.");
                 });
-                this.props.updateWorkspaces();
             }
         }
     }, {

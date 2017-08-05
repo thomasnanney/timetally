@@ -4,7 +4,7 @@ namespace App\Workspaces\Controllers;
 
 use App\Workspaces\Models\Workspace;
 use App\Core\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -30,8 +30,9 @@ class WorkspacesController extends Controller
         return view('workspaces');
     }
 
-    public function getEdit(){
-        return view('editWorkspace');
+    public function getEdit(Workspace $workspace){
+
+        return view('editWorkspace', ['workspace' => $workspace]);
     }
 
     public function postEdit(Request $request, Workspace $workspace)
@@ -63,9 +64,9 @@ class WorkspacesController extends Controller
     }
 
     public function postCreate(Request $request) {
-
         // validate info
         $data = $request->input('data');
+        $data['ownerID'] = Auth::id();
 
         $v = Workspace::validate($data);
 
@@ -75,14 +76,15 @@ class WorkspacesController extends Controller
                 'errors' => $v->errors(),
             ]);
         }
+        // workspace information
+        $workspace = Workspace::create($data);
 
         //attach the current user since they created the workspace;
+        $workspace->attachAdminUser(Auth::id());
 
         $users = $request->input('users');
         //add users to workspace
-
-        // workspace information
-        Workspace::create($data);
+        $workspace->inviteUsersByEmail($users);
 
         return response()->json([
            'status' => 'success',

@@ -40,7 +40,7 @@ class Workspace extends Model
         $rules = array(
             'name' => 'required|string|min:1',
             'description' => 'nullable|string|min:1',
-            'ownerId' => 'sometimes|required|int',
+            'ownerId' => 'sometimes|required|int|exists:users',
             'organizationID' => 'sometimes|required|int'
         );
 
@@ -50,7 +50,8 @@ class Workspace extends Model
         
     }
 
-    public function addUsers($users){
+    public function inviteUsersByEmail($users){
+
         foreach($users as $userEmail){
             //see if user exists
             $user = User::where('email', $userEmail);
