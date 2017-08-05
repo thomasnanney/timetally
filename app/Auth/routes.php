@@ -14,3 +14,5 @@ Route::get('password/reset', 'ForgotPasswordController@showLinkRequestForm')->na
 Route::post('password/email', 'ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 Route::get('password/reset/{token}', 'ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'ResetPasswordController@reset');
+Route::get('password/edit', 'ChangePasswordController@showChangeForm')->name('password.change');
+Route::post('password/edit', 'ChangePasswordController@changePassword');

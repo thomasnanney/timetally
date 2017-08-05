@@ -3,6 +3,7 @@
 namespace App\Auth\Controllers;
 
 use App\Users\Models\User;
+use App\Workspaces\Models\Workspace;
 use App\Core\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -48,7 +49,8 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'lastname => required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -62,11 +64,24 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
+
+
+        $user = User::create([
+            'name' => $data['firstname'] . " " . $data['lastname'],
             'email' => $data['email'],
+            'current_workspace_id' => 0,
             'password' => bcrypt($data['password']),
         ]);
+
+        $workspace = Workspace::create([
+            'title' => $data['firstname'] . "'s Worskpace",
+            'ownerID' => $user->id,
+            'description' => 'Please edit this description',
+        ]);
+
+        $user->current_workspace_id = $workspace->id;
+        $user->save();
+        return $user;
     }
 
     /**
