@@ -61,19 +61,6 @@ export default class DropDownCheckList extends Component{
                     <div className="tk-arrow"></div>
                 </DropdownContent>
             </Dropdown>
-            // <div tabIndex="0" onBlur={this.handleBlur.bind(this)} ref="self" className="full-width">
-            //
-            //     <div className={"tk-dropdown tk-root " + this.props.align + " " + (this.props.show ? 'active' : '')}>
-            //         <div className="row">
-            //             <div className="col-xs-12">
-            //                 <
-            //                 }
-            //                 </ul>
-            //             </div>
-            //         </div>
-            //     </div>
-            //
-            // </div>
         );
     }
 }

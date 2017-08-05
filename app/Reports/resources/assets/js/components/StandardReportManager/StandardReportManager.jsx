@@ -4,7 +4,6 @@ import ReactLoading from 'react-loading';
 import ReportFilters from './ReportsFilters';
 import ReportList from './ReportList';
 import DropDownDatePicker from 'core/DropDownDatePicker';
-import DateFormat from 'dateformat';
 import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
 import {PieChart, Pie, Sector, Cell } from 'recharts';
 
@@ -161,15 +160,11 @@ export default class StandardReportManager extends Component{
                     <div>
                         <div className="row">
                             <div className="col-xs-12">
-                                <div className={"start-date inline-block relative tk-dropdown-container "}>
-                                    <label>From:  </label>
-                                    <input type="text" value={this.state.params.startDate ? DateFormat(this.state.params.startDate, "mm/dd/yy") : ''} className="tk-timer-input inline-block width-auto" onClick={ this.toggleMenu.bind(this, 'isStartDateMenuActive')} placeholder="Start Date" readOnly={true}/>
-                                    <DropDownDatePicker updateInput={this.updateParam.bind(this, 'startDate')} collapse={this.toggleMenu.bind(this, 'isStartDateMenuActive')} show={this.state.isStartDateMenuActive} align="align-right" date={this.state.params.startDate}/>
+                                <div className={"start-date inline-block"}>
+                                    <DropDownDatePicker updateInput={this.updateParam.bind(this, 'startDate')} date={this.state.params.startDate} triggerLabel="From:  "/>
                                 </div>
-                                <div className={"start-date inline-block relative tk-dropdown-container "}>
-                                    <label className="inline-block">To:  </label>
-                                    <input type="text" value={this.state.params.endDate ? DateFormat(this.state.params.endDate, "mm/dd/yy") : ''} className="tk-timer-input  inline-block width-auto" onClick={ this.toggleMenu.bind(this, 'isEndDateMenuActive')} placeholder="End Date" readOnly={true}/>
-                                    <DropDownDatePicker updateInput={this.updateParam.bind(this, 'endDate')} collapse={this.toggleMenu.bind(this, 'isEndDateMenuActive')} show={this.state.isEndDateMenuActive} align="align-right" date={this.state.params.endDate}/>
+                                <div className={"start-date inline-block"}>
+                                    <DropDownDatePicker updateInput={this.updateParam.bind(this, 'endDate')} date={this.state.params.endDate} triggerLabel="To:  "/>
                                 </div>
                             </div>
                         </div>
