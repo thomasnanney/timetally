@@ -6,7 +6,14 @@
 @endsection
 
 @section('content')
-    <div id="reportManager"></div>
+    <div class="row">
+        <div class="col-xs-12 payroll-report">
+            <h2> <a href="/reports/getReportPDF">PDF report</a></h2>
+            <h2> <a href="/reports/getReportXLS">Excel report</a></h2>
+            <h2> <a href="/reports/getReportCSV">CSV report</a></h2>
+        </div>
+    </div>
+    {{--<div id="reportManager"></div>--}}
 @endsection
 
 

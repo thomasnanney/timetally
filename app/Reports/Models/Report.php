@@ -12,7 +12,7 @@ use PHPExcel_Worksheet_Drawing;
 
 class Report extends Model
 {
-    public static function generateReport($data){
+    public static function generateReportData($data){
         $clientFilter = $data['filters']['clients'];
         $projectFilter = $data['filters']['projects'];
         $userFilter = $data['filters']['users'];
@@ -21,6 +21,8 @@ class Report extends Model
         $groupBy = $data['groupBy'];
         $subGroup = $data['subGroup'];
         $subGroupBy = $data['subGroupBy'];
+        $reportType = $data['reportType'];
+
         //figure out keys to filter and order by
         $groupField = '';
         $groupKey = '';
@@ -38,6 +40,7 @@ class Report extends Model
                 $groupKey = 'projectID';
                 break;
         }
+
         if($subGroup){
             $subGroupField = '';
             $subGroupKey = '';
@@ -56,9 +59,14 @@ class Report extends Model
                     break;
             }
         }
+
+//        var_dump(!is_null($userFilter));
+//        var_dump(!empty($userFilter));
+
         //Retrieve entries from DB
         $user = Auth::user();
         $workspace = $user->current_workspace_id;
+
         $timeEntries = DB::table('timereports')->select('*')->where('workspaceID', $workspace);
         $timeEntries->where(function ($timeEntries) use ($clientFilter, $projectFilter, $userFilter) {
             if (!is_null($clientFilter) && !empty($clientFilter)) {
@@ -67,13 +75,14 @@ class Report extends Model
             if (!is_null($projectFilter) && !empty($projectFilter)) {
                 $timeEntries->whereIn('projectID', $projectFilter);
             }
-            if (!is_null($userFilter) && !empty($userFilterFilter)) {
+            if (!is_null($userFilter) && !empty($userFilter)) {
                 $timeEntries->whereIn('userID', $userFilter);
             }
         });
+
         if(is_null($startDate) || is_null($endDate)){
             $startDate = Carbon::parse('Monday this week')->format('y-m-d');
-            $endDate = Carbon::parse('now')->format('y-m-d');
+            $endDate = Carbon::parse('Sunday this week')->format('y-m-d');
             $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }else{
             $startDate = Carbon::parse($startDate)->format('Y-m-d');
@@ -85,9 +94,11 @@ class Report extends Model
         }else{
             $timeEntries = $timeEntries->orderBy($groupField, 'asc')->get();
         }
+
         //clone collection to prepare bar adn pie data as well
         $barData = clone $timeEntries;
         $pieData = clone $timeEntries;
+
         //get bar data
         $finalBarData = $barData->groupBy(function($entry, $key){
             return date('Y-m-d', strtotime($entry->startTime));
@@ -97,6 +108,7 @@ class Report extends Model
                 'value' => $entry->sum('time')/60
             ];
         });
+
         $paddedBarData = collect();
         $chartDate = date('Y-m-d', strtotime('+1 days', strtotime($startDate)));
         while(strtotime($chartDate) <= strtotime($endDate)){
@@ -107,22 +119,41 @@ class Report extends Model
             $paddedBarData->put($chartDate, $data);
             $chartDate = date('Y-m-d', strtotime('+1 days', strtotime($chartDate )));
         }
-        $finalBarData = $finalBarData->union($paddedBarData)->values()->all();
+
+        $finalBarData = $finalBarData->union($paddedBarData)->sortBy(function($entry, $key){
+            return $key;
+        })->values();
+
         //get pie data
+        //get bar data
+        $finalPieData = $pieData->groupBy('clientID')->transform(function($entry){
+            return [
+                'name'=> $entry[0]->clientName,
+                'value' => $entry->sum('time')/60
+            ];
+        })->values();
+
+
         if ($subGroup) {
-            $timeEntries = ['groups' => $timeEntries->groupBy($groupField)->transform(function ($item, $key) use($subGroupField) {
-                return [
-                    'title' => $key,
-                    'totalTime' => $item->sum('time') / 60,
-                    'subGroups' => $item->groupBy($subGroupField)->transform(function ($entry, $key) {
-                        return [
-                            'title' => $key,
-                            'totalTime' => ($entry->sum('time') / 60),
-                            'entries' => $entry->transform(function ($item, $k) {
-                                return ['description' => $item->description, 'time' => ($item->time / 60)];
-                            })->toArray()];
-                    })->toArray()];
-            })->toArray()];
+            $timeEntries = [
+                'totalTime' => ($timeEntries->sum('time')/60),
+                'groups' => $timeEntries->groupBy($groupField)->transform(function ($item, $key) use($subGroupField) {
+                    return [
+                        'title' => $key,
+                        'totalTime' => $item->sum('time') / 60,
+                        'subGroups' => $item->groupBy($subGroupField)->transform(function ($entry, $key) {
+                            return [
+                                'title' => $key,
+                                'totalTime' => ($entry->sum('time') / 60),
+                                'entries' => $entry->transform(function ($item, $k) {
+                                    return [
+                                        'date' => date('Y-m-d', strtotime($item->startTime)),
+                                        'description' => $item->description,
+                                        'time' => ($item->time / 60)];
+                                })->sortBy('date')->values()->toArray()
+                            ];
+                        })->toArray()];
+                })->toArray()];
         }else{
             $timeEntries = [
                 'totalTime' => ($timeEntries->sum('time') / 60),
@@ -130,31 +161,76 @@ class Report extends Model
                     return [
                         'title' => $key,
                         'totalTime' => ($entry->sum('time') / 60),
-                        'entries' => $entry->transform(function($item, $k){
-                            return ['description' => $item->description, 'time' => ($item->time / 60)];})->toArray()
+                        'entries' => $entry->transform(function($item){
+                            return [
+                                'date' => date('Y-m-d', strtotime($item->startTime)),
+                                'description' => $item->description,
+                                'time' => ($item->time / 60)];
+                        })->sortBy('date')->values()->toArray()
                     ];
                 })->toArray()];
         }
+
         $report = array_add($timeEntries, 'groupByType', $groupBy);
         $report = array_add($report, 'subGroup', $subGroup);
         $report = array_add($report, 'subGroupType', $subGroupBy);
         $report = array_add($report, 'barData', $finalBarData);
+        $report = array_add($report, 'pieData', $finalPieData);
+        $report = array_add($report, 'reportType', $reportType);
+
         return $report;
+
     }
 
-    public static function createTimeEntryReportPDF($reportData)
+    public static function createPDF($reportData)
     {
+
+        $titles = array();
+        switch($reportData['reportType']) {
+            case 'timeEntry':
+                $titles = [
+                    'reportTitle' => 'Time Entry Report',
+                    'barReportTitle' => 'Hours By Day',
+                    'barAxisTitles' => [
+                        'y' => 'Number of Hours',
+                        'x' => 'Date'
+                    ],
+                    'pieReportTitle' => 'Hours By Employee'
+                ];
+                break;
+            case 'billableRatePerEmployee':
+                $titles = [
+                    'reportTitle' => 'Billable Rate Per Employee Report',
+                    'barReportTitle' => 'Cost by Day',
+                    'barAxisTitles' => [
+                        'y' => 'Cost',
+                        'x' => 'Date'
+                    ],
+                    'pieReportTitle' => ''
+                ];
+                break;
+            default:
+                $titles = [
+                    'reportTitle' => 'No Report Type Specified',
+                    'barReportTitle' => '',
+                    'barAxisTitles' => [
+                        'y' => '',
+                        'x' => ''
+                    ],
+                    'pieReportTitle' => ''
+                ];
+        }
+
         // set document information
-        PDF::SetAuthor('Org Name');
-        PDF::SetTitle('Time Entry Report');
-        PDF::SetSubject('Employee Hours');
+        PDF::SetAuthor('TimeKeeper');
+        PDF::SetTitle($titles['reportTitle']);
 
         // set custom header and footer data
-        PDF::setHeaderCallback(function ($pdf) {
+        PDF::setHeaderCallback(function ($pdf) use($titles) {
             // Set font
             $pdf->SetFont('helvetica', 'B', 20);
             // Title
-            $pdf->Cell(0, 10, 'Time Entry Report', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+            $pdf->Cell(0, 10, $titles['reportTitle'], 0, false, 'C', 0, '', 0, false, 'M', 'M');
             //separator line
             $style = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0));
             $pdf->Line(10, 12, 200, 12, $style);
@@ -192,38 +268,27 @@ class Report extends Model
         // ----------------------------------------------------------
 
         /*
-         * Create Bar graph
+         * Create Bar Graph
          */
-        $bars = array();
-        foreach($reportData['barData'] as $values) {
-            $bars[$values['name']] = $values['value'];
-        }
-
         PDF::AddPage();
-        $settings = array(
-            'graph_title' => 'Time Entry By Day',
-            'graph_title_font_size' => 25,
-            'label_v' => 'Number of Hours',
-            'label_h' => 'Date',
-            'label_font_size' => 20,
-            'label_space' => 20
-        );
-        $graph = new SVGGraph(950, 500, $settings);
-        $graph->colours = array('#75a3a3');
-        $graph->Values($bars);
-        $output = $graph->Fetch('BarGraph');
-
-        PDF::ImageSVG('@' . $output, $x=7, $y=20, $w='', $h=100, $link='', $align='', $palign='', $border=0, $fitonpage=false);
+        $barOutput = Report::createBarGraph($reportData['barData'], $titles);
+        PDF::ImageSVG('@' . $barOutput, $x=6, $y=20, $w='', $h=100, $link='', $align='', $palign='', $border=0, $fitonpage=false);
 
         /*
-         * Create data tables
+         * Create Pie Chart
+         */
+        $pieOutput = Report::createPieChart($reportData['pieData'], $titles);
+        PDF::ImageSVG('@' . $pieOutput, $x=10, $y=140, $w='', $h=100, $link='', $align='', $palign='', $border=0, $fitonpage=false);
+
+        /*
+         * Create data table
          */
         $data = array('data' => $reportData);
 
         PDF::AddPage();
         PDF::setPage(2, true);
         PDF::SetTextColor(0,0,0);
-        $view = view('timeEntryReportPDF')->with($data); //add $data here to pass to view
+        $view = view('reportPDF')->with($data); //add $data here to pass to view
         $html = $view->render();
 
         PDF::writeHTML($html, true, false, false, false, '');
@@ -231,25 +296,83 @@ class Report extends Model
 
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.
-        PDF::Output('Time_Entry_Report.pdf', 'I');
+        PDF::Output($titles['reportTitle'].'.pdf', 'I');
     }
 
-    public static function createTimeEntryReportXLS($reportData){
+    public static function createBarGraph($barData, $titles){
+        $bars = array();
+        foreach($barData as $values) {
+            $bars[$values['name']] = $values['value'];
+        }
+
+        $settings = array(
+            'graph_title' => $titles['reportTitle'],
+            'graph_title_font_size' => 25,
+            'label_v' => $titles['barAxisTitles']['y'],
+            'label_h' => $titles['barAxisTitles']['x'],
+            'label_font_size' => 20,
+            'label_space' => 20
+        );
+        $graph = new SVGGraph(950, 500, $settings);
+        $graph->colours = array('#75a3a3');
+        $graph->Values($bars);
+
+        return $graph->Fetch('BarGraph');
+
+    }
+
+    public static function createPieChart($pieData, $titles){
+        $slices = array();
+        foreach($pieData as $values) {
+            $slices[$values['name']] = $values['value'];
+        }
+
+        $settings = array(
+            'back_colour' => '#eee',
+            'stroke_colour' => '#000',
+            'back_stroke_width' => 0,
+            'back_stroke_colour' => '#eee',
+            'pad_right' => 20,
+            'pad_left' => 20,
+            'link_base' => '/',
+            'link_target' => '_top',
+            'show_labels' => true,
+            'show_label_amount' => true,
+            'label_font' => 'Georgia',
+            'label_font_size' => '17',
+            'label_colour' => '#000',
+            'sort' => false,
+            'graph_title' => $titles['pieReportTitle'],
+            'graph_title_font_size' => 25,
+            'label_position' => 0.6,
+            'depth' => 20
+        );
+        $colours = array('#ccf','#699','#93c','#996','#f39','#0f3','#339');
+
+        $graph = new SVGGraph(950, 500, $settings);
+        $graph->colours = $colours;
+        $graph->Values($slices);
+
+        return $graph->Fetch('Pie3DGraph');
+
+    }
+
+    public static function createReportXLS($reportData){
         $data = array('data' => $reportData);
 
-        Excel::create('Time_Entry_Report', function($excel) use($data) {
+        Excel::create($reportData['reportType'], function($excel) use($data) {
             $excel->sheet('Detail', function($sheet) use($data) {
-                $sheet->loadView('timeEntryReportXLS', $data);
+                $sheet->loadView('reportXLS', $data);
             });
         })->export('xls');
     }
 
-    public static function createTimeEntryReportCSV($reportData){
+    public static function createReportCSV($reportData){
         $data = array('data' => $reportData);
 
-        Excel::create('Time_Entry_Report', function($excel) use($data) {
+        Excel::create($reportData['reportType'], function($excel) use($data) {
             $excel->sheet('Detail', function($sheet) use($data) {
-                $sheet->loadView('timeEntryReportXLS', $data);
+                $sheet->loadView('reportXLS', $data);
             });
         })->export('csv');
     }
