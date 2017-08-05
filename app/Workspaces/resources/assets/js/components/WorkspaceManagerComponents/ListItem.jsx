@@ -7,25 +7,6 @@ export default class ListItem extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            active: false,
-        };
-
-        this.handleClick = this.handleClick.bind(this);
-    }
-
-    componentDidMount() {
-
-    }
-
-    componentWillUnmount() {
-
-    }
-
-    handleClick(){
-        this.setState((prevState, props) => ({
-            active: !prevState.active,
-        }));
     }
 
     render() {
@@ -34,19 +15,18 @@ export default class ListItem extends Component {
                 name: 'Settings',
                 link: '/workspaces/edit/' + this.props.workspace.id
             },
-            {
-                name: 'Leave',
-                link: '/workspaces/removeUser'
-            }
+            // {
+            //     name: 'Leave',
+            //     link: '/workspaces/removeUser'
+            // }
         ];
 
         return (
             <div className="thin-border-bottom table-row">
-                <div className={"table-cell menu-icon-cell valign-bottom tk-dropdown-container relative " + (this.state.active ? "active " : "")}>
-                    <i className="fa fa-bars clickable" aria-hidden="true" onClick={this.handleClick}/>
-                    <DropDownMenu items={menuItems} align="align-left"/>
+                <div className="table-cell menu-icon-cell valign-bottom">
+                    <DropDownMenu items={menuItems}/>
                 </div>
-                <div className="table-cell valign-bottom">{this.props.workspace.title}</div>
+                <div className="table-cell valign-bottom">{this.props.workspace.name}</div>
                 <div className="table-cell valign-bottom"></div>
             </div>
         );

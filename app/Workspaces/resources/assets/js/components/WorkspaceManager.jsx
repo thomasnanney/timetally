@@ -18,16 +18,7 @@ class WorkspaceManager extends Component {
     }
 
     componentWillMount(){
-        let self = this;
-        axios.post('/users/getAllWorkspaces')
-            .then(function(response){
-                console.log(response);
-                self.setState({workspaces: response.data});
-            })
-            .catch(function(response){
-               alert("We were unable to retrieve all of your workspaces.  Please reload the page or contact your" +
-                   " System Administrator.");
-            });
+        this.getWorkspaces();
     };
 
 
@@ -39,11 +30,26 @@ class WorkspaceManager extends Component {
 
     }
 
-    addWorkspace(name){
-        let workspaces = this.state.workspaces.slice();
-        workspaces[this.state.workspaces.length] = name;
-        this.setState({workspaces: workspaces});
+    getWorkspaces(){
+        let self = this;
+        axios.post('/users/getAllWorkspaces')
+            .then(function(response){
+                console.log(response);
+                self.setState({workspaces: response.data});
+            })
+            .catch(function(response){
+                alert("We were unable to retrieve all of your workspaces.  Please reload the page or contact your" +
+                    " System Administrator.");
+            });
     }
+
+    // addWorkspace(name){
+    //     //add worksapce and update workspaces
+    //     let workspaces = this.state.workspaces.slice();
+    //     workspaces[this.state.workspaces.length] = name;
+    //     this.setState({workspaces: workspaces});
+    //
+    // }
 
     render() {
 
@@ -69,7 +75,7 @@ class WorkspaceManager extends Component {
                 </div>
                 <div className="row">
                     <div className="col-xs-12 text-center large-container dark drop">
-                        <AddWorkspaceWizard addWorkspace={this.addWorkspace} />
+                        <AddWorkspaceWizard updateWorkspaces={this.getWorkspaces.bind(this)} />
                     </div>
                 </div>
             </div>

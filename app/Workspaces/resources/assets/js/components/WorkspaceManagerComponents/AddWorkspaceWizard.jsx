@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 //components imports
+import validator from 'validator';
 
 export default class AddWorkspaceWizard extends Component {
 
@@ -10,7 +11,7 @@ export default class AddWorkspaceWizard extends Component {
             step: 1,
             name: '',
             users: [],
-            usersCount: 1
+            error: null
         };
 
         this.nextStep = this.nextStep.bind(this);
@@ -32,7 +33,7 @@ export default class AddWorkspaceWizard extends Component {
         let name = this.state.name;
         let users = this.state.users;
         let step = this.state.step;
-        let error = null;
+        let error = this.state.error;
 
         if(step == 2){
             if(name.length == 0){
@@ -53,17 +54,22 @@ export default class AddWorkspaceWizard extends Component {
         }else{
             this.setState({error: error});
         }
+
         this.setState((prevState, props) => ({
             step: prevState.step + 1,
         }));
     }
 
     addWorkspace(){
-        alert('You added a workspace');
-        this.setState((prevState, porps) => ({
-            step: 1,
-        }));
-        this.props.addWorkspace(this.state.name);
+        if(this.state.error){
+            alert("You must fix the errors before saving");
+            return;
+        }else{
+            this.setState((prevState, props) => ({
+                step: 1,
+            }));
+            this.props.updateWorkspaces();
+        }
     }
 
     setName(event){
@@ -80,9 +86,17 @@ export default class AddWorkspaceWizard extends Component {
     };
 
     updateUserName(id, evt){
+        let email = evt.target.value;
+
         let users = this.state.users.slice();
-        users[id] = evt.target.value;
+        users[id] = email;
         this.setState({users: users});
+
+        if(email && !validator.isEmail(email)){
+            this.setState({error: "Invalid email address"});
+        }else{
+            this.setState({error: null});
+        }
     }
 
     render() {

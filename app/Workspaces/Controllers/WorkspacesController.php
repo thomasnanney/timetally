@@ -76,6 +76,11 @@ class WorkspacesController extends Controller
             ]);
         }
 
+        //attach the current user since they created the workspace;
+
+        $users = $request->input('users');
+        //add users to workspace
+
         // workspace information
         Workspace::create($data);
 

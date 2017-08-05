@@ -2,6 +2,7 @@
 namespace App\Workspaces\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use App\Users\Models\User;
 
 class Workspace extends Model
 {
@@ -19,10 +20,6 @@ class Workspace extends Model
 
     public function queryProjects() {
         return $this->hasMany('App\Projects\Models\Project', 'workspaceID');
-    }
-
-    public function setOrganization() {
-        // TODO: set the organization ID for the workspace
     }
 
     public function queryClients(){
@@ -52,4 +49,36 @@ class Workspace extends Model
         return $validator;
         
     }
+
+    public function addUsers($users){
+        foreach($users as $userEmail){
+            //see if user exists
+            $user = User::where('email', $userEmail);
+
+            if($user){
+                //send invite to current user
+                //ToDo: Trigger event for adding current user to workspace
+            }else{
+                //send invite to new user
+                //ToDo: Trigger event for add new user to workspace
+            }
+        }
+    }
+
+    public function setOrganization() {
+        // TODO: set the organization ID for the workspace
+    }
+
+    public function attachRegularUser($userId){
+        $this->queryUsers()->attach($userId, [
+            'admin' => 0,
+        ]);
+    }
+
+    public function attachAdminUser($userId){
+        $this->queryUsers()->attach($userId, [
+            'admin' => 1,
+        ]);
+    }
+
 }
