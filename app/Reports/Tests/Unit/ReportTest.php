@@ -13,14 +13,6 @@ class ReportsTest extends TestCase
 {
     use DatabaseTransactions;
 
-    /*public function testProjectIndex()
-    {
-        $user = factory(User::class)->make();
-        $this->be($user);
-        $response = $this->call('GET', '/projects/');
-        $this->assertEquals(200, $response->getStatusCode());
-    }*/
-
     /**
      * Test to create a new project
      *
@@ -28,10 +20,7 @@ class ReportsTest extends TestCase
      */
     public function testDownloadPDFNoSubGroup()
     {
-        /*$user = factory(User::class)->create();
-        $this->be($user);*/
-
-        $response = $this->call('GET', '/reports/timeEntryReportPDF',
+        $response = $this->call('GET', '/reports/getReportPDF',
             array(
                 '_token' => csrf_token(),
                 'data' => array(
@@ -39,7 +28,7 @@ class ReportsTest extends TestCase
                     'endDate' => '2017-07-30T17:46:36.143Z',
                     'filters' => array(
                         'users' => [
-                            '0',
+                            '1',
                             '2'
                         ],
                         'clients' => [
@@ -55,180 +44,37 @@ class ReportsTest extends TestCase
                 )
             ));
 
-        //var_dump($response);
-        //$this->assertFileExists(__DIR__ . '/Time_Entry_Report.pdf');
         $this->assertEquals(302, $response->getStatusCode());
-        /*$this->assertDatabaseHas('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('success', $data['status']);*/
     }
 
-    /*public function testDownloadPDFSubGroup()
+    public function testDownloadPDFWithSubGroup()
     {
-        $user = factory(User::class)->create();
-        $this->be($user);
-
-        $response = $this->call('GET', '/reports/timeEntryReportPDF',
+        $response = $this->call('GET', '/reports/getReportPDF',
             array(
                 '_token' => csrf_token(),
                 'data' => array(
-                    'subGroup' => 'true',       // true/false,
-                    'title' => 'Projects',
-                    'totalTime' => '100',
-                    'groups' => [
-                        'subGroup1' => [
-                            'title' => 'Clients',
-                            'totalTime' => 'totalTime for subGroup',
-                            'detail' => [
-                                'client1' => [
-                                    'title' => 'Client 1',
-                                    'totalTime' => '20',
-                                    'entries' => [
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '1',
-                                            'userTime' => '5',
-                                        ),
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '2',
-                                            'userTime' => '5',
-                                        ),
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '3',
-                                            'userTime' => '10',
-                                        )
-                                    ],
-                                ],
-                                'client2' => [
-                                    'title' => 'Client 2',
-                                    'totalTime' => '27',
-                                    'entries' => [
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '1',
-                                            'userTime' => '5',
-                                        ),
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '2',
-                                            'userTime' => '10',
-                                        ),
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '3',
-                                            'userTime' => '12',
-                                        )
-                                    ],
-                                ],
-                                'client3' => [
-                                    'title' => 'Client 3',
-                                    'totalTime' => '50',
-                                    'entries' => [
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '1',
-                                            'userTime' => '15',
-                                        ),
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '2',
-                                            'userTime' => '15',
-                                        ),
-                                        array(
-                                            'projectid' => '1',
-                                            'userid' => '3',
-                                            'userTime' => '20',
-                                        )
-                                    ],
-                                ]
-                            ]
+                    'startDate' => '2017-07-24T17:46:36.143Z',
+                    'endDate' => '2017-07-30T17:46:36.143Z',
+                    'filters' => array(
+                        'users' => [
+                            '1',
+                            '2'
                         ],
-                        'subgroup2' => [
-                            'title' => 'Users',
-                            'totalTime' => 'totalTime for subGroup',
-                            'detail' => [
-                                'user1' => [
-                                    'title' => 'User 1',
-                                    'totalTime' => '20',
-                                    'entries' => [
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '1',
-                                            'userTime' => '5',
-                                        ),
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '2',
-                                            'userTime' => '5',
-                                        ),
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '3',
-                                            'userTime' => '10',
-                                        )
-                                    ],
-                                ],
-                                'user2' => [
-                                    'title' => 'User 2',
-                                    'totalTime' => '27',
-                                    'entries' => [
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '1',
-                                            'userTime' => '5',
-                                        ),
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '2',
-                                            'userTime' => '10',
-                                        ),
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '3',
-                                            'userTime' => '12',
-                                        )
-                                    ],
-                                ],
-                                'user3' => [
-                                    'title' => 'User 3',
-                                    'totalTime' => '50',
-                                    'entries' => [
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '1',
-                                            'userTime' => '15',
-                                        ),
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '2',
-                                            'userTime' => '15',
-                                        ),
-                                        array(
-                                            'projectid' => '2',
-                                            'userid' => '3',
-                                            'userTime' => '20',
-                                        )
-                                    ],
-                                ]
-                            ]
+                        'clients' => [
+
+                        ],
+                        'projects' => [
+
                         ]
-                    ]
+                    ),
+                    'groupBy' => 'users',
+                    'subGroup' => true,
+                    'subGroupBy' => 'client'
                 )
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseHas('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('success', $data['status']);
-    }*/
+        $this->assertEquals(302, $response->getStatusCode());
+    }
 
 }
 

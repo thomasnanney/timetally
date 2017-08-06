@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use \SVGGraph;
 use Excel;
 use PDF;
-use PHPExcel_Worksheet_Drawing;
 
 class Report extends Model
 {
@@ -296,7 +295,7 @@ class Report extends Model
 
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.
-        PDF::Output($titles['reportTitle'].'.pdf', 'I');
+        PDF::Output($titles['reportTitle'].'.pdf', 'D');
     }
 
     public static function createBarGraph($barData, $titles){
