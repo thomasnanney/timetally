@@ -8,3 +8,5 @@ Route::post('/workspaces/getAllUsers/{workspace?}', "WorkspacesController@getAll
 Route::post('/workspaces/getAllProjects/{workspace?}', "WorkspacesController@getAllProjects");
 Route::post('/workspaces/getAllClients/{workspace?}', "WorkspacesController@getAllClients");
 Route::post('/workspaces/inviteUsers/{workspace}', 'WorkspacesController@inviteUsers');
+Route::post('workspaces/addAdmin/{user}', 'WorkspacesController@addAdmin');
+Route::post('workspaces/removeAdmin/{user}', 'WorkspacesController@removeAdmin');

@@ -73,7 +73,7 @@ class User extends Authenticatable
     }
 
     public function getCurrentWorkspace(){
-        return $this->current_workspace_id;
+        return Workspace::find($this->current_workspace_id);
     }
 
     public function queryProjects(){

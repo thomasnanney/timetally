@@ -168,6 +168,7 @@ export default class WorkspaceSettingsPane extends Component {
                                             onChange={this.updateWorkspace.bind(this)}
                                         />
                                     </div>
+                                    {/*ToDo: Add in description text area*/}
                                 </div>
                                 <div className="row">
                                     <div className="col-xs-12 text-right">
@@ -299,12 +300,12 @@ export default class WorkspaceSettingsPane extends Component {
                                         No projects to display, get to work!
                                     </div>
                                 }
-                                <div className="row">
-                                    <div className="col-xs-12 text-center">
-                                        {/*ToDo: Improve so the project creation page auto fills in the workspace */}
-                                        <a href="/projects/create">+ Add Project</a>
-                                    </div>
-                                </div>
+                                {/*<div className="row">*/}
+                                    {/*<div className="col-xs-12 text-center">*/}
+                                        {/*/!*ToDo: Improve so the project creation page auto fills in the workspace *!/*/}
+                                        {/*<a href="/projects/create">+ Add Project</a>*/}
+                                    {/*</div>*/}
+                                {/*</div>*/}
                             </div>
                         );
                     case 4:
@@ -351,13 +352,13 @@ export default class WorkspaceSettingsPane extends Component {
                                             No clients to display. Try some networking groups!
                                         </div>
                                 }
-                                <div className="row">
-                                    <div className="col-xs-12 text-center">
-                                        {/*ToDo: Improve so the client creation page auto fills in the workspace
-                                         instead of using current*/}
-                                        <a href="/clients/create">+ Add Client</a>
-                                    </div>
-                                </div>
+                                {/*<div className="row">*/}
+                                    {/*<div className="col-xs-12 text-center">*/}
+                                        {/*/!*ToDo: Improve so the client creation page auto fills in the workspace*/}
+                                         {/*instead of using current*!/*/}
+                                        {/*<a href="/clients/create">+ Add Client</a>*/}
+                                    {/*</div>*/}
+                                {/*</div>*/}
                             </div>
                         );
                 }

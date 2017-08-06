@@ -18,6 +18,11 @@ class Workspace extends Model
         return $this->belongsToMany('App\Users\Models\User', 'user_workspace_pivot', 'workspaceID', 'userID');
     }
 
+    public function queryUsersWithPrivileges(){
+        return $this->belongsToMany('App\Users\Models\User', 'user_workspace_pivot', 'workspaceID', 'userID')
+            ->withPivot('admin');
+    }
+
     public function queryProjects() {
         return $this->hasMany('App\Projects\Models\Project', 'workspaceID');
     }
@@ -79,6 +84,14 @@ class Workspace extends Model
         $this->queryUsers()->attach($userId, [
             'admin' => 1,
         ]);
+    }
+
+    public function addAdmin($user){
+        $this->queryUsersWithPrivileges()->updateExistingPivot($user->id, ['admin' => 1]);
+    }
+
+    public function removeAdmin($user){
+        $this->queryUsersWithPrivileges()->updateExistingPivot($user->id, ['admin' => 0]);
     }
 
 }
