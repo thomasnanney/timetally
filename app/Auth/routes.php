@@ -6,8 +6,9 @@ Route::post('login', 'LoginController@login');
 Route::post('logout', 'LoginController@logout')->name('logout');
 
 // Registration Routes...
-Route::get('register', 'RegisterController@showRegistrationForm')->name('register');
+Route::get('register/{token?}', 'RegisterController@showRegistrationForm')->name('register');
 Route::post('register', 'RegisterController@register');
+
 
 // Password Reset Routes...
 Route::get('password/reset', 'ForgotPasswordController@showLinkRequestForm')->name('password.request');

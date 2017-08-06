@@ -3,6 +3,7 @@
 namespace App\Auth\Controllers;
 
 use App\Users\Models\User;
+use App\Workspaces\Models\WorkspaceInvite;
 use App\Workspaces\Models\Workspace;
 use App\Core\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -65,23 +66,40 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
 
+        if(is_null($data['token'])){
 
-        $user = User::create([
-            'name' => $data['firstname'] . " " . $data['lastname'],
-            'email' => $data['email'],
-            'current_workspace_id' => 0,
-            'password' => bcrypt($data['password']),
-        ]);
+            $user = User::create([
+                'name' => $data['firstname'] . " " . $data['lastname'],
+                'email' => $data['email'],
+                'current_workspace_id' => 0,
+                'password' => bcrypt($data['password']),
+            ]);
 
-        $workspace = Workspace::create([
-            'title' => $data['firstname'] . "'s Worskpace",
-            'ownerID' => $user->id,
-            'description' => 'Please edit this description',
-        ]);
+            $workspace = Workspace::create([
+                'title' => $data['firstname'] . "'s Worskpace",
+                'ownerID' => $user->id,
+                'description' => 'Please edit this description',
+            ]);
 
-        $user->current_workspace_id = $workspace->id;
-        $user->save();
+            $user->current_workspace_id = $workspace->id;
+            $user->save();
+            $user->queryWorkspaces()->attach($workspace->id);
+        }else{
+            $invite = WorkspaceInvite::where('token', $data['token'])->first();
+            $user = User::create([
+                'name' => $data['firstname'] . " " . $data['lastname'],
+                'email' => $data['email'],
+                'current_workspace_id' => $invite->workspaceID,
+                'password' => bcrypt($data['password']),
+            ]);
+
+            $user->queryWorkspaces()->attach($invite->workspaceID);
+
+            $invite->delete();
+        }
+
         return $user;
+
     }
 
     /**
@@ -89,8 +107,8 @@ class RegisterController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm($token = null)
     {
-        return view('register');
+        return view('register')->with('token', $token);
     }
 }

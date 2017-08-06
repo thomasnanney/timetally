@@ -12,7 +12,7 @@
 
                         <div class="form-group{{ $errors->has('firstname') ? ' has-error' : '' }}">
                             <label for="name" class="col-md-4 control-label">First Name</label>
-
+                            <input type="hidden" name="token" value="{{$token}}"/>
                             <div class="col-md-6">
                                 <input id="firstname" type="text" class="form-control" name="firstname" value="{{ old('firstname') }}" required autofocus>
 
