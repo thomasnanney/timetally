@@ -68,7 +68,8 @@ export default class AddWorkspaceWizard extends Component {
         }else{
             axios.post('/workspaces/create', {
                 data: {
-                    name: self.state.name                },
+                    name: self.state.name
+                },
                 users: self.state.users
             }).then(function(response){
                 self.setState({step: 1});

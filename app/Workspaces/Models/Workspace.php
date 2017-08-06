@@ -40,21 +40,20 @@ class Workspace extends Model
         $rules = array(
             'name' => 'required|string|min:1',
             'description' => 'nullable|string|min:1',
-            'ownerId' => 'sometimes|required|int|exists:users',
-            'organizationID' => 'sometimes|required|int'
+            'ownerID' => 'required|int|exists:users,id',
+            'organizationID' => 'nullable|int|exists:organizations,id'
         );
 
         $validator = Validator::make($data, $rules, $messages);
 
         return $validator;
-        
     }
 
     public function inviteUsersByEmail($users){
 
         foreach($users as $userEmail){
             //see if user exists
-            $user = User::where('email', $userEmail);
+            $user = User::where('email', $userEmail)->first();
 
             if($user){
                 //send invite to current user

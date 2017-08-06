@@ -7,3 +7,4 @@ Route::delete('/workspaces/delete/{workspace}', "WorkspacesController@deleteWork
 Route::post('/workspaces/getAllUsers/{workspace?}', "WorkspacesController@getAllUsers");
 Route::post('/workspaces/getAllProjects/{workspace?}', "WorkspacesController@getAllProjects");
 Route::post('/workspaces/getAllClients/{workspace?}', "WorkspacesController@getAllClients");
+Route::post('/workspaces/inviteUsers/{workspace}', 'WorkspacesController@inviteUsers');

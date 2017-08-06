@@ -6,6 +6,7 @@ use App\Workspaces\Models\Workspace;
 use App\Core\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Exception;
 
 
 class WorkspacesController extends Controller
@@ -39,7 +40,7 @@ class WorkspacesController extends Controller
     {
         $data = $request->input('data');
 
-        if(isset($request['data'])) {
+        if($data) {
             $validator = Workspace::validate($data);
 
             if($validator->fails()) {
@@ -48,11 +49,12 @@ class WorkspacesController extends Controller
                     'errors' => $validator->errors(),
                 ]);
             }
-            $workspace->name = $request->input('name');
-            $workspace->description = $request->input('description');
-            $workspace->organizationID = $request->input('organizationID');
+
+            $workspace->fill($data);
             $workspace->save();
+
             return response()->json([
+                'status' => 'success',
                 'errors' => 'false'
             ]);
         }
@@ -164,5 +166,21 @@ class WorkspacesController extends Controller
         })->values();
 
         return $projects;
+    }
+
+    public function inviteUsers(Workspace $workspace, Request $request){
+        $users = $request->input('data')['userEmails'];
+        try{
+            $workspace->inviteUsersByEmail([$users]);
+        }catch(Exception $e){
+            return response()->json([
+                'status' => 'fail',
+                'errors' => $e->getMessage(),
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }
