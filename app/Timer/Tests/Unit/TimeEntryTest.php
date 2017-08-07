@@ -97,7 +97,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('success', $data['status']);
     }
 
-    public function testDeleteProjectNoId()
+    public function testDeleteTimeEntryNoId()
     {
         $user = factory(User::class)->make();
         $this->be($user);
@@ -108,7 +108,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals(404, $response->getStatusCode());
     }
 
-    public function testDeleteProjectInvalidId()
+    public function testDeleteTimeEntryInvalidId()
     {
         $user = factory(User::class)->make();
         $this->be($user);
@@ -121,5 +121,681 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
         $this->assertEquals('Time Entry not found', $data['messages'][0]);
+    }
+
+    public function testCreateTimeEntryMissingWorkspaceID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => null,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'worspaceID' => $workspace->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter a Workspace Name', $data['messages']['name'][0]);
+    }
+    public function testCreateTimeEntryMissingProjectID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => null,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'projectID' => $project->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter a Project Name', $data['messages']['name'][0]);
+    }
+    public function testCreateTimeEntryMissingUserID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => null,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'userID' => $user->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryMissingClientID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => null,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'clientID' => $client->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidWorkspaceID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => 'string',
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'worspaceID' => $workspace->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter a Workspace Name', $data['messages']['name'][0]);
+    }
+    public function testCreateTimeEntryInvalidProjectID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => 'string',
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'projectID' => $project->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter a Project Name', $data['messages']['name'][0]);
+    }
+    public function testCreateTimeEntryInvalidUserID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => 'string',
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'userID' => $user->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidClientID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => 'string',
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'clientID' => $client->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryMissingStartTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => null,
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'startTime' => '2017-7-12 22:42:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryMissingEndTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => null,
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'endTime' => '2017-7-12 22:50:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidStartTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => 'string',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'startTime' => '2017-7-12 22:42:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidEndTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => 'string',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'endTime' => '2017-7-12 22:50:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryNoDescription()
+
+    {
+
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => null,
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertEquals('success', $data['status']);
+
+    }
+    public function testCreateTimeEntryRobustWorkspaceID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => '11111111111111111111111111111111111111111111111111111111111111111',
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'worspaceID' => $workspace->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter a Workspace Name', $data['messages']['name'][0]);
+    }
+    public function testCreateTimeEntryRobustProjectID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => '11111111111111111111111111111111111111111111111111111111111111111',
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'projectID' => $project->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter a Project Name', $data['messages']['name'][0]);
+    }
+    public function testCreateTimeEntryRobustUserID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => '11111111111111111111111111111111111111111111111111111111111111111',
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'userID' => $user->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryRobustClientID()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => '11111111111111111111111111111111111111111111111111111111111111111',
+                    'startTime' => '2017-7-12 22:42:00',
+                    'endTime' => '2017-7-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'clientID' => $client->id
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+
+    public function testCreateTimeEntryInvalidYearStartTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '17-07-12 22:42:0',
+                    'endTime' => '2017-07-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'startTime' => '2017-7-12 22:42:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidYearEndTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-07-12 22:42:00',
+                    'endTime' => '17-07-12 22:42:0',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'endTime' => '2017-7-12 22:50:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidMonthStartTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-7-12 22:42:0',
+                    'endTime' => '2017-07-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'startTime' => '2017-7-12 22:42:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidMonthEndTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-07-12 22:42:00',
+                    'endTime' => '2017-7-12 22:42:0',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'endTime' => '2017-7-12 22:50:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidDayStartTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-07-40 22:42:0',
+                    'endTime' => '2017-07-12 22:50:00',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'startTime' => '2017-7-12 22:42:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+    }
+    public function testCreateTimeEntryInvalidDayEndTime()
+    {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $client = factory(Client::class)->make();
+        $workspace = factory(Workspace::class)->make();
+        $project = factory(Project::class)->make();
+        $response = $this->call('POST', '/timer',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'workspaceID' => $workspace->id,
+                    'projectID' => $project->id,
+                    'userID' => $user->id,
+                    'clientID' => $client->id,
+                    'startTime' => '2017-07-12 22:42:00',
+                    'endTime' => '2017-7-40 22:42:0',
+                    'billable' => false,
+                    'description' => 'Description for Timer 1',
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('time_entries', [
+            'endTime' => '2017-7-12 22:50:00'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
     }
 }
