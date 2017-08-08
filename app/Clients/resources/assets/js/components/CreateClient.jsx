@@ -1,37 +1,24 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-class CreateProject extends Component{
+class CreateClient extends Component{
 
     constructor(props){
         super(props);
         this.state = {
             step: 1,
             client: {
-                title: '',
-                scope: 'public',
-                workspaceID: '',
-                clientID: '',
-                billableType: 'fixed',
-                startDate: '',
-                endDate: '',
-                projectedTime: '',
-                projectedRevenue: '',
-                billableRate: '',
-                billableHourlyType: 'project',
-                users: [],
-                description: ''
+                name: '',
+                email: '',
+                address1: '',
+                address2: '',
+                city: '',
+                state: '',
+                postalCode: '',
+                description: '',
             },
             errors: {},
         }
-    }
-
-    componentDidMount(){
-
-    }
-
-    componentWillUnmount(){
-
     }
 
     componentWillMount(){
@@ -39,41 +26,10 @@ class CreateProject extends Component{
         this.getAllWorkspaces();
     }
 
-    getAllClients(){
-        let self = this;
-        axios.post('/users/getAllClients')
-            .then(function(response){
-                self.setState({clients: response.data});
-                if(self.state.clients.length > 0){
-                    //set initial value for client in state
-                    let newProject = self.state.project;
-                    newProject.clientID = self.state.clients[0].id
-                    self.setState({project: newProject});
-                }
-            })
-            .catch(function(error){
-                console.log(error);
-                alert('We were unable to retrieve all clients, please reload the page or contact your System' +
-                    ' Administrator');
-            });
-    }
-
-    getAllWorkspaces(){
-        let self = this;
-        axios.post('/users/getAllWorkspaces')
-            .then(function(response){
-                self.setState({workspaces: response.data});
-                if(self.state.workspaces.length >0){
-                    let newProject = self.state.project;
-                    newProject.workspaceID = self.state.workspaces[0].id;
-                    self.setState({project: newProject});
-                }
-            })
-            .catch(function(error){
-                console.log(error);
-                alert('We were unable to retrieve all of your workspaces, please reload the page or contact your' +
-                    ' System Administrator');
-            });
+    updateClient(evt){
+        let newState = this.state;
+        newState[evt.target.name] = evt.target.value;
+        this.setState(newState);
     }
 
     nextStep(){
@@ -90,9 +46,9 @@ class CreateProject extends Component{
 
     createClient(){
         let self = this;
-        console.log(self.state.project);
-        axios.post('/projects/create', {
-            data: self.state.project
+        console.log(self.state.client);
+        axios.post('/clients/create', {
+            data: self.state.client
         })
             .then(function(response){
                 if(response.status == 200){
@@ -109,61 +65,6 @@ class CreateProject extends Component{
                 console.log(error);
                 alert("We were unable to create your project, please try again");
             });
-    }
-
-    addUserField(){
-        let newProject = this.state.project;
-        newProject.users.push('');
-        this.setState((prevState, props) => ({
-            project : newProject
-        }));
-    };
-
-    //ToDo: convert to updateInput for dynamic fields as well via arrays
-    updateUserName(id, evt){
-        let users = this.state.project.users.slice();
-        users[id] = evt.target.value;
-        let newProject = this.state.project;
-        newProject.users = users;
-        this.setState({project: newProject});
-    }
-
-    updateInput(event){
-        let name = event.target.name;
-        let value = event.target.value;
-        this.updateState(name, value);
-    }
-
-    updateState(name, value){
-        let newProject = this.state.project;
-        newProject[name] = value;
-        this.setState({ project: newProject});
-    }
-
-    updateCheckbox(event){
-        let name = event.target.name;
-        let value = event.target.checked;
-        if(name == 'scope'){
-            if(value){
-                this.updateState(name, 'private');
-            }else{
-                this.updateState(name, 'public');
-            }
-        }
-        if(name == 'billableType'){
-            if(value){
-                this.updateState(name, 'hourly');
-            }else{
-                this.updateState(name, 'fixed');
-            }
-        }
-        if(name == 'billableHourlyType'){
-            if(value){
-                this.updateState(name, 'employee');
-            }else{
-                this.updateState(name, 'project');
-            }
-        }
     }
 
     render(){
@@ -474,6 +375,6 @@ class CreateProject extends Component{
     }
 }
 
-if(document.getElementById('createProject')){
-    ReactDOM.render(<CreateProject/>, document.getElementById('createProject'));
+if(document.getElementById('createClient')){
+    ReactDOM.render(<CreateClient/>, document.getElementById('createClient'));
 }

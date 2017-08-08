@@ -40831,7 +40831,6 @@ var ListItem = function (_Component) {
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
                     { className: "table-cell menu-icon-cell valign-bottom tk-dropdown-container relative " + (this.state.active ? "active " : "") },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-bars clickable', 'aria-hidden': 'true', onClick: this.handleClick }),
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_core_DropDownMenu__["a" /* default */], { items: menuItems, align: 'align-left' })
                 ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -41818,41 +41817,44 @@ var CreateProject = function (_Component) {
                 alert('We were unable to retrieve all clients, please reload the page or contact your System' + ' Administrator');
             });
 
-            axios.post('/users/getAllWorkspaces').then(function (response) {
-                self.setState({ workspaces: response.data });
-                if (self.state.workspaces.length > 0) {
-                    var newProject = self.state.project;
-                    newProject.workspaceID = self.state.workspaces[0].id;
-                    self.setState({ project: newProject });
-                }
-            }).catch(function (error) {
-                console.log(error);
-                alert('We were unable to retrieve all of your workspaces, please reload the page or contact your' + ' System Administrator');
-            });
+            // axios.post('/users/getAllWorkspaces')
+            //     .then(function(response){
+            //         self.setState({workspaces: response.data});
+            //         if(self.state.workspaces.length >0){
+            //             let newProject = self.state.project;
+            //             newProject.workspaceID = self.state.workspaces[0].id;
+            //             self.setState({project: newProject});
+            //         }
+            //     })
+            //     .catch(function(error){
+            //         console.log(error);
+            //         alert('We were unable to retrieve all of your workspaces, please reload the page or contact your' +
+            //             ' System Administrator');
+            //     });
         }
     }, {
         key: 'nextStep',
         value: function nextStep() {
-            this.setState(function (prevState, props) {
-                return {
-                    step: prevState.step + 1
-                };
-            });
+            if (this.state.step == 3 && this.state.project.scope == 'public') {
+                this.setState({ step: this.state.step + 2 });
+            } else {
+                this.setState({ step: this.state.step + 1 });
+            }
         }
     }, {
         key: 'prevStep',
         value: function prevStep() {
-            this.setState(function (prevState, props) {
-                return {
-                    step: prevState.step - 1
-                };
-            });
+            if (this.state.step == 5 && this.state.project.scope == 'public') {
+                this.setState({ step: this.state.step - 2 });
+            } else {
+                this.setState({ step: this.state.step - 1 });
+            }
         }
     }, {
         key: 'createProject',
         value: function createProject() {
             var self = this;
-            console.log(self.state.project);
+
             axios.post('/projects/create', {
                 data: self.state.project
             }).then(function (response) {
@@ -41992,7 +41994,7 @@ var CreateProject = function (_Component) {
                                                     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                                         'option',
                                                         { value: workspace.id, key: workspace.id },
-                                                        workspace.title
+                                                        workspace.name
                                                     );
                                                 }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                                     'option',
@@ -45366,9 +45368,7 @@ var UsersManager = function (_Component) {
             axios.post('/workspaces/getAllUsers', {
                 raw: true
             }).then(function (response) {
-                self.setState({ users: response.data }, function () {
-                    console.log(self.state);
-                });
+                self.setState({ users: response.data });
             }).catch(function (error) {
                 console.log(error);
                 alert('We were unable to retrieve the users for your current workspace.  Try reloading the page, or' + ' contact your System' + ' Administrator');
@@ -46099,12 +46099,6 @@ var WorkspaceManager = function (_Component) {
             this.getWorkspaces();
         }
     }, {
-        key: 'componentDidMount',
-        value: function componentDidMount() {}
-    }, {
-        key: 'componentWillUnmount',
-        value: function componentWillUnmount() {}
-    }, {
         key: 'getWorkspaces',
         value: function getWorkspaces() {
             var self = this;
@@ -46115,15 +46109,6 @@ var WorkspaceManager = function (_Component) {
                 alert("We were unable to retrieve all of your workspaces.  Please reload the page or contact your" + " System Administrator.");
             });
         }
-
-        // addWorkspace(name){
-        //     //add worksapce and update workspaces
-        //     let workspaces = this.state.workspaces.slice();
-        //     workspaces[this.state.workspaces.length] = name;
-        //     this.setState({workspaces: workspaces});
-        //
-        // }
-
     }, {
         key: 'render',
         value: function render() {

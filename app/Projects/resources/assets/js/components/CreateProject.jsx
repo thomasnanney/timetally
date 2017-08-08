@@ -54,37 +54,41 @@ class CreateProject extends Component{
                     ' Administrator');
             });
 
-        axios.post('/users/getAllWorkspaces')
-            .then(function(response){
-                self.setState({workspaces: response.data});
-                if(self.state.workspaces.length >0){
-                    let newProject = self.state.project;
-                    newProject.workspaceID = self.state.workspaces[0].id;
-                    self.setState({project: newProject});
-                }
-            })
-            .catch(function(error){
-                console.log(error);
-                alert('We were unable to retrieve all of your workspaces, please reload the page or contact your' +
-                    ' System Administrator');
-            });
+        // axios.post('/users/getAllWorkspaces')
+        //     .then(function(response){
+        //         self.setState({workspaces: response.data});
+        //         if(self.state.workspaces.length >0){
+        //             let newProject = self.state.project;
+        //             newProject.workspaceID = self.state.workspaces[0].id;
+        //             self.setState({project: newProject});
+        //         }
+        //     })
+        //     .catch(function(error){
+        //         console.log(error);
+        //         alert('We were unable to retrieve all of your workspaces, please reload the page or contact your' +
+        //             ' System Administrator');
+        //     });
     }
 
     nextStep(){
-        this.setState((prevState, props) => ({
-            step: prevState.step + 1
-        }));
+        if(this.state.step == 3 && this.state.project.scope == 'public') {
+            this.setState({step: this.state.step + 2});
+        }else{
+            this.setState({step: this.state.step + 1});
+        }
     }
 
     prevStep(){
-        this.setState((prevState, props) => ({
-            step: prevState.step - 1
-        }));
+        if(this.state.step == 5 && this.state.project.scope == 'public') {
+            this.setState({step: this.state.step - 2});
+        }else{
+            this.setState({step: this.state.step - 1});
+        }
     }
 
     createProject(){
         let self = this;
-        console.log(self.state.project);
+
         axios.post('/projects/create', {
             data: self.state.project
         })
@@ -196,7 +200,7 @@ class CreateProject extends Component{
                                                         this.state.workspaces.length > 0
                                                         ?
                                                         this.state.workspaces.map((workspace) =>
-                                                            <option value={workspace.id} key={workspace.id}>{workspace.title}</option>
+                                                            <option value={workspace.id} key={workspace.id}>{workspace.name}</option>
                                                         )
                                                         :
                                                         <option>Add a workspace</option>

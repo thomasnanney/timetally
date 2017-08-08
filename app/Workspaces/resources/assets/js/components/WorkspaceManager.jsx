@@ -20,15 +20,6 @@ class WorkspaceManager extends Component {
         this.getWorkspaces();
     };
 
-
-    componentDidMount() {
-
-    }
-
-    componentWillUnmount() {
-
-    }
-
     getWorkspaces(){
         let self = this;
         axios.post('/users/getAllWorkspaces')
@@ -41,14 +32,6 @@ class WorkspaceManager extends Component {
                     " System Administrator.");
             });
     }
-
-    // addWorkspace(name){
-    //     //add worksapce and update workspaces
-    //     let workspaces = this.state.workspaces.slice();
-    //     workspaces[this.state.workspaces.length] = name;
-    //     this.setState({workspaces: workspaces});
-    //
-    // }
 
     render() {
 

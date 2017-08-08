@@ -135,21 +135,21 @@ class ViewProject extends Component {
                             <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
                                 <li className={"tab " + (this.state.activeView == 1 ? 'active': '')} onClick={() => this.makeTabActive(1)}>
                                     {(this.state.errors) &&  (this.state.errors.title || this.state.errors.scope || this.state.errors.description)
-                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
+                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"/>
                                         :   ''
                                     }
                                     General
                                 </li>
                                 <li className={"tab " + (this.state.activeView == 2 ? 'active': '')} onClick={() => this.makeTabActive(2)}>
                                     {(this.state.errors) &&  (this.state.errors.clientID || this.state.errors.billableType || this.state.errors.billableRate || this.state.errors.billableHourlyType)
-                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
+                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"/>
                                         :   ''
                                     }
                                     Details
                                 </li>
                                 <li className={"tab " + (this.state.activeView == 3 ? 'active': '')} onClick={() => this.makeTabActive(3)}>
                                     {(this.state.errors) &&  (this.state.errors.users)
-                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"></i>
+                                        ?   <i className="fa fa-exclamation error" aria-hidden="true"/>
                                         :   ''
                                     }
                                     Users

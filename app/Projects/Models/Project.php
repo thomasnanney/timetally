@@ -44,6 +44,7 @@ class Project extends Model
             'endDate.required' => 'Please enter an End Date',
             'billableType.required' => 'Please enter Billable Type',
             'scope.required' => 'Please enter the Project as Private or Public',
+            'projectedTime.required' => "Please entered a projected time",
         ];
         $rules = [
             'title' => 'required|string|min:1',

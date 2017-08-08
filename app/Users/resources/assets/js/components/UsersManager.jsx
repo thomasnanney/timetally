@@ -35,9 +35,7 @@ class UsersManager extends Component{
             raw: true
         })
             .then(function(response){
-                self.setState({users : response.data}, function(){
-                    console.log(self.state);
-                });
+                self.setState({users : response.data});
             })
             .catch(function(error){
                 console.log(error);
