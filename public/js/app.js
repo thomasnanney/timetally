@@ -39861,6 +39861,8 @@ module.exports = exports['default'];
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components_ClientsManager__ = __webpack_require__(366);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_ViewClient__ = __webpack_require__(367);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_CreateClient__ = __webpack_require__(859);
+
 
 
 
@@ -107685,6 +107687,374 @@ __webpack_require__(344);
 __webpack_require__(343);
 module.exports = __webpack_require__(345);
 
+
+/***/ }),
+/* 859 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__CreateClientComponents_CreateClientPane__ = __webpack_require__(860);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+var CreateClient = function (_Component) {
+    _inherits(CreateClient, _Component);
+
+    function CreateClient(props) {
+        _classCallCheck(this, CreateClient);
+
+        var _this = _possibleConstructorReturn(this, (CreateClient.__proto__ || Object.getPrototypeOf(CreateClient)).call(this, props));
+
+        _this.state = {
+            activeView: 1,
+            client: {
+                name: '',
+                email: '',
+                address1: '',
+                address2: '',
+                city: '',
+                state: '',
+                postalCode: '',
+                description: ''
+            },
+            errors: {}
+        };
+        return _this;
+    }
+
+    _createClass(CreateClient, [{
+        key: 'componentWillMount',
+        value: function componentWillMount() {}
+    }, {
+        key: 'updateClient',
+        value: function updateClient(evt) {
+            var newState = this.state;
+            newState.client[evt.target.name] = evt.target.value;
+            this.setState(newState);
+        }
+    }, {
+        key: 'makeTabActive',
+        value: function makeTabActive(tab) {
+            this.setState({ activeView: tab });
+        }
+    }, {
+        key: 'createClient',
+        value: function createClient() {
+            var self = this;
+            console.log(self.state.client);
+            axios.post('/clients/create', {
+                data: self.state.client
+            }).then(function (response) {
+                console.log(response.data);
+                if (response.status == 200) {
+                    if (response.data.errors == "true") {
+                        console.log("Setting state errors");
+                        console.log(response.data.messages);
+                        var errors = response.data.messages;
+                        self.setState({ errors: errors });
+                    }
+                    if (response.data.status == "success") {
+                        self.setState({ errors: null });
+                        window.location.href = "/clients";
+                    }
+                }
+            }).catch(function (error) {
+                console.log(error);
+                alert("We were unable to create your client, please try again");
+            });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            var tabs = ['General', 'Details'];
+
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'div',
+                { className: 'tile raise' },
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'div',
+                    { className: 'row' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'div',
+                        { className: 'col-xs-12' },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            'ul',
+                            { className: 'no-list-style horizontal-menu text-center thin-border-bottom' },
+                            tabs.map(function (tab, id) {
+                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'li',
+                                    { className: "tab " + (_this2.state.activeView == id + 1 ? 'active ' : '') + (hasErrors(id, _this2.state.errors) ? 'pane-error ' : ''), onClick: function onClick() {
+                                            return _this2.makeTabActive(id + 1);
+                                        }, key: id },
+                                    tab
+                                );
+                            })
+                        )
+                    )
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'div',
+                    { className: 'pane-container' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__CreateClientComponents_CreateClientPane__["a" /* default */], { activeView: this.state.activeView, updateClient: this.updateClient.bind(this), client: this.state.client, saveClient: this.createClient.bind(this), errors: this.state.errors })
+                )
+            );
+        }
+    }]);
+
+    return CreateClient;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+function hasErrors(pane, errors) {
+    var errorFields = [['name', 'email'], ['address1', 'address2', 'city', 'state', 'postalCode']];
+
+    var hasErrors = false;
+
+    if (errors) {
+        Object.keys(errors).forEach(function (field) {
+            for (var key in errorFields[pane]) {
+                if (field == errorFields[pane][key]) {
+                    hasErrors = true;
+                    break;
+                }
+            }
+        });
+    }
+
+    return hasErrors;
+}
+
+if (document.getElementById('createClient')) {
+    __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(CreateClient, null), document.getElementById('createClient'));
+}
+
+/***/ }),
+/* 860 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_textarea_autosize__ = __webpack_require__(767);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+//components imports
+
+
+var ViewClientPane = function (_Component) {
+    _inherits(ViewClientPane, _Component);
+
+    function ViewClientPane(props) {
+        _classCallCheck(this, ViewClientPane);
+
+        return _possibleConstructorReturn(this, (ViewClientPane.__proto__ || Object.getPrototypeOf(ViewClientPane)).call(this, props));
+    }
+
+    _createClass(ViewClientPane, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {}
+    }, {
+        key: 'componentWillMount',
+        value: function componentWillMount() {}
+    }, {
+        key: 'componentWillUnmount',
+        value: function componentWillUnmount() {}
+    }, {
+        key: 'updateInput',
+        value: function updateInput(event) {
+            var name = event.target.name;
+            var value = event.target.value;
+            this.props.updateClient(name, value);
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                'div',
+                null,
+                function () {
+                    switch (_this2.props.activeView) {
+                        case 1:
+                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'div',
+                                { className: 'pane medium-container margin-center' },
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'div',
+                                    { className: 'row' },
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                        'div',
+                                        { className: 'col-xs-12 ' },
+                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                            'label',
+                                            null,
+                                            'Client Name:'
+                                        ),
+                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text',
+                                            name: 'name',
+                                            className: 'tk-form-input',
+                                            value: _this2.props.client.name,
+                                            onChange: _this2.props.updateClient
+                                        }),
+                                        _this2.props.errors && _this2.props.errors.name && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                            'small',
+                                            { className: 'error' },
+                                            _this2.props.errors.name
+                                        ),
+                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                            'label',
+                                            null,
+                                            'Email:'
+                                        ),
+                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text',
+                                            name: 'email',
+                                            className: 'tk-form-input',
+                                            value: _this2.props.client.email,
+                                            onChange: _this2.props.updateClient
+                                        }),
+                                        _this2.props.errors && _this2.props.errors.email && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                            'small',
+                                            { className: 'error' },
+                                            _this2.props.errors.email
+                                        )
+                                    )
+                                ),
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'div',
+                                    { className: 'row' },
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                        'div',
+                                        { className: 'col-xs-12' },
+                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_textarea_autosize__["a" /* default */], {
+                                            className: 'tk-form-textarea',
+                                            name: 'description',
+                                            placeholder: 'Description...',
+                                            value: _this2.props.client.description,
+                                            onChange: _this2.props.updateClient
+                                        }),
+                                        _this2.props.errors && _this2.props.errors.description ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                            'small',
+                                            { className: 'error' },
+                                            _this2.props.errors.description
+                                        ) : ''
+                                    )
+                                )
+                            );
+                        case 2:
+                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'div',
+                                { className: 'pane medium-container margin-center' },
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text',
+                                    className: 'tk-form-input',
+                                    placeholder: 'Address 1',
+                                    value: _this2.props.client.address1,
+                                    onChange: _this2.props.updateClient,
+                                    name: 'address1'
+                                }),
+                                _this2.props.errors && _this2.props.errors.address1 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'small',
+                                    { className: 'error' },
+                                    _this2.props.errors.address1
+                                ),
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text',
+                                    className: 'tk-form-input',
+                                    placeholder: 'Address 2',
+                                    value: _this2.props.client.address2,
+                                    onChange: _this2.props.updateClient,
+                                    name: 'address2'
+                                }),
+                                _this2.props.errors && _this2.props.errors.address2 && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'small',
+                                    { className: 'error' },
+                                    _this2.props.errors.address2
+                                ),
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text',
+                                    className: 'tk-form-input',
+                                    placeholder: 'City',
+                                    value: _this2.props.client.city,
+                                    onChange: _this2.props.updateClient,
+                                    name: 'city'
+                                }),
+                                _this2.props.errors && _this2.props.errors.city && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'small',
+                                    { className: 'error' },
+                                    _this2.props.errors.city
+                                ),
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text',
+                                    className: 'tk-form-input',
+                                    placeholder: 'State',
+                                    value: _this2.props.client.state,
+                                    onChange: _this2.props.updateClient,
+                                    name: 'state'
+                                }),
+                                _this2.props.errors && _this2.props.errors.state && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'small',
+                                    { className: 'error' },
+                                    _this2.props.errors.state
+                                ),
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text',
+                                    className: 'tk-form-input',
+                                    placeholder: 'Zip',
+                                    value: _this2.props.client.postalCode,
+                                    onChange: _this2.props.updateClient,
+                                    name: 'postalCode'
+                                }),
+                                _this2.props.errors && _this2.props.errors.postalCode && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'small',
+                                    { className: 'error' },
+                                    _this2.props.errors.postalCode
+                                )
+                            );
+                    }
+                }(),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'div',
+                    { className: 'row' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'div',
+                        { className: 'col-xs-12' },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            'button',
+                            { className: 'btn btn-default pull-right', onClick: function onClick() {
+                                    return _this2.props.saveClient();
+                                } },
+                            'Save'
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return ViewClientPane;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+/* harmony default export */ __webpack_exports__["a"] = (ViewClientPane);
 
 /***/ })
 /******/ ]);

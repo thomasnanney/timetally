@@ -56,6 +56,7 @@ body{
     box-shadow: -2px 2px 5px 0px #000;
     padding: 8px;
     z-index: 3;
+    min-width: 250px;
 }
 
 /*.tk-dropdown.align-right{*/
@@ -348,6 +349,7 @@ li.tab.active{
     content: '\f12a';
     color: red;
     font-family: FontAwesome;
+    padding-left: 10px;
 }
 /*********************MENU CSS*************************/
 
@@ -449,7 +451,7 @@ li.tab.active{
     background: transparent;
     border: none;
     border-bottom: 1px solid #cecece;
-    margin:15px 0px;
+    margin: 0px 0px 15px;
 }
 
 .tk-form-input:focus{
@@ -471,6 +473,7 @@ li.tab.active{
 .tk-form-textarea{
     display: block;
     width: 100%;
+    min-height: 80px;
     background: transparent;
     border: 1px dotted #cecece;
     -webkit-border-radius:5px;
