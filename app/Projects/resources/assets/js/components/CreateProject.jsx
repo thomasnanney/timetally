@@ -6,7 +6,7 @@ class CreateProject extends Component{
     constructor(props){
         super(props);
         this.state = {
-            step: 1,
+            activeView: 1,
             project: {
                 title: '',
                 scope: 'public',
@@ -70,22 +70,6 @@ class CreateProject extends Component{
         //     });
     }
 
-    nextStep(){
-        if(this.state.step == 3 && this.state.project.scope == 'public') {
-            this.setState({step: this.state.step + 2});
-        }else{
-            this.setState({step: this.state.step + 1});
-        }
-    }
-
-    prevStep(){
-        if(this.state.step == 5 && this.state.project.scope == 'public') {
-            this.setState({step: this.state.step - 2});
-        }else{
-            this.setState({step: this.state.step - 1});
-        }
-    }
-
     createProject(){
         let self = this;
 
@@ -100,7 +84,8 @@ class CreateProject extends Component{
                         let errors = response.data.messages;
                         self.setState({errors: errors});
                         self.setState({step: 1});
-                    }else{
+                    }
+                    if(response.data.status == "success"){
                         window.location.href = '/projects';
                     }
                 }
@@ -140,6 +125,10 @@ class CreateProject extends Component{
         this.setState({ project: newProject});
     }
 
+    makeTabActive(tab){
+        this.setState({activeView: tab});
+    }
+
     updateCheckbox(event){
         let name = event.target.name;
         let value = event.target.checked;
@@ -167,11 +156,31 @@ class CreateProject extends Component{
     }
 
     render(){
+
+        const tabs = [
+            'General',
+            'Client',
+            'Details',
+            'Users',
+            'Description'
+        ];
+
         return(
             <div className="tile raise">
+                <div className="row">
+                    <div className="col-xs-12">
+                        <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
+                            {
+                                tabs.map((tab, id) =>
+                                    <li className={"tab " + (this.state.activeView == id+1 ? 'active ': '') + (hasErrors(id, this.state.errors) ? 'pane-error ' : '')} onClick={() => this.makeTabActive(id+1)} key={id}>{tab}</li>
+                                )
+                            }
+                        </ul>
+                    </div>
+                </div>
                 <div className="pane-container">
                     {(() => {
-                        switch (this.state.step) {
+                        switch (this.state.activeView) {
                             case 1:
                                 return (
                                     <div className="pane medium-container margin-center">
@@ -231,12 +240,6 @@ class CreateProject extends Component{
                                                     ? <small className="error">{this.state.errors.scope}</small>
                                                     : ''
                                                 }
-                                            </div>
-                                        </div>
-                                        <br></br>
-                                        <div className="row">
-                                            <div className="col-xs-12">
-                                                <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right" aria-hidden="true">&nbsp;</i></a>
                                             </div>
                                         </div>
                                     </div>
@@ -317,8 +320,8 @@ class CreateProject extends Component{
                                                             <div className="slider round"></div>
                                                         </label>
                                                         Employee Hourly Rate
-                                                        {this.state.errors.projectedRevenue
-                                                            ? <small className="error">{this.state.errors.projectedRevenue}</small>
+                                                        {this.state.errors.billableHourlyType
+                                                            ? <small className="error">{this.state.errors.billableHourlyType}</small>
                                                             : ''
                                                         }
                                                     </div>
@@ -349,14 +352,6 @@ class CreateProject extends Component{
 
                                                     ''
                                             }
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
-                                                Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right"
-                                                                                                                                     aria-hidden="true"></i></a>
                                         </div>
                                     </div>
                                 </div>);
@@ -401,15 +396,6 @@ class CreateProject extends Component{
                                             : ''
                                         }
                                     </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
-                                                Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right"
-                                                                                                                                     aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
                                 </div>);
                             case 4:
                                 return (<div className="pane medium-container margin-center">
@@ -427,18 +413,10 @@ class CreateProject extends Component{
                                             ))
                                         }
                                     </div>
-                                    <br></br>
+                                    <br/>
                                     <div className="row">
                                         <div className="col-xs-12 text-center">
                                             <button onClick={() => this.addUserField()} className="btn tk-btn">Add User</button>
-                                        </div>
-                                    </div>
-                                    <br></br>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
-                                                Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right" aria-hidden="true"></i></a>
                                         </div>
                                     </div>
                                 </div>);
@@ -456,22 +434,60 @@ class CreateProject extends Component{
                                             : ''
                                         }
                                     </div>
-                                    <br></br>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
-                                                Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.createProject()}>Finish <i className="fa fa-chevron-right"
-                                                                                                       aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
                                 </div>);
                         }
                     }) ()}
+                    <div className="row">
+                        <div className="col-xs-12 text-right">
+                            <button className="btn tk-btn-success" onClick={this.createProject.bind(this)}>Save</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     }
+}
+
+function hasErrors(pane, errors){
+    const errorFields = [
+        [
+            'title',
+            'scope'
+        ],
+        [
+            'clientID',
+            'billableType',
+            'projectedRevenue',
+            'billableHourlyType',
+            'billableRate',
+        ],
+        [
+            'startDate',
+            'endDate',
+            'projectedTime',
+        ],
+        [
+
+        ],
+        [
+            'description'
+        ]
+    ];
+
+    let hasErrors = false;
+
+    if(errors){
+        Object.keys(errors).forEach(function(field){
+            for(let key in errorFields[pane]){
+                if(field ==  errorFields[pane][key]){
+                    hasErrors = true;
+                    break;
+                }
+            }
+        });
+    }
+
+    return hasErrors;
 }
 
 if(document.getElementById('createProject')){

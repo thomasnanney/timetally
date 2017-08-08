@@ -270,6 +270,10 @@ li.tab.active{
     max-width: 600px;
 }
 
+.btn{
+    margin:0px 5px;
+}
+
 .tk-btn{
     background-color: #f9f9f9;
     color: #777;

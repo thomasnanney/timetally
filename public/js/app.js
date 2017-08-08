@@ -41773,7 +41773,7 @@ var CreateProject = function (_Component) {
         var _this = _possibleConstructorReturn(this, (CreateProject.__proto__ || Object.getPrototypeOf(CreateProject)).call(this, props));
 
         _this.state = {
-            step: 1,
+            activeView: 1,
             project: {
                 title: '',
                 scope: 'public',
@@ -41835,24 +41835,6 @@ var CreateProject = function (_Component) {
             //     });
         }
     }, {
-        key: 'nextStep',
-        value: function nextStep() {
-            if (this.state.step == 3 && this.state.project.scope == 'public') {
-                this.setState({ step: this.state.step + 2 });
-            } else {
-                this.setState({ step: this.state.step + 1 });
-            }
-        }
-    }, {
-        key: 'prevStep',
-        value: function prevStep() {
-            if (this.state.step == 5 && this.state.project.scope == 'public') {
-                this.setState({ step: this.state.step - 2 });
-            } else {
-                this.setState({ step: this.state.step - 1 });
-            }
-        }
-    }, {
         key: 'createProject',
         value: function createProject() {
             var self = this;
@@ -41867,7 +41849,8 @@ var CreateProject = function (_Component) {
                         var errors = response.data.messages;
                         self.setState({ errors: errors });
                         self.setState({ step: 1 });
-                    } else {
+                    }
+                    if (response.data.status == "success") {
                         window.location.href = '/projects';
                     }
                 }
@@ -41914,6 +41897,11 @@ var CreateProject = function (_Component) {
             this.setState({ project: newProject });
         }
     }, {
+        key: 'makeTabActive',
+        value: function makeTabActive(tab) {
+            this.setState({ activeView: tab });
+        }
+    }, {
         key: 'updateCheckbox',
         value: function updateCheckbox(event) {
             var name = event.target.name;
@@ -41945,14 +41933,37 @@ var CreateProject = function (_Component) {
         value: function render() {
             var _this2 = this;
 
+            var tabs = ['General', 'Client', 'Details', 'Users', 'Description'];
+
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 { className: 'tile raise' },
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
+                    { className: 'row' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'div',
+                        { className: 'col-xs-12' },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            'ul',
+                            { className: 'no-list-style horizontal-menu text-center thin-border-bottom' },
+                            tabs.map(function (tab, id) {
+                                return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'li',
+                                    { className: "tab " + (_this2.state.activeView == id + 1 ? 'active ' : '') + (hasErrors(id, _this2.state.errors) ? 'pane-error ' : ''), onClick: function onClick() {
+                                            return _this2.makeTabActive(id + 1);
+                                        }, key: id },
+                                    tab
+                                );
+                            })
+                        )
+                    )
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'div',
                     { className: 'pane-container' },
                     function () {
-                        switch (_this2.state.step) {
+                        switch (_this2.state.activeView) {
                             case 1:
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                     'div',
@@ -42036,27 +42047,6 @@ var CreateProject = function (_Component) {
                                                 { className: 'error' },
                                                 _this2.state.errors.scope
                                             ) : ''
-                                        )
-                                    ),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        'div',
-                                        { className: 'row' },
-                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                            'div',
-                                            { className: 'col-xs-12' },
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style pull-right', onClick: function onClick() {
-                                                        return _this2.nextStep();
-                                                    } },
-                                                'Next ',
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                    'i',
-                                                    { className: 'fa fa-chevron-right', 'aria-hidden': 'true' },
-                                                    '\xA0'
-                                                )
-                                            )
                                         )
                                     )
                                 );
@@ -42162,10 +42152,10 @@ var CreateProject = function (_Component) {
                                                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'slider round' })
                                                 ),
                                                 'Employee Hourly Rate',
-                                                _this2.state.errors.projectedRevenue ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                                _this2.state.errors.billableHourlyType ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                                     'small',
                                                     { className: 'error' },
-                                                    _this2.state.errors.projectedRevenue
+                                                    _this2.state.errors.billableHourlyType
                                                 ) : ''
                                             )
                                         )
@@ -42194,31 +42184,6 @@ var CreateProject = function (_Component) {
                                                     _this2.state.errors.billableRate
                                                 ) : ''
                                             ) : ''
-                                        )
-                                    ),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        'div',
-                                        { className: 'row' },
-                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                            'div',
-                                            { className: 'col-xs-12' },
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style', onClick: function onClick() {
-                                                        return _this2.prevStep();
-                                                    } },
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-left', 'aria-hidden': 'true' }),
-                                                'Back'
-                                            ),
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style pull-right', onClick: function onClick() {
-                                                        return _this2.nextStep();
-                                                    } },
-                                                'Next ',
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-right',
-                                                    'aria-hidden': 'true' })
-                                            )
                                         )
                                     )
                                 );
@@ -42279,32 +42244,6 @@ var CreateProject = function (_Component) {
                                             { className: 'error' },
                                             _this2.state.errors.projectedTime
                                         ) : ''
-                                    ),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        'div',
-                                        { className: 'row' },
-                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                            'div',
-                                            { className: 'col-xs-12' },
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style', onClick: function onClick() {
-                                                        return _this2.prevStep();
-                                                    } },
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-left', 'aria-hidden': 'true' }),
-                                                'Back'
-                                            ),
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style pull-right', onClick: function onClick() {
-                                                        return _this2.nextStep();
-                                                    } },
-                                                'Next ',
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-right',
-                                                    'aria-hidden': 'true' })
-                                            )
-                                        )
                                     )
                                 );
                             case 4:
@@ -42344,31 +42283,6 @@ var CreateProject = function (_Component) {
                                                 'Add User'
                                             )
                                         )
-                                    ),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        'div',
-                                        { className: 'row' },
-                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                            'div',
-                                            { className: 'col-xs-12' },
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style', onClick: function onClick() {
-                                                        return _this2.prevStep();
-                                                    } },
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-left', 'aria-hidden': 'true' }),
-                                                'Back'
-                                            ),
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style pull-right', onClick: function onClick() {
-                                                        return _this2.nextStep();
-                                                    } },
-                                                'Next ',
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-right', 'aria-hidden': 'true' })
-                                            )
-                                        )
                                     )
                                 );
                             case 5:
@@ -42393,36 +42307,23 @@ var CreateProject = function (_Component) {
                                             { className: 'error' },
                                             _this2.state.errors.description
                                         ) : ''
-                                    ),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                        'div',
-                                        { className: 'row' },
-                                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                            'div',
-                                            { className: 'col-xs-12' },
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style', onClick: function onClick() {
-                                                        return _this2.prevStep();
-                                                    } },
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-left', 'aria-hidden': 'true' }),
-                                                'Back'
-                                            ),
-                                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                                'a',
-                                                { href: '#', className: 'no-link-style pull-right', onClick: function onClick() {
-                                                        return _this2.createProject();
-                                                    } },
-                                                'Finish ',
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-right',
-                                                    'aria-hidden': 'true' })
-                                            )
-                                        )
                                     )
                                 );
                         }
-                    }()
+                    }(),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'div',
+                        { className: 'row' },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            'div',
+                            { className: 'col-xs-12 text-right' },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'button',
+                                { className: 'btn tk-btn-success', onClick: this.createProject.bind(this) },
+                                'Save'
+                            )
+                        )
+                    )
                 )
             );
         }
@@ -42430,6 +42331,25 @@ var CreateProject = function (_Component) {
 
     return CreateProject;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+function hasErrors(pane, errors) {
+    var errorFields = [['title', 'scope'], ['clientID', 'billableType', 'projectedRevenue', 'billableHourlyType', 'billableRate'], ['startDate', 'endDate', 'projectedTime'], [], ['description']];
+
+    var hasErrors = false;
+
+    if (errors) {
+        Object.keys(errors).forEach(function (field) {
+            for (var key in errorFields[pane]) {
+                if (field == errorFields[pane][key]) {
+                    hasErrors = true;
+                    break;
+                }
+            }
+        });
+    }
+
+    return hasErrors;
+}
 
 if (document.getElementById('createProject')) {
     __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(CreateProject, null), document.getElementById('createProject'));
