@@ -32,7 +32,7 @@ export default class DropDownMenu extends Component {
                 <DropdownContent>
                     <ul className="no-list-style no-margin no-padding text-center">
                         {this.props.items.map((item, id) =>
-                            <li key={id} ><a href={item.link}>{item.name}</a></li>
+                            <li key={id}><a href={item.link}>{item.name}</a></li>
                         )}
                     </ul>
                     <div className="tk-arrow"></div>

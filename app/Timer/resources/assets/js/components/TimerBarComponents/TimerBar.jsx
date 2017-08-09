@@ -1,9 +1,7 @@
 import React, {Component} from 'react';
 
-import DropDownList from './DropDownList';
+import DropDownSelect from 'core/DropDownSelect';
 import DropDownDateTimePicker from './DropDownDateTimePicker';
-
-import DateFormat from 'dateformat';
 
 export default class TimerBar extends Component{
 
@@ -17,15 +15,12 @@ export default class TimerBar extends Component{
                 startTime: null,
                 endTime: null,
             },
-            timer: '00:00:00',
             project: {
-                title: '',
+                title: ''
             },
+            timer: '00:00:00',
             running: false,
-            projects: null,
-            isProjectMenuActive: false,
-            isStartDateMenuActive: false,
-            isEndDateMenuActive: false,
+            projects: [],
             errors: {},
         }
     }
@@ -75,16 +70,24 @@ export default class TimerBar extends Component{
 
     stopTimer(){
         clearInterval(this.timerID);
+        let newState = this.state;
+        newState.entry.endTime = new Date();
+        this.setState(newState);
         this.submitEntry();
         this.setState({running: false});
     }
 
     submitEntry(){
         let self = this;
+        let data = this.state.entry;
+        data.startTime = new Date(data.startTime).toUTCString();
+        data.endTime = new Date(data.endTime).toUTCString();
         axios.post('timer/create', {
-            data: self.state.entry
+            data: data
         })
             .then(function(response){
+                data.startTime = new Date(data.startTime);
+                data.endTime = new Date(data.endTime);
                 if(response.status == 200){
                     if(response.data.errors == 'true'){
                         let newState = self.state;
@@ -92,9 +95,6 @@ export default class TimerBar extends Component{
                         self.setState(newState);
                         setTimeout(() => self.removeErrors(), 10000);
                     }else{
-                        console.log("success");
-                        let newEntry = self.state.entry;
-                        newEntry['project_name'] = self.state.project.title
                         self.props.updateEntries();
                         let newState = self.state;
                         newState.entry = {
@@ -104,11 +104,6 @@ export default class TimerBar extends Component{
                             startTime: null,
                             endTime: null,
                         };
-
-                        newState. project = {
-                            title: '',
-                        };
-
                         self.setState(newState);
                     }
                 }
@@ -131,53 +126,24 @@ export default class TimerBar extends Component{
         this.setState({timer: newTimer});
     }
 
-    toggleMenu(menu){
+    updateEntry(evt){
+        let name = evt.target.name;
+        let value = evt.target.type === 'checkbox' ? evt.target.checked : evt.target.value;
         let newState = this.state;
-        newState[menu] = !this.state[menu];
-        this.setState(newState);
+        newState.entry[name] = value;
+        this.setState(newState, function(){
+            console.log(this.state.entry);
+        });
     }
 
-    updateInput(event){
-        let name = event.target.name;
-        let value = event.target.value;
-        this.updateState(name, value);
-    }
-
-    updateState(name, value){
-        let newEntry = this.state.entry;
-        newEntry[name] = value;
-        this.setState({ entry: newEntry});
-    }
-
-    updateProject(project){
+    updateProject(evt){
+        let value = evt.target.value;
         let newState = this.state;
-        newState.project = project;
-        newState.entry.projectID = project.id;
-        this.setState(newState);
-        this.toggleMenu('isProjectMenuActive');
-
-    }
-
-    toggleBillable(){
-        let newEntry = this.state.entry;
-        newEntry['billable'] = !this.state.entry.billable;
-        this.setState({entry: newEntry});
-    }
-
-    updateProjectStartTime(date, time){
-        let newEntry = this.state.entry;
-        newEntry['startTime'] = new Date(date + ' ' + time);
-        this.setState({entry: newEntry});
-        console.log(this.state.entry);
-        this.toggleMenu('isStartDateMenuActive');
-    }
-
-    updateProjectEndTime(date, time){
-        let newEntry = this.state.entry;
-        newEntry['endTime'] = new Date(date + ' ' + time);
-        this.setState({entry: newEntry});
-        console.log(this.state.entry);
-        this.toggleMenu('isEndDateMenuActive');
+        newState.project = value;
+        newState.entry.projectID = value.id;
+        this.setState(newState, function(){
+            console.log(this.state.entry);
+        });
     }
 
     render(){
@@ -195,36 +161,48 @@ export default class TimerBar extends Component{
             <div>
                 <div className="timer-container">
                     <div className="row">
-                        <div className="co-xs-12 col-md-6 timer-description">
+                        <div className="co-xs-12 col-md-5 timer-description">
                             <input type="text"
-                                   className="tk-timer-input"
+                                   className="tk-timer-input timer-element"
                                    placeholder="Task Description..."
-                                   onChange={this.updateInput.bind(this)}
+                                   onChange={this.updateEntry.bind(this)}
                                    value={this.state.entry.description}
                                    name="description"
                             />
                         </div>
-                        <div className="col-xs-12 col-md-6">
+                        <div className="col-xs-12 col-md-7">
                             <div className="row">
-                                <div className={"timer-project col-xs-3 relative tk-dropdown-container " + (this.state.isProjectMenuActive ? 'active' :'')}>
-                                    <input type="text" value={this.state.project.title} className="tk-timer-input" onClick={ ()=>this.toggleMenu('isProjectMenuActive')} placeholder="Project / Task"/>
-                                    <DropDownList items={this.state.projects} updateInput={this.updateProject.bind(this)} align="align-right"/>
+                                <div className="timer-project col-xs-3 ">
+                                    <DropDownSelect
+                                        data={this.state.projects}
+                                        updateInput={this.updateProject.bind(this)}
+                                        triggerName={this.state.project.title.length ? this.state.project.title : "Select project"}
+                                        name="project"
+                                    />
+                                    {/*//ToDo: Update to new drop down*/}
+                                    {/*<input type="text" value={this.state.project.title} className="tk-timer-input" onClick={ ()=>this.toggleMenu('isProjectMenuActive')} placeholder="Project / Task"/>*/}
+                                    {/*<DropDownList items={this.state.projects} updateInput={this.updateProject.bind(this)} align="align-right"/>*/}
                                 </div>
-                                <div className="timer-billable col-xs-1 text-center ">
-                                    <i className={"clickable fa fa-usd " + (this.state.entry.billable ? 'active' : '')} aria-hidden="true" onClick={this.toggleBillable.bind(this)}/>
+                                <div className="timer-billable col-xs-1 text-center">
+                                    <i className={" timer-element clickable fa fa-usd " + (this.state.entry.billable ? 'active' : '')} aria-hidden="true"/>
+                                    <input
+                                        type="checkbox"
+                                        name="billable"
+                                        className="timer-element icon-check-box clickable"
+                                        onClick={this.updateEntry.bind(this)}
+                                        checked={this.state.entry.billable}
+                                    />
                                 </div>
-                                <div className="timer-set-time col-xs-5 text-center relative tk-dropdown-container">
+                                <div className="timer-set-time col-xs-5 text-center">
                                     <div className="row">
                                         <div className="col-xs-6 no-padding">
-                                            <div className={"timer-project relative tk-dropdown-container " + (this.state.isStartDateMenuActive ? 'active' :'')}>
-                                                <input type="text" value={this.state.entry.startTime ? DateFormat(this.state.entry.startTime, "mm/dd/yy h:MM TT") : ''} className="tk-timer-input" onClick={ ()=>this.toggleMenu('isStartDateMenuActive')} placeholder="start time"/>
-                                                <DropDownDateTimePicker updateInput={this.updateProjectStartTime.bind(this)} align="align-right"/>
+                                            <div className="timer-project">
+                                                <DropDownDateTimePicker updateInput={this.updateEntry.bind(this)} time={this.state.entry.startTime} placeholder="Start time" name="startTime"/>
                                             </div>
                                         </div>
                                         <div className="col-xs-6 no-padding">
-                                            <div className={"timer-project relative tk-dropdown-container " + (this.state.isEndDateMenuActive ? 'active' :'')}>
-                                                <input type="text" value={this.state.entry.endTime ? DateFormat(this.state.entry.endTime, "mm/dd/yy h:MM TT") : ''} className="tk-timer-input" onClick={ ()=>this.toggleMenu('isEndDateMenuActive')} placeholder="end time"/>
-                                                <DropDownDateTimePicker updateInput={this.updateProjectEndTime.bind(this)} align="align-right"/>
+                                            <div className="timer-project">
+                                                <DropDownDateTimePicker updateInput={this.updateEntry.bind(this)} time={this.state.entry.endTime} placeholder="End time" name="endTime"/>
                                             </div>
                                         </div>
                                     </div>
@@ -233,17 +211,17 @@ export default class TimerBar extends Component{
                                     {
                                         this.state.running
                                             ?
-                                                <i className="fa fa-pause-circle error" aria-hidden="true" onClick={this.stopTimer.bind(this)}/>
+                                                <i className="fa clickable fa-pause-circle error timer-element" aria-hidden="true" onClick={this.stopTimer.bind(this)}/>
                                             :
-                                                <i className="fa fa-play-circle" aria-hidden="true" onClick={this.startTimer.bind(this)}/>
+                                                <i className="fa clickable fa-play-circle timer-element" aria-hidden="true" onClick={this.startTimer.bind(this)}/>
                                     }
                                 </div>
                                 <div className="timer-clock col-xs-2">
                                     {this.state.running
                                         ?
-                                            <p>{this.state.timer}</p>
+                                            <p className=" timer-element">{this.state.timer}</p>
                                         :
-                                            <p>00:00:00</p>
+                                            <p className=" timer-element">00:00:00</p>
                                     }
                                 </div>
                             </div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Projects\Models\Project;
+use App\Workspaces\Models\Workspace;
 
 class UsersController extends Controller
 {
@@ -52,20 +53,33 @@ class UsersController extends Controller
     public function postGetAllTimeEntriesByUser(){
         $user = Auth::user();
 
-        $timeEntries =  $user->queryTimeEntries()->get();
+        $timeEntries =  $user->queryTimeEntries()->where('workspaceID', '=', $user->current_workspace_id)->get();
 
-        $returnEntries = [];
+        return $timeEntries->groupBy(function($entry){
+            return date('Y-m-d', strtotime($entry->startTime));
+        })->transform(function($entries){
+           $subEntries = collect($entries);
+           return $entries->sortByDesc(function($entry){
+               return date('Y-m-d h:i', strtotime($entry['startTime']));
+           })->values();
+        })->sortByDesc(function($entry, $key){
+            return date('Y-m-d', strtotime($key));
+        });
+        
+    }
 
-        foreach($timeEntries as $entry){
-            if(!isset($returnEntries[date('Y-m-d', strtotime($entry->startTime))])){
-                $returnEntries[date('Y-m-d', strtotime($entry->startTime))] = [];
-            }
-            $entry['project_name'] = Project::find($entry->projectID)->title;
-            array_push($returnEntries[date('Y-m-d', strtotime($entry->startTime))], $entry);
+    public function postGetCurrentWorkspaceByUser(){
+        $user = Auth::user();
+        return $user->getCurrentWorkspace();
+    }
+
+    public function postMakeWorkspaceActive(Workspace $workspace){
+        if($workspace){
+            $user = Auth::user();
+            $user->makeWorkspaceActive($workspace);
+            return response('success', 200);
         }
 
-        krsort($returnEntries);
-
-        return $returnEntries;
+        return response('invalid workspace', 401);
     }
 }

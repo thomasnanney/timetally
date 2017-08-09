@@ -22,7 +22,7 @@ export default class TimerEntryContainer extends Component{
                             ?
                             <div>
                                 {Object.keys(this.props.timeEntries).map((day, key) => (
-                                    <ul key={key}>
+                                    <ul key={key} className="no-padding">
                                         <li key={day}>{printHeader(day)}</li>
                                         {this.props.timeEntries[day].map((entry) => (
                                             <TimerEntry entry={entry} key={entry.id} removeItem={this.props.removeItem}/>
@@ -44,14 +44,14 @@ export default class TimerEntryContainer extends Component{
 
 function printHeader(date){
     let todayDate = new Date();
-    console.log("TODAY: " + todayDate);
+    // console.log("TODAY: " + todayDate);
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    console.log("YESTERDAY: " + yesterday);
+    // console.log("YESTERDAY: " + yesterday);
     yesterday = yesterday.yyyymmdd();
     let today = todayDate.yyyymmdd();
-    console.log(date);
-    console.log(todayDate.getTimezoneOffset());
+    // console.log(date);
+    // console.log(todayDate.getTimezoneOffset());
     if(date == today){
         return 'Today';
     }else if(date == yesterday){
@@ -62,11 +62,11 @@ function printHeader(date){
             day: "numeric"
         };
         let newDate = new Date(date);
-        console.log("NEW DATE 1: " + newDate);
+        // console.log("NEW DATE 1: " + newDate);
         newDate = newDate.toLocaleTimeString("en-us", options);
-        console.log("NEW DATE 2: " + newDate);
+        // console.log("NEW DATE 2: " + newDate);
         newDate =  newDate.substr(0, newDate.lastIndexOf(","));
-        console.log("NEW DATE 3: " + newDate);
+        // console.log("NEW DATE 3: " + newDate);
         return newDate;
     }
 }

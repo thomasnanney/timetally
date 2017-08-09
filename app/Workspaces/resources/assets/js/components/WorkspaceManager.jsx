@@ -11,14 +11,29 @@ class WorkspaceManager extends Component {
         super(props);
         this.state ={
             addNewActive: false,
-            workspaces: {}
+            workspaces: {},
+            currentWorkspace: {},
         };
 
     }
 
     componentWillMount(){
         this.getWorkspaces();
+        this.getCurrentWorkspace();
     };
+
+    getCurrentWorkspace(){
+        let self = this;
+        axios.post('/users/getCurrentWorkspace')
+            .then(function(response){
+                self.setState({currentWorkspace: response.data});
+            })
+            .catch(function(response){
+                console.log(response);
+                alert("We were unable to retrieve your current workspace.  Please reload the page or contact your" +
+                    " System Administrator.");
+            });
+    }
 
     getWorkspaces(){
         let self = this;
@@ -33,8 +48,27 @@ class WorkspaceManager extends Component {
             });
     }
 
-    render() {
+    makeWorkspaceActive(id){
+        let self = this;
 
+        axios.post('/users/makeWorkspaceActive/' + id)
+            .then(function(response){
+                console.log(response);
+                if(response.status == 200){
+                    self.getCurrentWorkspace();
+                }
+                if(response.stats == 401){
+                    alert("There is an error with the workspace you selected, please refresh the page and try again\n");
+                }
+            }).catch(function(error){
+                console.log(error);
+                alert("We experienced an error updating your active workspace.  Please refresh the page and try" +
+                    " again.");
+        });
+    }
+
+    render() {
+        console.log(this.state);
         return (
             <div>
                 <h1>Workspaces</h1>
@@ -49,7 +83,12 @@ class WorkspaceManager extends Component {
                     </div>
                     {this.state.workspaces.length > 0 ?
                         this.state.workspaces.map((space, id) =>
-                            <ListItem workspace={space} key={space.id}/>
+                            <ListItem
+                                workspace={space}
+                                key={space.id}
+                                active={(space.id == this.state.currentWorkspace.id)}
+                                makeWorkspaceActive={this.makeWorkspaceActive.bind(this, space.id)}
+                            />
                         )
                         :
                         <p>You do not have any workspaces...</p>
@@ -66,6 +105,5 @@ class WorkspaceManager extends Component {
 }
 
 if(document.getElementById('workspaceManager')){
-    console.log("manager present");
     ReactDOM.render(<WorkspaceManager />, document.getElementById('workspaceManager'));
 }

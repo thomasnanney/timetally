@@ -10,6 +10,7 @@ class TimeEntries extends Model {
         'projectID',
         'userID',
         'workspaceID',
+        'clientID',
         'startTime',
         'endTime',
         'description',
@@ -34,7 +35,7 @@ class TimeEntries extends Model {
             'description' => 'required|string|min:1',
             'userID' => 'required|integer|exists:users,id', // needs to exist
             'projectID' => 'required|integer|exists:projects,id', // needs to exist
-            'workspaceID' => 'required|integer|exists:workspace,id',//needs to exist
+            'workspaceID' => 'required|integer|exists:workspaces,id',//needs to exist
             'startTime' => 'required',
             'endTime' => 'required',
             'billableType' => 'sometimes|integer',

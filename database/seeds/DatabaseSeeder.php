@@ -78,11 +78,18 @@ class DatabaseSeeder extends Seeder
 
             //link users to project
             //link primary user to all projects
-            $project->queryUsers()->attach($primaryUser->id);
+            if($project->scope == 'private'){
+                $project->queryUsers()->attach($primaryUser->id);
+            }
 
             //link all 5 users to each of the projects
             foreach($subUsers as $user){
-                $project->queryUsers()->attach($user->id);
+                if($project->scope == 'private'){
+                    $rand = rand(0, 8);
+                    if($rand%2){
+                        $project->queryUsers()->attach($user->id);
+                    }
+                }
                 //create some time entries by each user for each project
                 $num_entries = rand(7,15);
                 factory(TimeEntry::class, $num_entries)->create([

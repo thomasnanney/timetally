@@ -39,44 +39,34 @@ class User extends Authenticatable
     }
 
     public function getAllClients(){
-        $workspaces = $this->queryWorkspaces()->get();
+        $workspace = $this->getCurrentWorkspace();
 
-        $results = collect();
-        foreach($workspaces as $workspace){
-            $clients = $workspace->queryClients()->get();
-            foreach($clients as $client){
-                $results->push($client);
-            }
-        }
-
-        return $results->unique('id');
+        return $workspace->queryClients()->get();
     }
 
     public function getAllProjectsByUser(){
-        $workspaces = $this->queryWorkspaces()->get();
 
-        $results = collect();
-        foreach($workspaces as $workspace){
-            $projects = $workspace->queryProjects()->get();
-//            $results->merge($projects);
-            foreach($projects as $project){
-                $project['workspaceTitle'] = Workspace::find($project->workspaceID)->title;
-                $project['clientName'] = Client::find($project->clientID)->name;
-                $results->push($project);
-            }
+        //get pulic projects for workspace and private projects and merge then return
+        $publicProjects = $this->queryPublicProjects()->get();
+        $privateProjects = $this->queryPrivateProjects()->where('workspaceID', '=', $this->current_workspace_id)->get();
 
-        }
-
-//        var_dump($results);
-
-        return $results;
+        return $publicProjects->merge($privateProjects)->sortBy('title')->values();
     }
 
     public function getCurrentWorkspace(){
         return Workspace::find($this->current_workspace_id);
     }
 
-    public function queryProjects(){
+    public function makeWorkspaceActive(Workspace $workspace){
+        $this->current_workspace_id = $workspace->id;
+        $this->save();
+    }
+
+    public function queryPublicProjects(){
+        return $this->getCurrentWorkspace()->queryProjects()->where('scope', '=', 'public');
+    }
+
+    public function queryPrivateProjects(){
         return $this->belongsToMany('App\Projects\Models\Project', 'project_user_pivot', 'userID', 'projectID');
     }
 

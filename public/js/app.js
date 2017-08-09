@@ -42418,9 +42418,13 @@ var ProjectsList = function (_Component) {
                         'Workspace'
                     )
                 ),
-                this.props.projects.map(function (project) {
+                this.props.projects.length ? this.props.projects.map(function (project) {
                     return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_projects_ProjectManagerComponents_ProjectsListItem__["a" /* default */], { project: project, key: project.id, removeItem: _this2.props.removeItem });
-                })
+                }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    'p',
+                    null,
+                    'You do not have any projects...slacker.'
+                )
             );
         }
     }]);
@@ -44293,6 +44297,12 @@ function getEndDate() {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_day_picker___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react_day_picker__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_day_picker_lib_style_css__ = __webpack_require__(327);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_day_picker_lib_style_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_react_day_picker_lib_style_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_simple_dropdown__ = __webpack_require__(165);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_simple_dropdown___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_4_react_simple_dropdown__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_simple_dropdown_styles_Dropdown_css__ = __webpack_require__(176);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_simple_dropdown_styles_Dropdown_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_react_simple_dropdown_styles_Dropdown_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_dateformat__ = __webpack_require__(238);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_dateformat___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_6_dateformat__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -44300,6 +44310,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
 
 
 
@@ -44315,9 +44329,7 @@ var DropDownDateTimePicker = function (_Component) {
         var _this = _possibleConstructorReturn(this, (DropDownDateTimePicker.__proto__ || Object.getPrototypeOf(DropDownDateTimePicker)).call(this, props));
 
         _this.state = {
-            selectedDay: new Date(),
-            selectedTime: new Date().getHours() + ':' + new Date().getMinutes(),
-            selectedTimeOfDay: new Date().getHours > 11 ? 'PM' : 'AM'
+            selectedTime: new Date()
         };
         return _this;
     }
@@ -44331,24 +44343,65 @@ var DropDownDateTimePicker = function (_Component) {
     }, {
         key: 'handleDayClick',
         value: function handleDayClick(day) {
-            this.setState({ selectedDay: day });
+            var current = new Date(this.state.selectedTime);
+            var newDay = new Date(day);
+            newDay.setHours(current.getHours(), current.getMinutes());
+            this.setState({ selectedTime: newDay }, function () {
+                this.updateInput();
+            });
         }
     }, {
         key: 'handleTimeClick',
         value: function handleTimeClick(hour, minute) {
-            this.setState({ selectedTime: hour + ':' + minute });
+            var current = new Date(this.state.selectedTime);
+            if (hour) {
+                if (current.getHours() > 11) {
+                    current.setHours(hour + 12);
+                    this.setState({ selectedTime: current }, function () {
+                        this.updateInput();
+                    });
+                } else {
+                    current.setHours(hour);
+                    this.setState({ selectedTime: current }, function () {
+                        this.updateInput();
+                    });
+                }
+            }
+            if (minute) {
+                current.setMinutes(minute);
+                this.setState({ selectedTime: current }, function () {
+                    this.updateInput();
+                });
+            }
         }
     }, {
         key: 'handleTimeOfDayClick',
         value: function handleTimeOfDayClick(event) {
             var value = event.target.value;
-            this.setState({ selectedTimeOfDay: value });
+            var current = new Date(this.state.selectedTime);
+            if (value == 'AM' && current.getHours() > 11) {
+                current.setHours(current.getHours() - 12);
+                this.setState({ selectedTime: current }, function () {
+                    this.updateInput();
+                });
+            }
+            if (value == 'PM' && current.getHours() <= 11) {
+                current.setHours(current.getHours() + 12);
+                this.setState({ selectedTime: current }, function () {
+                    this.updateInput();
+                });
+            }
         }
     }, {
-        key: 'handleSave',
-        value: function handleSave() {
-            var time = this.state.selectedTime + ' ' + this.state.selectedTimeOfDay;
-            this.props.updateInput(this.state.selectedDay.toDateString(), time);
+        key: 'updateInput',
+        value: function updateInput() {
+            var evt = {
+                target: {}
+            };
+            evt.target.name = this.props.name;
+            evt.target.type = 'text';
+            evt.target.value = new Date(this.state.selectedTime);
+            this.props.updateInput(evt);
         }
     }, {
         key: 'render',
@@ -44356,23 +44409,35 @@ var DropDownDateTimePicker = function (_Component) {
             var _this2 = this;
 
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                'div',
-                null,
+                __WEBPACK_IMPORTED_MODULE_4_react_simple_dropdown___default.a,
+                { ref: 'dropdown', className: 'full-width relative' },
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'div',
-                    { className: "date-time-picker tk-dropdown tk-dropdown-list tk-root " + this.props.align },
+                    __WEBPACK_IMPORTED_MODULE_4_react_simple_dropdown__["DropdownTrigger"],
+                    { className: 'full-width' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text', value: this.props.time ? __WEBPACK_IMPORTED_MODULE_6_dateformat___default()(this.props.time, "mm/dd/yy h:MM TT") : '', className: 'timer-element tk-timer-input', placeholder: this.props.placeholder })
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_4_react_simple_dropdown__["DropdownContent"],
+                    null,
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'div',
                         { className: 'row' },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'div',
-                            { className: 'col-xs-12 col-sm-6' },
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_react_day_picker___default.a, { onDayClick: this.handleDayClick.bind(this), selectedDays: this.state.selectedDay })
+                            { className: '' },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_react_day_picker___default.a, { onDayClick: this.handleDayClick.bind(this), selectedDays: new Date(this.state.selectedTime) })
                         ),
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'div',
-                            { className: 'col-xs-12 col-sm-6' },
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_timepicker___default.a, { size: 300, radius: 80, militaryTime: false, onChange: this.handleTimeClick.bind(this) }),
+                            { className: '' },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_timepicker___default.a, {
+                                size: 300,
+                                radius: 80,
+                                militaryTime: false,
+                                hours: new Date(this.state.selectedTime).getHours() > 11 ? new Date(this.state.selectedTime).getHours() - 11 : new Date(this.state.selectedTime).getHours() + 1,
+                                minutes: new Date(this.state.selectedTime).getMinutes(),
+                                onChange: this.handleTimeClick.bind(this)
+                            }),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'div',
                                 { className: 'row' },
@@ -44384,14 +44449,14 @@ var DropDownDateTimePicker = function (_Component) {
                                         { className: 'btn-group', role: 'group' },
                                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                             'button',
-                                            { type: 'button', className: "btn btn-primary " + (this.state.selectedTimeOfDay == 'AM' ? 'active' : ''), value: 'AM', onClick: function onClick(e) {
+                                            { type: 'button', className: "btn btn-primary " + (new Date(this.state.selectedTime).getHours() <= 11 ? 'active' : ''), value: 'AM', onClick: function onClick(e) {
                                                     return _this2.handleTimeOfDayClick(e);
                                                 } },
                                             'AM'
                                         ),
                                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                             'button',
-                                            { type: 'button', className: "btn btn-primary " + (this.state.selectedTimeOfDay == 'PM' ? 'active' : ''), value: 'PM', onClick: function onClick(e) {
+                                            { type: 'button', className: "btn btn-primary " + (new Date(this.state.selectedTime).getHours() > 11 ? 'active' : ''), value: 'PM', onClick: function onClick(e) {
                                                     return _this2.handleTimeOfDayClick(e);
                                                 } },
                                             'PM'
@@ -44401,21 +44466,8 @@ var DropDownDateTimePicker = function (_Component) {
                             )
                         )
                     ),
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'div',
-                        { className: 'row' },
-                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'div',
-                            { className: 'col-xs-12' },
-                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                                'button',
-                                { type: 'button', className: 'btn btn-success', onClick: this.handleSave.bind(this) },
-                                'Save'
-                            )
-                        )
-                    )
-                ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'tk-arrow' })
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'tk-arrow' })
+                )
             );
         }
     }]);
@@ -44426,140 +44478,16 @@ var DropDownDateTimePicker = function (_Component) {
 /* harmony default export */ __webpack_exports__["a"] = (DropDownDateTimePicker);
 
 /***/ }),
-/* 386 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__DropDownListItem__ = __webpack_require__(387);
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-//components imports
-
-
-var DropDownList = function (_Component) {
-    _inherits(DropDownList, _Component);
-
-    function DropDownList(props) {
-        _classCallCheck(this, DropDownList);
-
-        return _possibleConstructorReturn(this, (DropDownList.__proto__ || Object.getPrototypeOf(DropDownList)).call(this, props));
-    }
-
-    _createClass(DropDownList, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {}
-    }, {
-        key: 'componentWillUnmount',
-        value: function componentWillUnmount() {}
-    }, {
-        key: 'render',
-        value: function render() {
-            var _this2 = this;
-
-            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                'div',
-                null,
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                    'div',
-                    { className: "tk-dropdown tk-dropdown-list tk-root " + this.props.align },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                        'ul',
-                        { className: 'no-list-style no-margin no-padding text-center' },
-                        this.props.items && this.props.items.length > 0 ? this.props.items.map(function (item, id) {
-                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__DropDownListItem__["a" /* default */], { item: item, onAction: _this2.props.updateInput, key: id });
-                        }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                            'a',
-                            { href: '/projects/create' },
-                            'Add Project'
-                        )
-                    )
-                ),
-                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'tk-arrow' })
-            );
-        }
-    }]);
-
-    return DropDownList;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/* harmony default export */ __webpack_exports__["a"] = (DropDownList);
-
-/***/ }),
-/* 387 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
-
-//components imports
-
-var DropDownListItem = function (_Component) {
-    _inherits(DropDownListItem, _Component);
-
-    function DropDownListItem(props) {
-        _classCallCheck(this, DropDownListItem);
-
-        return _possibleConstructorReturn(this, (DropDownListItem.__proto__ || Object.getPrototypeOf(DropDownListItem)).call(this, props));
-        // this.state
-    }
-
-    _createClass(DropDownListItem, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {}
-    }, {
-        key: 'componentWillUnmount',
-        value: function componentWillUnmount() {}
-    }, {
-        key: 'render',
-        value: function render() {
-            var _this2 = this;
-
-            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
-                'li',
-                { key: this.props.item.id, onClick: function onClick() {
-                        return _this2.props.onAction(_this2.props.item);
-                    } },
-                this.props.item.title
-            );
-        }
-    }]);
-
-    return DropDownListItem;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
-
-/* harmony default export */ __webpack_exports__["a"] = (DropDownListItem);
-
-/***/ }),
+/* 386 */,
+/* 387 */,
 /* 388 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__DropDownList__ = __webpack_require__(386);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_DropDownSelect__ = __webpack_require__(861);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__DropDownDateTimePicker__ = __webpack_require__(385);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_dateformat__ = __webpack_require__(238);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_dateformat___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_dateformat__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -44567,8 +44495,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-
 
 
 
@@ -44591,15 +44517,12 @@ var TimerBar = function (_Component) {
                 startTime: null,
                 endTime: null
             },
-            timer: '00:00:00',
             project: {
                 title: ''
             },
+            timer: '00:00:00',
             running: false,
-            projects: null,
-            isProjectMenuActive: false,
-            isStartDateMenuActive: false,
-            isEndDateMenuActive: false,
+            projects: [],
             errors: {}
         };
         return _this;
@@ -44652,6 +44575,9 @@ var TimerBar = function (_Component) {
         key: 'stopTimer',
         value: function stopTimer() {
             clearInterval(this.timerID);
+            var newState = this.state;
+            newState.entry.endTime = new Date();
+            this.setState(newState);
             this.submitEntry();
             this.setState({ running: false });
         }
@@ -44659,9 +44585,14 @@ var TimerBar = function (_Component) {
         key: 'submitEntry',
         value: function submitEntry() {
             var self = this;
+            var data = this.state.entry;
+            data.startTime = new Date(data.startTime).toUTCString();
+            data.endTime = new Date(data.endTime).toUTCString();
             axios.post('timer/create', {
-                data: self.state.entry
+                data: data
             }).then(function (response) {
+                data.startTime = new Date(data.startTime);
+                data.endTime = new Date(data.endTime);
                 if (response.status == 200) {
                     if (response.data.errors == 'true') {
                         var newState = self.state;
@@ -44671,9 +44602,6 @@ var TimerBar = function (_Component) {
                             return self.removeErrors();
                         }, 10000);
                     } else {
-                        console.log("success");
-                        var newEntry = self.state.entry;
-                        newEntry['project_name'] = self.state.project.title;
                         self.props.updateEntries();
                         var _newState = self.state;
                         _newState.entry = {
@@ -44683,11 +44611,6 @@ var TimerBar = function (_Component) {
                             startTime: null,
                             endTime: null
                         };
-
-                        _newState.project = {
-                            title: ''
-                        };
-
                         self.setState(_newState);
                     }
                 }
@@ -44711,64 +44634,30 @@ var TimerBar = function (_Component) {
             this.setState({ timer: newTimer });
         }
     }, {
-        key: 'toggleMenu',
-        value: function toggleMenu(menu) {
+        key: 'updateEntry',
+        value: function updateEntry(evt) {
+            var name = evt.target.name;
+            var value = evt.target.type === 'checkbox' ? evt.target.checked : evt.target.value;
             var newState = this.state;
-            newState[menu] = !this.state[menu];
-            this.setState(newState);
-        }
-    }, {
-        key: 'updateInput',
-        value: function updateInput(event) {
-            var name = event.target.name;
-            var value = event.target.value;
-            this.updateState(name, value);
-        }
-    }, {
-        key: 'updateState',
-        value: function updateState(name, value) {
-            var newEntry = this.state.entry;
-            newEntry[name] = value;
-            this.setState({ entry: newEntry });
+            newState.entry[name] = value;
+            this.setState(newState, function () {
+                console.log(this.state.entry);
+            });
         }
     }, {
         key: 'updateProject',
-        value: function updateProject(project) {
+        value: function updateProject(evt) {
+            var value = evt.target.value;
             var newState = this.state;
-            newState.project = project;
-            newState.entry.projectID = project.id;
-            this.setState(newState);
-            this.toggleMenu('isProjectMenuActive');
-        }
-    }, {
-        key: 'toggleBillable',
-        value: function toggleBillable() {
-            var newEntry = this.state.entry;
-            newEntry['billable'] = !this.state.entry.billable;
-            this.setState({ entry: newEntry });
-        }
-    }, {
-        key: 'updateProjectStartTime',
-        value: function updateProjectStartTime(date, time) {
-            var newEntry = this.state.entry;
-            newEntry['startTime'] = new Date(date + ' ' + time);
-            this.setState({ entry: newEntry });
-            console.log(this.state.entry);
-            this.toggleMenu('isStartDateMenuActive');
-        }
-    }, {
-        key: 'updateProjectEndTime',
-        value: function updateProjectEndTime(date, time) {
-            var newEntry = this.state.entry;
-            newEntry['endTime'] = new Date(date + ' ' + time);
-            this.setState({ entry: newEntry });
-            console.log(this.state.entry);
-            this.toggleMenu('isEndDateMenuActive');
+            newState.project = value;
+            newState.entry.projectID = value.id;
+            this.setState(newState, function () {
+                console.log(this.state.entry);
+            });
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this3 = this;
 
             var errorMessages = [];
             if (this.state.errors) {
@@ -44790,37 +44679,46 @@ var TimerBar = function (_Component) {
                         { className: 'row' },
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'div',
-                            { className: 'co-xs-12 col-md-6 timer-description' },
+                            { className: 'co-xs-12 col-md-5 timer-description' },
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text',
-                                className: 'tk-timer-input',
+                                className: 'tk-timer-input timer-element',
                                 placeholder: 'Task Description...',
-                                onChange: this.updateInput.bind(this),
+                                onChange: this.updateEntry.bind(this),
                                 value: this.state.entry.description,
                                 name: 'description'
                             })
                         ),
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                             'div',
-                            { className: 'col-xs-12 col-md-6' },
+                            { className: 'col-xs-12 col-md-7' },
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                 'div',
                                 { className: 'row' },
                                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                     'div',
-                                    { className: "timer-project col-xs-3 relative tk-dropdown-container " + (this.state.isProjectMenuActive ? 'active' : '') },
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text', value: this.state.project.title, className: 'tk-timer-input', onClick: function onClick() {
-                                            return _this3.toggleMenu('isProjectMenuActive');
-                                        }, placeholder: 'Project / Task' }),
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1__DropDownList__["a" /* default */], { items: this.state.projects, updateInput: this.updateProject.bind(this), align: 'align-right' })
+                                    { className: 'timer-project col-xs-3 ' },
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_core_DropDownSelect__["a" /* default */], {
+                                        data: this.state.projects,
+                                        updateInput: this.updateProject.bind(this),
+                                        triggerName: this.state.project.title.length ? this.state.project.title : "Select project",
+                                        name: 'project'
+                                    })
                                 ),
                                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                     'div',
-                                    { className: 'timer-billable col-xs-1 text-center ' },
-                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: "clickable fa fa-usd " + (this.state.entry.billable ? 'active' : ''), 'aria-hidden': 'true', onClick: this.toggleBillable.bind(this) })
+                                    { className: 'timer-billable col-xs-1 text-center' },
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: " timer-element clickable fa fa-usd " + (this.state.entry.billable ? 'active' : ''), 'aria-hidden': 'true' }),
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', {
+                                        type: 'checkbox',
+                                        name: 'billable',
+                                        className: 'timer-element icon-check-box clickable',
+                                        onClick: this.updateEntry.bind(this),
+                                        checked: this.state.entry.billable
+                                    })
                                 ),
                                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                     'div',
-                                    { className: 'timer-set-time col-xs-5 text-center relative tk-dropdown-container' },
+                                    { className: 'timer-set-time col-xs-5 text-center' },
                                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                         'div',
                                         { className: 'row' },
@@ -44829,11 +44727,8 @@ var TimerBar = function (_Component) {
                                             { className: 'col-xs-6 no-padding' },
                                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                                 'div',
-                                                { className: "timer-project relative tk-dropdown-container " + (this.state.isStartDateMenuActive ? 'active' : '') },
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text', value: this.state.entry.startTime ? __WEBPACK_IMPORTED_MODULE_3_dateformat___default()(this.state.entry.startTime, "mm/dd/yy h:MM TT") : '', className: 'tk-timer-input', onClick: function onClick() {
-                                                        return _this3.toggleMenu('isStartDateMenuActive');
-                                                    }, placeholder: 'start time' }),
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__DropDownDateTimePicker__["a" /* default */], { updateInput: this.updateProjectStartTime.bind(this), align: 'align-right' })
+                                                { className: 'timer-project' },
+                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__DropDownDateTimePicker__["a" /* default */], { updateInput: this.updateEntry.bind(this), time: this.state.entry.startTime, placeholder: 'Start time', name: 'startTime' })
                                             )
                                         ),
                                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
@@ -44841,11 +44736,8 @@ var TimerBar = function (_Component) {
                                             { className: 'col-xs-6 no-padding' },
                                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                                 'div',
-                                                { className: "timer-project relative tk-dropdown-container " + (this.state.isEndDateMenuActive ? 'active' : '') },
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('input', { type: 'text', value: this.state.entry.endTime ? __WEBPACK_IMPORTED_MODULE_3_dateformat___default()(this.state.entry.endTime, "mm/dd/yy h:MM TT") : '', className: 'tk-timer-input', onClick: function onClick() {
-                                                        return _this3.toggleMenu('isEndDateMenuActive');
-                                                    }, placeholder: 'end time' }),
-                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__DropDownDateTimePicker__["a" /* default */], { updateInput: this.updateProjectEndTime.bind(this), align: 'align-right' })
+                                                { className: 'timer-project' },
+                                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2__DropDownDateTimePicker__["a" /* default */], { updateInput: this.updateEntry.bind(this), time: this.state.entry.endTime, placeholder: 'End time', name: 'endTime' })
                                             )
                                         )
                                     )
@@ -44853,18 +44745,18 @@ var TimerBar = function (_Component) {
                                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                     'div',
                                     { className: 'timer-start-stop col-xs-1 text-center' },
-                                    this.state.running ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-pause-circle error', 'aria-hidden': 'true', onClick: this.stopTimer.bind(this) }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-play-circle', 'aria-hidden': 'true', onClick: this.startTimer.bind(this) })
+                                    this.state.running ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa clickable fa-pause-circle error timer-element', 'aria-hidden': 'true', onClick: this.stopTimer.bind(this) }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa clickable fa-play-circle timer-element', 'aria-hidden': 'true', onClick: this.startTimer.bind(this) })
                                 ),
                                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                     'div',
                                     { className: 'timer-clock col-xs-2' },
                                     this.state.running ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                         'p',
-                                        null,
+                                        { className: ' timer-element' },
                                         this.state.timer
                                     ) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                         'p',
-                                        null,
+                                        { className: ' timer-element' },
                                         '00:00:00'
                                     )
                                 )
@@ -45042,7 +44934,7 @@ var TimerEntryContainer = function (_Component) {
                             Object.keys(this.props.timeEntries).map(function (day, key) {
                                 return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                     'ul',
-                                    { key: key },
+                                    { key: key, className: 'no-padding' },
                                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                         'li',
                                         { key: day },
@@ -45072,14 +44964,14 @@ var TimerEntryContainer = function (_Component) {
 
 function printHeader(date) {
     var todayDate = new Date();
-    console.log("TODAY: " + todayDate);
+    // console.log("TODAY: " + todayDate);
     var yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
-    console.log("YESTERDAY: " + yesterday);
+    // console.log("YESTERDAY: " + yesterday);
     yesterday = yesterday.yyyymmdd();
     var today = todayDate.yyyymmdd();
-    console.log(date);
-    console.log(todayDate.getTimezoneOffset());
+    // console.log(date);
+    // console.log(todayDate.getTimezoneOffset());
     if (date == today) {
         return 'Today';
     } else if (date == yesterday) {
@@ -45090,11 +44982,11 @@ function printHeader(date) {
             day: "numeric"
         };
         var newDate = new Date(date);
-        console.log("NEW DATE 1: " + newDate);
+        // console.log("NEW DATE 1: " + newDate);
         newDate = newDate.toLocaleTimeString("en-us", options);
-        console.log("NEW DATE 2: " + newDate);
+        // console.log("NEW DATE 2: " + newDate);
         newDate = newDate.substr(0, newDate.lastIndexOf(","));
-        console.log("NEW DATE 3: " + newDate);
+        // console.log("NEW DATE 3: " + newDate);
         return newDate;
     }
 }
@@ -46009,7 +45901,8 @@ var WorkspaceManager = function (_Component) {
 
         _this.state = {
             addNewActive: false,
-            workspaces: {}
+            workspaces: {},
+            currentWorkspace: {}
         };
 
         return _this;
@@ -46019,6 +45912,18 @@ var WorkspaceManager = function (_Component) {
         key: 'componentWillMount',
         value: function componentWillMount() {
             this.getWorkspaces();
+            this.getCurrentWorkspace();
+        }
+    }, {
+        key: 'getCurrentWorkspace',
+        value: function getCurrentWorkspace() {
+            var self = this;
+            axios.post('/users/getCurrentWorkspace').then(function (response) {
+                self.setState({ currentWorkspace: response.data });
+            }).catch(function (response) {
+                console.log(response);
+                alert("We were unable to retrieve your current workspace.  Please reload the page or contact your" + " System Administrator.");
+            });
         }
     }, {
         key: 'getWorkspaces',
@@ -46032,9 +45937,29 @@ var WorkspaceManager = function (_Component) {
             });
         }
     }, {
+        key: 'makeWorkspaceActive',
+        value: function makeWorkspaceActive(id) {
+            var self = this;
+
+            axios.post('/users/makeWorkspaceActive/' + id).then(function (response) {
+                console.log(response);
+                if (response.status == 200) {
+                    self.getCurrentWorkspace();
+                }
+                if (response.stats == 401) {
+                    alert("There is an error with the workspace you selected, please refresh the page and try again\n");
+                }
+            }).catch(function (error) {
+                console.log(error);
+                alert("We experienced an error updating your active workspace.  Please refresh the page and try" + " again.");
+            });
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var _this2 = this;
 
+            console.log(this.state);
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
@@ -46058,7 +45983,12 @@ var WorkspaceManager = function (_Component) {
                         __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'table-cell valign bottom' })
                     ),
                     this.state.workspaces.length > 0 ? this.state.workspaces.map(function (space, id) {
-                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_workspaces_WorkspaceManagerComponents_ListItem__["a" /* default */], { workspace: space, key: space.id });
+                        return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_2_workspaces_WorkspaceManagerComponents_ListItem__["a" /* default */], {
+                            workspace: space,
+                            key: space.id,
+                            active: space.id == _this2.state.currentWorkspace.id,
+                            makeWorkspaceActive: _this2.makeWorkspaceActive.bind(_this2, space.id)
+                        });
                     }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'p',
                         null,
@@ -46082,7 +46012,6 @@ var WorkspaceManager = function (_Component) {
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
 if (document.getElementById('workspaceManager')) {
-    console.log("manager present");
     __WEBPACK_IMPORTED_MODULE_1_react_dom___default.a.render(__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(WorkspaceManager, null), document.getElementById('workspaceManager'));
 }
 
@@ -46308,7 +46237,10 @@ var AddWorkspaceWizard = function (_Component) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_core_DropDownMenu__ = __webpack_require__(116);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown__ = __webpack_require__(165);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_simple_dropdown_styles_Dropdown_css__ = __webpack_require__(176);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_simple_dropdown_styles_Dropdown_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react_simple_dropdown_styles_Dropdown_css__);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -46322,22 +46254,33 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 //components imports
 
 
+
 var ListItem = function (_Component) {
     _inherits(ListItem, _Component);
 
     function ListItem(props) {
         _classCallCheck(this, ListItem);
 
-        return _possibleConstructorReturn(this, (ListItem.__proto__ || Object.getPrototypeOf(ListItem)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (ListItem.__proto__ || Object.getPrototypeOf(ListItem)).call(this, props));
+
+        _this.handleLinkClick = _this.handleLinkClick.bind(_this);
+        return _this;
     }
 
     _createClass(ListItem, [{
+        key: 'handleLinkClick',
+        value: function handleLinkClick() {
+            this.refs.dropdown.hide();
+        }
+    }, {
+        key: 'makeWorkspaceActive',
+        value: function makeWorkspaceActive() {
+            this.handleLinkClick();
+            this.props.makeWorkspaceActive();
+        }
+    }, {
         key: 'render',
         value: function render() {
-            var menuItems = [{
-                name: 'Settings',
-                link: '/workspaces/edit/' + this.props.workspace.id
-            }];
 
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
@@ -46345,12 +46288,48 @@ var ListItem = function (_Component) {
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
                     { className: 'table-cell menu-icon-cell valign-bottom' },
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_core_DropDownMenu__["a" /* default */], { items: menuItems })
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown___default.a,
+                        { ref: 'dropdown', className: 'full-width relative' },
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown__["DropdownTrigger"],
+                            { className: 'full-width' },
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-bars clickable', 'aria-hidden': 'true' })
+                        ),
+                        __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                            __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown__["DropdownContent"],
+                            null,
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'ul',
+                                { className: 'no-list-style no-margin no-padding text-center' },
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'li',
+                                    null,
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                        'a',
+                                        { className: 'no-link-style', href: "/workspaces/view/" + this.props.workspace.id },
+                                        'View'
+                                    )
+                                ),
+                                !this.props.active && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'li',
+                                    { onClick: this.makeWorkspaceActive.bind(this), className: 'clickable' },
+                                    'Make Active Workspace'
+                                )
+                            ),
+                            __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'tk-arrow' })
+                        )
+                    )
                 ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'div',
                     { className: 'table-cell valign-bottom' },
-                    this.props.workspace.name
+                    this.props.workspace.name,
+                    this.props.active && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'span',
+                        { className: 'badge tk-badge tk-badge-active' },
+                        'Active'
+                    )
                 ),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'table-cell valign-bottom' })
             );
@@ -107975,6 +107954,116 @@ var ViewClientPane = function (_Component) {
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
 
 /* harmony default export */ __webpack_exports__["a"] = (ViewClientPane);
+
+/***/ }),
+/* 861 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown__ = __webpack_require__(165);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_simple_dropdown_styles_Dropdown_css__ = __webpack_require__(176);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_simple_dropdown_styles_Dropdown_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react_simple_dropdown_styles_Dropdown_css__);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+
+
+
+
+
+var DropDownSelect = function (_Component) {
+    _inherits(DropDownSelect, _Component);
+
+    function DropDownSelect(props) {
+        _classCallCheck(this, DropDownSelect);
+
+        var _this = _possibleConstructorReturn(this, (DropDownSelect.__proto__ || Object.getPrototypeOf(DropDownSelect)).call(this, props));
+
+        _this.state = {
+            active: false
+        };
+        return _this;
+    }
+
+    _createClass(DropDownSelect, [{
+        key: 'handleClick',
+        value: function handleClick() {
+            this.refs.dropdown.hide();
+        }
+    }, {
+        key: 'setIcon',
+        value: function setIcon(visibility) {
+            this.setState({ active: visibility });
+        }
+    }, {
+        key: 'updateInput',
+        value: function updateInput(item) {
+            var evt = {
+                target: {}
+            };
+            evt.target.name = this.props.name;
+            evt.target.value = item;
+            evt.type = "select";
+            this.props.updateInput(evt);
+            this.handleClick();
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this2 = this;
+
+            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown___default.a,
+                { ref: 'dropdown', className: 'full-width relative', onShow: this.setIcon.bind(this, true), onHide: this.setIcon.bind(this, false) },
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown__["DropdownTrigger"],
+                    { className: 'full-width' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'div',
+                        { className: 'search-input full-width' },
+                        this.props.triggerName,
+                        this.state.active ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-up pull-right', 'aria-hidden': 'true' }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('i', { className: 'fa fa-chevron-down pull-right', 'aria-hidden': 'true' })
+                    )
+                ),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                    __WEBPACK_IMPORTED_MODULE_1_react_simple_dropdown__["DropdownContent"],
+                    { className: 'scroll' },
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                        'ul',
+                        { className: 'no-list-style no-padding list select-list' },
+                        this.props.data.map(function (item, id) {
+                            return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                'li',
+                                {
+                                    key: id,
+                                    className: 'table no-padding no-margin clickable',
+                                    value: item.value,
+                                    onClick: function onClick() {
+                                        return _this2.updateInput(item);
+                                    }
+                                },
+                                item.title
+                            );
+                        })
+                    ),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'tk-arrow' })
+                )
+            );
+        }
+    }]);
+
+    return DropDownSelect;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]);
+
+/* harmony default export */ __webpack_exports__["a"] = (DropDownSelect);
 
 /***/ })
 /******/ ]);

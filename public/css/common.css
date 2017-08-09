@@ -27,7 +27,7 @@ body{
     display: table;
 }
 
-.timer-container div[class*="timer-"] > *:not(div){
+.timer-container .timer-element{
     display: table-cell;
     vertical-align: middle;
     height:50px;
@@ -44,6 +44,13 @@ body{
 .inline-block{
     display: inline-block !important;
 }
+
+.icon-check-box{
+    position: relative;
+    left: -20px;
+    opacity: 0;
+    width: 30px;
+}
 /********************DROPDOWN MENU STYLES*********************/
 /*.tk-dropdown[class*="active"], .tk-dropdown[class*="active"] + .tk-arrow{*/
     /*display: block !important;*/
@@ -57,6 +64,11 @@ body{
     padding: 8px;
     z-index: 3;
     min-width: 250px;
+}
+
+.dropdown--active .dropdown__content.scroll{
+    max-height: 400px;
+    overflow-y: auto;
 }
 
 /*.tk-dropdown.align-right{*/
@@ -187,6 +199,7 @@ body{
 
 .clickable:hover {
     cursor: pointer;
+    text-decoration: underline;
 }
 
 .table{
@@ -561,6 +574,10 @@ input:checked + .slider:before {
 
 .tk-badge-public{
     background-color: #2ca02c;
+}
+
+.tk-badge-active{
+    background-color: #FF173E;
 }
 
 .tk-header{
