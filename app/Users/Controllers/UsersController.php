@@ -5,7 +5,8 @@ namespace App\Users\Controllers;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use App\Projects\Models\Project;
+use DateTime;
+use DateTimeZone;
 use App\Workspaces\Models\Workspace;
 
 class UsersController extends Controller
@@ -50,22 +51,27 @@ class UsersController extends Controller
         return $user->queryWorkspaces()->get();
     }
 
-    public function postGetAllTimeEntriesByUser(){
+    public function postGetAllTimeEntriesByUser(Request $request){
         $user = Auth::user();
+
+//        var_dump($request->get('timezone'));
+        $timezone = $request->get('timezone');
 
         $timeEntries =  $user->queryTimeEntries()->where('workspaceID', '=', $user->current_workspace_id)->get();
 
-        return $timeEntries->groupBy(function($entry){
-            return date('Y-m-d', strtotime($entry->startTime));
+        return $timeEntries->groupBy(function($entry) use($timezone){
+            $date = new DateTime($entry->startTime);
+            $date->setTimezone(new DateTimeZone($timezone));
+            return $date->format('Y-m-d');
         })->transform(function($entries){
-           $subEntries = collect($entries);
            return $entries->sortByDesc(function($entry){
+               //not translating these to user time zone because it is just for ordering
                return date('Y-m-d h:i', strtotime($entry['startTime']));
            })->values();
         })->sortByDesc(function($entry, $key){
             return date('Y-m-d', strtotime($key));
         });
-        
+
     }
 
     public function postGetCurrentWorkspaceByUser(){

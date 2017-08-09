@@ -33,9 +33,7 @@ class TimerController extends Controller
     public function postDelete(TimeEntries $entry) {
         if($entry){
             TimeEntries::destroy($entry->id);
-            return response(200)->json([
-                'status' => 'success'
-            ]);
+            return response('success', 200);
         }
 
         return response('Invalid time entry', 404);
@@ -50,7 +48,9 @@ class TimerController extends Controller
         $data['endTime'] = date("Y-m-d h:i:s",strtotime($data['endTime']));
         $data['userID'] = $user->id;
         $data['workspaceID'] = $user->current_workspace_id;
-        $data['clientID'] = Project::find($data['projectID'])->clientID;
+        if($data['projectID']){
+            $data['clientID'] = Project::find($data['projectID'])->clientID;
+        }
 
         $v = TimeEntries::validate($data);
 

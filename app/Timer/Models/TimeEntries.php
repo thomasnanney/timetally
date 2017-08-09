@@ -25,11 +25,11 @@ class TimeEntries extends Model {
 
         $messages = [
             'description.required' => 'Please enter a description',
-            'projectID.required' => 'Please enter a Project Name',
+            'projectID.required' => 'Please choose a project',
             'workspaceID.required' => 'Please enter a Workspace Name',
-            'startTime.required' => 'Please enter a Start Date',
-            'endTime.required' => 'Please enter an End Date',
-            'billableType.required' => 'Please enter Billable Type',
+            'startTime.required' => 'Please enter a start date',
+            'endTime.required' => 'Please enter an end date',
+            'billableType.required' => 'Please enter billable type',
         ];
         $rules = [
             'description' => 'required|string|min:1',

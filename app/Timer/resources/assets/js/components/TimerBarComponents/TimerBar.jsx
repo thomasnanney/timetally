@@ -13,7 +13,7 @@ export default class TimerBar extends Component{
                 projectID: '',
                 billable: false,
                 startTime: null,
-                endTime: null,
+                endTime: null
             },
             project: {
                 title: ''
@@ -32,7 +32,6 @@ export default class TimerBar extends Component{
                 if(response.status == 200){
                     self.setState({projects: response.data});
                 }
-                console.log(response);
             })
             .catch(function(error){
                 console.log(error);
@@ -131,9 +130,7 @@ export default class TimerBar extends Component{
         let value = evt.target.type === 'checkbox' ? evt.target.checked : evt.target.value;
         let newState = this.state;
         newState.entry[name] = value;
-        this.setState(newState, function(){
-            console.log(this.state.entry);
-        });
+        this.setState(newState);
     }
 
     updateProject(evt){

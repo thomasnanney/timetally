@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 
 import TimerEntry from './TimerEntry';
+import DateFormat from 'dateformat';
 
 export default class TimerEntryContainer extends Component{
 
@@ -44,29 +45,29 @@ export default class TimerEntryContainer extends Component{
 
 function printHeader(date){
     let todayDate = new Date();
-    // console.log("TODAY: " + todayDate);
+    console.log(date);
+    console.log("TODAY: " + todayDate);
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     // console.log("YESTERDAY: " + yesterday);
     yesterday = yesterday.yyyymmdd();
     let today = todayDate.yyyymmdd();
-    // console.log(date);
-    // console.log(todayDate.getTimezoneOffset());
     if(date == today){
         return 'Today';
     }else if(date == yesterday){
         return 'Yesterday'
     }else{
-        let options = {
-            weekday: "long", year: "numeric", month: "short",
-            day: "numeric"
-        };
-        let newDate = new Date(date);
-        // console.log("NEW DATE 1: " + newDate);
-        newDate = newDate.toLocaleTimeString("en-us", options);
-        // console.log("NEW DATE 2: " + newDate);
-        newDate =  newDate.substr(0, newDate.lastIndexOf(","));
-        // console.log("NEW DATE 3: " + newDate);
-        return newDate;
+        return DateFormat(date, 'dddd, mmm, dS, yyyy', true);
+        // let options = {
+        //     weekday: "long", year: "numeric", month: "short",
+        //     day: "numeric"
+        // };
+        // let newDate = new Date(date);
+        // // console.log("NEW DATE 1: " + newDate);
+        // newDate = newDate.toLocaleTimeString("en-us", options);
+        // // console.log("NEW DATE 2: " + newDate);
+        // newDate =  newDate.substr(0, newDate.lastIndexOf(","));
+        // // console.log("NEW DATE 3: " + newDate);
+        // return newDate;
     }
 }

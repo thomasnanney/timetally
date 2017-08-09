@@ -15,9 +15,15 @@
 $factory->define(App\Timer\Models\TimeEntries::class, function (Faker\Generator $faker) {
 
     $hours = rand(2, 6);
-    $offset = rand(0, 10);
-    $startTime = date('Y-m-d H:i:s', strtotime('-'.$offset.' day', time()));
-    $endTime = date('Y-m-d H:i:s', strtotime('+'.$hours.' hour', strtotime($startTime)));
+    $dayOffset = rand(0, 10);
+    $hourOffset1 = rand(0,22);
+    $hourOffset2 = rand(0,8);
+    $startTime = new DateTime('now', new DateTimeZone('UTC'));
+    $startTime->sub(new DateInterval('P'.$dayOffset.'D'));
+    $startTime->sub(new DateInterval('PT'.$hourOffset1.'H'));
+    $startTime->format('Y-m-d H:i:s');
+    $endTime = clone $startTime;
+    $endTime->add(new DateInterval('PT'.$hourOffset2.'H'));
 
     return [
         'projectID' => 1, //default to one, but this should be over ridden on creation

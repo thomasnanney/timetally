@@ -1,18 +1,21 @@
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 
+import ReactLoading from 'react-loading';
 import TimerBar from './TimerBarComponents/TimerBar';
 import TimerEntryContainer from './TimerEntryComponents/TimerEntryContainer';
 import Modal from 'core/Modal';
+import jstz from 'jstimezonedetect';
 
 class TimerManager extends Component{
 
     constructor(props){
         super(props);
         this.state = {
-            timeEntries: {},
+            timeEntries: null,
             promptDelete: false,
-            promptDeleteEntry: null
+            promptDeleteEntry: null,
+            timezone: jstz.determine().name(),
         }
     }
 
@@ -22,9 +25,10 @@ class TimerManager extends Component{
 
     updateEntries(){
         let self = this;
-        axios.post('/users/getAllTimeEntries')
+        axios.post('/users/getAllTimeEntries', {
+            timezone: self.state.timezone
+        })
             .then(function(response){
-                console.log(response);
                 if(response.status == 200){
                     let newState = self.state;
                     newState.timeEntries = response.data;
@@ -41,7 +45,6 @@ class TimerManager extends Component{
         let entry = this.state.promptDeleteEntry;
         axios.post('/timer/delete/' + entry.id)
             .then(function(response){
-                console.log(response);
                 if(response.status == 200){
                     self.setState({promptDelete: false});
                     self.updateEntries();
@@ -74,11 +77,22 @@ class TimerManager extends Component{
             body = 'Are you sure you want to delete ' + this.state.promptDeleteEntry.description;
         }
 
+        console.log(this.state.timeEntries);
+
         return (
             <div>
                 <TimerBar updateEntries={this.updateEntries.bind(this)}/>
                 <hr/>
-                <TimerEntryContainer timeEntries={this.state.timeEntries} removeItem={this.promptToDelete.bind(this)}/>
+                {
+                    this.state.timeEntries
+                        ?
+                        <TimerEntryContainer timeEntries={this.state.timeEntries} removeItem={this.promptToDelete.bind(this)}/>
+                        :
+                        <div className="page-loading">
+                            <ReactLoading type='spin' color='#777' className='loading-img'/>
+                        </div>
+
+                }
                 {this.state.promptDelete &&
                 <Modal show={true} header={header} body={body} onConfirm={this.removeEntry.bind(this)} onClose={this.cancelDelete.bind(this)} />
                 }
