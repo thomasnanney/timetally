@@ -6,6 +6,7 @@ import ReportList from './ReportList';
 import DropDownDatePicker from 'core/DropDownDatePicker';
 import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts';
 import {PieChart, Pie, Sector, Cell } from 'recharts';
+import jstz from 'jstimezonedetect';
 
 export default class StandardReportManager extends Component{
     constructor(props){
@@ -46,7 +47,10 @@ export default class StandardReportManager extends Component{
         let data = this.state.params;
         data.startDate = new Date(data.startDate).toUTCString();
         data.endDate = new Date(data.endDate).toUTCString();
-        axios.post('/reports/getReport/standard', {data: data})
+        axios.post('/reports/getReport/standard', {
+            data: data,
+            timezone: jstz.determine().name(),
+        })
             .then(function(response){
                 data.startDate = new Date(data.startDate);
                 data.endDate = new Date(data.endDate);

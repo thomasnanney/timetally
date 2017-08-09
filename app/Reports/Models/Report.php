@@ -11,12 +11,14 @@ namespace App\Reports\Models;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use App\Users\Models\User;
+use DateTime;
+use DateTimeZone;
+use DateInterval;
 
 
 class Report
 {
-    public static function generateReportData($data){
+    public static function generateReportData($data, $timezone){
         $clientFilter = $data['filters']['clients'];
         $projectFilter = $data['filters']['projects'];
         $userFilter = $data['filters']['users'];
@@ -29,6 +31,7 @@ class Report
         //figure out keys to filter and order by
         $groupField = '';
         $groupKey = '';
+
         switch($groupBy){
             case 'client':
                 $groupField = 'clientName';
@@ -89,6 +92,7 @@ class Report
             $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }else{
             $startDate = Carbon::parse($startDate)->format('Y-m-d');
+//            var_dump(Carbon::parse($startDate)->format('Y-m-d'));
             $endDate = Carbon::parse($endDate)->format('Y-m-d');
             $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }
@@ -98,29 +102,45 @@ class Report
             $timeEntries = $timeEntries->orderBy($groupField, 'asc')->get();
         }
 
+//        var_dump($timeEntries);
+
+//        //adjust all time entries to users local time zone so they are properly grouped
+//        $timeEntries = $timeEntries->map(function($entry) use($timezone) {
+//            $date = new DateTime($entry->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
+//            return $date->format('Y-m-d');
+//        });
+
         //clone collection to prepare bar adn pie data as well
         $barData = clone $timeEntries;
         $pieData = clone $timeEntries;
 
         //get bar data
-        $finalBarData = $barData->groupBy(function($entry, $key){
-            return date('Y-m-d', strtotime($entry->startTime));
-        })->transform(function($entry){
+        $finalBarData = $barData->groupBy(function($entry) use($timezone){
+            $date = new DateTime($entry->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
+            return $date->format('m-d-Y');
+        })->transform(function($entry) use($timezone){
+            $date = new DateTime($entry[0]->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
             return [
-                'name'=> date('Y-m-d', strtotime($entry[0]->startTime)),
+                'name'=> $date->format('m-d-Y'),
                 'value' => $entry->sum('time')/60
             ];
         });
 
         $paddedBarData = collect();
-        $chartDate = date('Y-m-d', strtotime('+1 days', strtotime($startDate)));
-        while(strtotime($chartDate) <= strtotime($endDate)){
+        $chartDate = new DateTime($startDate);
+//        $chartDate->setTimezone(new DateTimeZone($timezone));
+        $endDate = new DateTime($endDate);
+//        $endDate->setTimezone(new DateTimeZone(($timezone)));
+        while($chartDate <= $endDate){
             $data = [
-                'name' => $chartDate,
+                'name' => $chartDate->format('m-d-Y'),
                 'value' => 0
             ];
-            $paddedBarData->put($chartDate, $data);
-            $chartDate = date('Y-m-d', strtotime('+1 days', strtotime($chartDate )));
+            $paddedBarData->put($chartDate->format('m-d-Y'), $data);
+            $chartDate->add(new DateInterval('P1D'));
         }
 
         $finalBarData = $finalBarData->union($paddedBarData)->sortBy(function($entry, $key){

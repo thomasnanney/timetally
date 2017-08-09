@@ -103,6 +103,10 @@ export default class TimerBar extends Component{
                             startTime: null,
                             endTime: null,
                         };
+                        newState.project = {
+                            title: ''
+                        };
+                        newState.timer = '00:00:00';
                         self.setState(newState);
                     }
                 }

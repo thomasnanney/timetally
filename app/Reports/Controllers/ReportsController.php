@@ -28,10 +28,13 @@ class ReportsController extends Controller
         return view('reports');
     }
 
-    public function getReport(Request $request){
+    public function getReport(Request $request, $type){
+
         $data = $request->input('data');
 
-        $report = Report::generateReportData($data);
+        $timezone = $request->get('timezone');
+
+        $report = Report::generateReportData($data, $timezone);
 
         return response()->json($report);
 
