@@ -305,7 +305,7 @@ class Report extends Model
         }
 
         $settings = array(
-            'graph_title' => $titles['reportTitle'],
+            'graph_title' => $titles['barReportTitle'],
             'graph_title_font_size' => 25,
             'label_v' => $titles['barAxisTitles']['y'],
             'label_h' => $titles['barAxisTitles']['x'],
