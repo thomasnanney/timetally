@@ -4,6 +4,7 @@ namespace App\Reports\Controllers;
 
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
+use PDF;
 use App\Reports\Models\Report;
 
 class ReportsController extends Controller
@@ -28,13 +29,40 @@ class ReportsController extends Controller
         return view('reports');
     }
 
-    public function getReport(Request $request){
+    public function getReport(Request $request)
+    {
         $data = $request->input('data');
 
         $report = Report::generateReportData($data);
 
         return response()->json(['data' => $report]);
-
-
     }
+
+    public function createReportPDF(Request $request)
+    {
+        $data = $request->input('data');
+
+        $report = Report::generateReportData($data);
+
+        Report::createPDF($report);
+    }
+
+    public function createReportXLS(Request $request)
+    {
+        $data = $request->input('data');
+
+        $report = Report::generateReportData($data);
+
+        Report::createReportXLS($report);
+    }
+
+    public function createReportCSV(Request $request)
+    {
+        $data = $request->input('data');
+
+        $report = Report::generateReportData($data);
+
+        Report::createReportCSV($report);
+    }
+
 }
