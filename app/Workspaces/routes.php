@@ -11,3 +11,5 @@ Route::post('/workspaces/getAllClients/{workspace?}', "WorkspacesController@getA
 Route::post('/workspaces/inviteUsers/{workspace}', 'WorkspacesController@inviteUsers');
 Route::post('workspaces/addAdmin/{user}', 'WorkspacesController@addAdmin');
 Route::post('workspaces/removeAdmin/{user}', 'WorkspacesController@removeAdmin');
+Route::get('/workspaces/invite/{workspace}', 'WorkspaceInviteController@getInvite');
+Route::post('workspaces/invite/{workspace}', 'WorkspaceInviteController@postInvite');

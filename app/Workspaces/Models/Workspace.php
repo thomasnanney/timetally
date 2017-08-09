@@ -8,7 +8,7 @@ class Workspace extends Model
 {
     //set fillable and guarded
     protected $fillable = array(
-        'name',
+        'title',
         'description',
         'ownerID',
         'organizationID'
@@ -35,7 +35,7 @@ class Workspace extends Model
 
         // error messages
         $messages = array(
-            'name.required' => 'Please enter a Company Name',
+            'title.required' => 'Please enter a Company Name',
             'description.required' => 'Please enter a Description',
             'ownerID.required' => 'Please enter an Owner ID',
             'organizationID.required' => 'Please enter an Organziation ID'
@@ -43,7 +43,7 @@ class Workspace extends Model
 
         //rules
         $rules = array(
-            'name' => 'required|string|min:1',
+            'title' => 'required|string|min:1',
             'description' => 'nullable|string|min:1',
             'ownerID' => 'required|int|exists:users,id',
             'organizationID' => 'nullable|int|exists:organizations,id'
