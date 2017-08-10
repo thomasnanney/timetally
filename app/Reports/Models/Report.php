@@ -14,7 +14,7 @@ use PDF;
 
 class Report extends Model
 {
-    public static function generateReportData($data, $timezone){
+    public static function generateReportData($data){
         $clientFilter = $data['filters']['clients'];
         $projectFilter = $data['filters']['projects'];
         $userFilter = $data['filters']['users'];
@@ -113,11 +113,11 @@ class Report extends Model
         $pieData = clone $timeEntries;
 
         //get bar data
-        $finalBarData = $barData->groupBy(function($entry) use($timezone){
+        $finalBarData = $barData->groupBy(function($entry){
             $date = new DateTime($entry->startTime);
 //            $date->setTimezone(new DateTimeZone($timezone));
             return $date->format('m-d-Y');
-        })->transform(function($entry) use($timezone){
+        })->transform(function($entry){
             $date = new DateTime($entry[0]->startTime);
 //            $date->setTimezone(new DateTimeZone($timezone));
             return [

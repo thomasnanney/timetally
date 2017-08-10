@@ -6,7 +6,7 @@ class CreateProject extends Component{
     constructor(props){
         super(props);
         this.state = {
-            activeView: 1,
+            activeView: 0,
             project: {
                 title: '',
                 scope: 'public',
@@ -17,8 +17,7 @@ class CreateProject extends Component{
                 endDate: '',
                 projectedTime: '',
                 projectedRevenue: '',
-                billableRate: '',
-                billableHourlyType: 'project',
+                projectedCost: '',
                 users: [],
                 description: ''
             },
@@ -99,9 +98,7 @@ class CreateProject extends Component{
     addUserField(){
         let newProject = this.state.project;
         newProject.users.push('');
-        this.setState((prevState, props) => ({
-            project : newProject
-        }));
+        this.setState({project : newProject});
     };
 
     //ToDo: convert to updateInput for dynamic fields as well via arrays
@@ -159,10 +156,9 @@ class CreateProject extends Component{
 
         const tabs = [
             'General',
-            'Client',
             'Details',
+            'Finance',
             'Users',
-            'Description'
         ];
 
         return(
@@ -172,7 +168,7 @@ class CreateProject extends Component{
                         <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
                             {
                                 tabs.map((tab, id) =>
-                                    <li className={"tab " + (this.state.activeView == id+1 ? 'active ': '') + (hasErrors(id, this.state.errors) ? 'pane-error ' : '')} onClick={() => this.makeTabActive(id+1)} key={id}>{tab}</li>
+                                    <li className={"tab " + (this.state.activeView == id ? 'active ': '') + (hasErrors(id, this.state.errors) ? 'pane-error ' : '')} onClick={() => this.makeTabActive(id)} key={id}>{tab}</li>
                                 )
                             }
                         </ul>
@@ -181,7 +177,7 @@ class CreateProject extends Component{
                 <div className="pane-container">
                     {(() => {
                         switch (this.state.activeView) {
-                            case 1:
+                            case 0:
                                 return (
                                     <div className="pane medium-container margin-center">
                                         <div>
@@ -221,6 +217,7 @@ class CreateProject extends Component{
                                                 ? <small className="error">{this.state.errors.workspaceID}</small>
                                                 : ''
                                             }
+
                                         </div>
                                         <br></br>
                                         <div className="row">
@@ -242,12 +239,23 @@ class CreateProject extends Component{
                                                 }
                                             </div>
                                         </div>
+                                        <br/>
+                                        <textarea name="description"
+                                                  className="tk-form-textarea"
+                                                  placeholder="Project Description..."
+                                                  onChange={this.updateInput.bind(this)}
+                                        />
+                                        {this.state.errors.description
+                                            ? <small className="error">{this.state.errors.description}</small>
+                                            : ''
+                                        }
                                     </div>
                                 );
-                            case 2:
+                            case 1:
                                 return (<div className="pane medium-container margin-center">
                                     <div>
-                                        <h1>Client</h1>
+                                        <h1>Details</h1>
+                                        <label>Client</label>
                                         <select className="tk-form-input"
                                                 value={this.state.project.clientID}
                                                 onChange={this.updateInput.bind(this)}
@@ -267,137 +275,76 @@ class CreateProject extends Component{
                                             : ''
                                         }
                                     </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            Fixed Price
-                                            <label className="switch">
-                                                <input
-                                                    type="checkbox"
-                                                    name="billableType"
-                                                    checked = {this.state.project.billableType == 'hourly'}
-                                                    onChange={this.updateCheckbox.bind(this)}
-                                                />
-                                                <div className="slider round"></div>
-                                            </label>
-                                            Billed Hourly
-                                            {this.state.errors.billableType
-                                                ? <small className="error">{this.state.errors.billableType}</small>
-                                                : ''
-                                            }
-                                        </div>
-                                    </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            {
-                                                this.state.project.billableType == 'fixed'
-                                                    ?
-                                                    <div>
-                                                        <input
-                                                            type="text"
-                                                            name="projectedRevenue"
-                                                            className="tk-form-input"
-                                                            placeholder="$$$ Total Cost..."
-                                                            value={this.state.project.projectedRevenue}
-                                                            onChange={this.updateInput.bind(this)}
-                                                        />
-                                                        {this.state.errors.projectedRevenue
-                                                            ? <small className="error">{this.state.errors.projectedRevenue}</small>
-                                                            : ''
-                                                        }
-                                                    </div>
-                                                    :
-                                                    <div>
-                                                        Project Hourly Rate
-                                                        <label className="switch">
-                                                            <input
-                                                                type="checkbox"
-                                                                name="billableHourlyType"
-                                                                checked={this.state.project.billableHourlyType == 'employee'}
-                                                                onChange={this.updateCheckbox.bind(this)}
-                                                            />
-                                                            <div className="slider round"></div>
-                                                        </label>
-                                                        Employee Hourly Rate
-                                                        {this.state.errors.billableHourlyType
-                                                            ? <small className="error">{this.state.errors.billableHourlyType}</small>
-                                                            : ''
-                                                        }
-                                                    </div>
-                                            }
-                                        </div>
-                                    </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            {
-                                                this.state.project.billableHourlyType == 'project' && this.state.project.billableType == 'hourly'
-                                                    ?
-                                                    <div>
-                                                        <input
-                                                            type="text"
-                                                            name="billableRate"
-                                                            className="tk-form-input"
-                                                            placeholder="$$$ Hourly Rate"
-                                                            value={this.state.project.billableRate}
-                                                            onChange={this.updateInput.bind(this)}
-                                                        />
-                                                        {this.state.errors.billableRate
-                                                            ? <small className="error">{this.state.errors.billableRate}</small>
-                                                            : ''
-                                                        }
-                                                    </div>
-                                                    :
-
-                                                    ''
-                                            }
-                                        </div>
+                                    <label>
+                                        Start Date:
+                                    </label>
+                                    <input name="startDate"
+                                           type="date"
+                                           className="tk-form-input"
+                                           onChange={this.updateInput.bind(this)}
+                                    />
+                                    {this.state.errors.startDate
+                                        ? <small className="error">{this.state.errors.startDate}</small>
+                                        : ''
+                                    }
+                                    <label>
+                                        End Date:
+                                    </label>
+                                    <input name="endDate"
+                                           type="date"
+                                           className="tk-form-input"
+                                           onChange={this.updateInput.bind(this)}
+                                    />
+                                    {this.state.errors.endDate
+                                        ? <small className="error">{this.state.errors.endDate}</small>
+                                        : ''
+                                    }
+                                    <label>
+                                        Estimated Completion Time (hours):
+                                    </label>
+                                    <input name="projectedTime"
+                                           type="text"
+                                           className="tk-form-input"
+                                           onChange={this.updateInput.bind(this)}
+                                    />
+                                    {this.state.errors.projectedTime
+                                        ? <small className="error">{this.state.errors.projectedTime}</small>
+                                        : ''
+                                    }
+                                </div>);
+                            case 2:
+                                return (
+                                <div className="pane medium-container margin-center">
+                                    <div>
+                                        <label>Projected Revenue</label>
+                                        <input
+                                            type="text"
+                                            name="projectedRevenue"
+                                            className="tk-form-input"
+                                            placeholder="$$$ Projected Revenue"
+                                            value={this.state.project.projectedRevenue}
+                                            onChange={this.updateInput.bind(this)}
+                                        />
+                                        {this.state.errors.projectedRevenue
+                                            ? <small className="error">{this.state.errors.projectedRevenue}</small>
+                                            : ''
+                                        }
+                                        <label>Projected Cost</label>
+                                        <input
+                                            type="text"
+                                            name="projectedCost"
+                                            className="tk-form-input"
+                                            placeholder="$$$ Projected Cost"
+                                            value={this.state.project.projectedCost}
+                                            onChange={this.updateInput.bind(this)}
+                                        />
+                                        {this.state.errors.projectedRevenue
+                                            ? <small className="error">{this.state.errors.projectedCost}</small>
+                                            : ''
+                                        }
                                     </div>
                                 </div>);
                             case 3:
-                                return (<div className="pane medium-container margin-center">
-                                    <div>
-                                        <h1>Details</h1>
-                                        <label>
-                                            Start Date:
-                                        </label>
-                                        <input name="startDate"
-                                               type="date"
-                                               className="tk-form-input"
-                                               onChange={this.updateInput.bind(this)}
-                                        />
-                                        {this.state.errors.startDate
-                                            ? <small className="error">{this.state.errors.startDate}</small>
-                                            : ''
-                                        }
-                                        <label>
-                                            End Date:
-                                        </label>
-                                        <input name="endDate"
-                                               type="date"
-                                               className="tk-form-input"
-                                               onChange={this.updateInput.bind(this)}
-                                        />
-                                        {this.state.errors.endDate
-                                            ? <small className="error">{this.state.errors.endDate}</small>
-                                            : ''
-                                        }
-                                        <label>
-                                            Estimated Completion Time (hours):
-                                        </label>
-                                        <input name="projectedTime"
-                                               type="text"
-                                               className="tk-form-input"
-                                               onChange={this.updateInput.bind(this)}
-                                        />
-                                        {this.state.errors.projectedTime
-                                            ? <small className="error">{this.state.errors.projectedTime}</small>
-                                            : ''
-                                        }
-                                    </div>
-                                </div>);
-                            case 4:
                                 return (<div className="pane medium-container margin-center">
                                     <div>
                                         <h1>Add Users</h1>
@@ -418,21 +365,6 @@ class CreateProject extends Component{
                                         <div className="col-xs-12 text-center">
                                             <button onClick={() => this.addUserField()} className="btn tk-btn">Add User</button>
                                         </div>
-                                    </div>
-                                </div>);
-                            case 5:
-                                return (<div className="pane medium-container margin-center">
-                                    <div>
-                                        <h1>Project Details</h1>
-                                        <textarea name="description"
-                                                  className="tk-form-textarea"
-                                                  placeholder="Project Description..."
-                                                  onChange={this.updateInput.bind(this)}
-                                        />
-                                        {this.state.errors.description
-                                            ? <small className="error">{this.state.errors.description}</small>
-                                            : ''
-                                        }
                                     </div>
                                 </div>);
                         }

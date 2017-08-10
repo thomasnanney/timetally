@@ -179,6 +179,7 @@ export default class TimerBar extends Component{
                                         updateInput={this.updateProject.bind(this)}
                                         triggerName={this.state.project.title.length ? this.state.project.title : "Select project"}
                                         name="project"
+                                        emptyMessage="You have no projects.  Go add some and get to work!"
                                     />
                                     {/*//ToDo: Update to new drop down*/}
                                     {/*<input type="text" value={this.state.project.title} className="tk-timer-input" onClick={ ()=>this.toggleMenu('isProjectMenuActive')} placeholder="Project / Task"/>*/}

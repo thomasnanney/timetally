@@ -116,7 +116,7 @@ class WorkspacesController extends Controller
             $users = $users->transform(function($user, $key){
                 return[
                     'value' => $user->id,
-                    'title' => $user->name,
+                    'title' => $user->email,
                     'selected' => false
                 ];
             })->values();
@@ -168,22 +168,6 @@ class WorkspacesController extends Controller
         })->values();
 
         return $projects;
-    }
-
-    public function inviteUsers(Workspace $workspace, Request $request){
-        $users = $request->input('data')['userEmails'];
-        try{
-            $workspace->inviteUsersByEmail([$users]);
-        }catch(Exception $e){
-            return response()->json([
-                'status' => 'fail',
-                'errors' => $e->getMessage(),
-            ]);
-        }
-
-        return response()->json([
-            'status' => 'success'
-        ]);
     }
 
     public function addAdmin(User $user){

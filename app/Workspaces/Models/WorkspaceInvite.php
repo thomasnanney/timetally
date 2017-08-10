@@ -2,10 +2,12 @@
 
 namespace App\Workspaces\Models;
 
-use App\Mail\Invite;
+use App\Mail\Models\InviteNewUser;
+use App\Mail\Models\InviteCurrentUser;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
+use App\Users\Models\User;
 
 class WorkspaceInvite extends Model
 {
@@ -16,34 +18,48 @@ class WorkspaceInvite extends Model
         'token',
         ];
 
-    public static function sendInvite($email, $workspaceID){
+    public function __construct(array $attributes = [])
+    {
         do{
             $token = str_random(32);
-        }while(WorkspaceInvite::where('token', $token)->first());
+        }while(WorkspaceInvite::where('token', '=', $token)->exists());
 
-        $invite = WorkspaceInvite::create([
-            'email' => $email,
-            'workspaceID' => $workspaceID,
-            'token' => $token,
-        ]);
+        $attributes['token'] = $token;
 
-        Mail::to($email)->send(new Invite($invite));
+        parent::__construct($attributes);
 
+    }
 
+    public function inviteNewUser(){
+        $workspace = Workspace::find($this->workspaceID);
+        Mail::to($this->email)->send(new InviteNewUser($this, $workspace));
+    }
 
+    public function inviteCurrentUser(){
+        $workspace = Workspace::find($this->workspaceID);
+        Mail::to($this->email)->send(new InviteCurrentUser($this, $workspace));
+    }
+
+    public function confirm(){
+        $user = User::where('email', '=', $this->email)->first();
+        $workspace = Workspace::find($this->workspaceID);
+
+        $workspace->attachRegularUser($user->id);
+
+        $this->delete();
     }
 
     public static function validate( array $data) {
 
         // error messages
         $messages = array(
-            'email.require' => 'Please provide an email',
-            'email.email' => 'Please enter a valid email',
+            'userEmails.*.require' => 'Please provide an email',
+            'userEmails.*.email' => 'Please enter a valid email',
         );
 
         //rules
         $rules = array(
-            'email' => 'required|email',
+            'userEmails.*' => 'required|email',
         );
 
         $validator = Validator::make($data, $rules, $messages);

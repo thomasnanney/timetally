@@ -1,0 +1,25 @@
+modify/consolidate routes for reports
+
+modify report controller 
+
+if project made is private, link current user always
+
+project creation in general, make sure right fields are asked for cost/prod/analysis etc
+
+change validation to make sure confirmation password matches
+
+How come one uses bcrypt and another uses Hash?
+
+Move reset password to a settings page modal
+
+delete user functionality for workspace
+
+add composite key to DB to stop duplicates in pivot table
+
+Link up reports
+
+Show general info on Dashboard
+
+change pivot tables to sync without detaching
+
+

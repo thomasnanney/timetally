@@ -19,7 +19,7 @@ export default class TimerEntryContainer extends Component{
             <div className="log-container">
                 <div className="row">
                     <div className="col-xs-12">
-                        {this.props.timeEntries
+                        {this.props.timeEntries.length
                             ?
                             <div>
                                 {Object.keys(this.props.timeEntries).map((day, key) => (
@@ -34,7 +34,9 @@ export default class TimerEntryContainer extends Component{
                                 }
                             </div>
                             :
-                            <p>You do not have any entries to display</p>
+                            <div className="large-container dark drop text-center">
+                                <h2>You do not have any time entries to display.  Do you get paid to do nothing?</h2>
+                            </div>
                         }
                     </div>
                 </div>

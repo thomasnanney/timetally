@@ -46,21 +46,29 @@ export default class DropDownSelect extends Component{
                     </div>
                 </DropdownTrigger>
                 <DropdownContent className="scroll">
-                    <ul className="no-list-style no-padding list select-list">
-                        {
-                            this.props.data.map((item, id) => (
-                                <li
-                                    key={id}
-                                    className="table no-padding no-margin clickable"
-                                    value={item.value}
-                                    onClick={() => this.updateInput(item)}
-                                >
-                                    {item.title}
-                                </li>
-                            ))
-                        }
-                    </ul>
-                    <div className="tk-arrow"></div>
+                    {
+                        this.props.data.length
+                            ?
+                            <ul className="no-list-style no-padding list select-list">
+                                {
+                                    this.props.data.map((item, id) => (
+                                        <li
+                                            key={id}
+                                            className="table no-padding no-margin clickable"
+                                            value={item.value}
+                                            onClick={() => this.updateInput(item)}
+                                        >
+                                            {item.title}
+                                        </li>
+                                    ))
+                                }
+                            </ul>
+                            :
+                            <div className="medium-container">
+                                {this.props.emptyMessage ? this.props.emptyMessage : 'No data to display'}
+                            </div>
+                    }
+                            <div className="tk-arrow"></div>
                 </DropdownContent>
             </Dropdown>
         );

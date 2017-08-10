@@ -32,6 +32,7 @@ class ReportsController extends Controller
     public function getReport(Request $request, $type){
 
         $data = $request->input('data');
+        $data['reportType'] = $type;
 
         $timezone = $request->get('timezone');
 

@@ -8,7 +8,7 @@ class Workspace extends Model
 {
     //set fillable and guarded
     protected $fillable = array(
-        'title',
+        'name',
         'description',
         'ownerID',
         'organizationID'
@@ -54,22 +54,6 @@ class Workspace extends Model
         return $validator;
     }
 
-    public function inviteUsersByEmail($users){
-
-        foreach($users as $userEmail){
-            //see if user exists
-            $user = User::where('email', $userEmail)->first();
-
-            if($user){
-                //send invite to current user
-                //ToDo: Trigger event for adding current user to workspace
-            }else{
-                //send invite to new user
-                //ToDo: Trigger event for add new user to workspace
-            }
-        }
-    }
-
     public function setOrganization() {
         // TODO: set the organization ID for the workspace
     }
@@ -92,6 +76,33 @@ class Workspace extends Model
 
     public function removeAdmin($user){
         $this->queryUsersWithPrivileges()->updateExistingPivot($user->id, ['admin' => 0]);
+    }
+
+    /**
+     * Takes in an array of user emails and creates invitations
+     * @param $users
+     */
+    public function inviteUsersByEmail($users){
+
+        foreach($users as $userEmail){
+            //see if user exists
+            $user = User::where('email', $userEmail)->first();
+
+            $inviteInfo = [
+                'email' => $userEmail[0],
+                'workspaceID' => $this->id,
+            ];
+
+            $invite = WorkspaceInvite::create($inviteInfo);
+
+            if($user){
+                //send invite to current user
+                $invite->inviteCurrentUser();
+            }else{
+                //send invite to new user
+                $invite->inviteNewUser();
+            }
+        }
     }
 
 }

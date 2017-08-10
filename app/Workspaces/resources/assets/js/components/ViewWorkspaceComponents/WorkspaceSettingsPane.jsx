@@ -92,10 +92,10 @@ export default class WorkspaceSettingsPane extends Component {
     }
 
     addNewUser(){
-        if(!validator.isEmail(this.state.newUser)){
-            this.setState({userError: "Invalid email"});
-            return;
-        }
+        // if(!validator.isEmail(this.state.newUser)){
+        //     this.setState({userError: "Invalid email"});
+        //     return;
+        // }
 
         let self = this;
         axios.post('/workspaces/inviteUsers/'+this.state.workspace.id, {
@@ -105,11 +105,14 @@ export default class WorkspaceSettingsPane extends Component {
                 ]
             }
         }).then(function(response){
-            console.log(response.data);
-            self.setState({newUser: "", addingUser: false, userError: null})
+            if(response.status == 201){
+                self.setState({newUser: "", addingUser: false, userError: null})
+            }
         }).catch(function(error){
-            console.log(error);
-            alert("There was an error adding the user, please try again");
+            if(error.response.status == 400){
+                let errorMessage = error.response.data.errors['userEmails.0'][0];
+                self.setState({userError: errorMessage});
+            }
         });
 
     }
@@ -271,13 +274,23 @@ export default class WorkspaceSettingsPane extends Component {
                                             <option value="20">20</option>
                                         </select>
 
-                                        <ul className="no-list-style no-margin no-padding list">
-                                            {
-                                                currentProjects.map((project, id) => (
-                                                    <li key={id}>{project.title}</li>
-                                                ))
-                                            }
-                                        </ul>
+                                        {
+                                            this.state.projects.length
+                                            ?
+                                                <ul className="no-list-style no-margin no-padding list">
+                                                    {
+                                                        currentProjects.map((project, id) => (
+                                                            <li key={id}>{project.title}</li>
+                                                        ))
+                                                    }
+                                                </ul>
+                                            :
+                                                <div>
+                                                    <br/>
+                                                    You have no projects to display.
+                                                    <br/>
+                                                </div>
+                                        }
 
                                         <div className="row">
                                             <div className="col-xs-12 text-center">
@@ -323,13 +336,23 @@ export default class WorkspaceSettingsPane extends Component {
                                                 <option value="20">20</option>
                                             </select>
 
-                                            <ul className="no-list-style no-margin no-padding list">
-                                                {
-                                                    currentClients.map((client, id) => (
-                                                        <li key={id}>{client.title}</li>
-                                                    ))
-                                                }
-                                            </ul>
+                                            {
+                                                this.state.clients.lenght
+                                                ?
+                                                    <ul className="no-list-style no-margin no-padding list">
+                                                        {
+                                                            currentClients.map((client, id) => (
+                                                                <li key={id}>{client.title}</li>
+                                                            ))
+                                                        }
+                                                    </ul>
+                                                :
+                                                    <div>
+                                                        <br/>
+                                                        You have no clients to display.
+                                                        <br/>
+                                                    </div>
+                                            }
 
                                             <div className="row">
                                                 <div className="col-xs-12 text-center">

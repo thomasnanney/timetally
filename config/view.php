@@ -27,6 +27,7 @@ return [
         base_path('app/Timer/resources/views'),
         base_path('app/Users/resources/views'),
         base_path('app/Workspaces/resources/views'),
+        base_path('app/Mail/resources/views'),
     ],
 
     /*
