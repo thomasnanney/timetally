@@ -10,15 +10,13 @@ class Project extends Model
     protected $fillable = array(
         'description',
         'clientID',
-        'billableType',
         'projectedRevenue',
+        'projectedCost',
         'title',
         'startDate',
         'endDate',
         'projectedTime',
-        'scope',
-        'billableHourlyType',
-        'billableRate',
+        'private',
         'workspaceID'
     );
 
@@ -32,33 +30,47 @@ class Project extends Model
      */
     public static function validate($data){
 
-        $tempData = array_filter($data, function($value){
+        $data = array_filter($data, function($value){
             return !is_null($value);
         });
+
+//        var_dump($data);
 
         $messages = [
             'title.required' => 'Please enter a Project Title',
             'clientID.required' => 'Please enter a Client Name',
-            'workspaceID.required' => 'Please enter a Workspace Name',
             'startDate.required' => 'Please enter a Start Date',
+            'startDate.before' => 'A project must start before it ends!',
             'endDate.required' => 'Please enter an End Date',
-            'billableType.required' => 'Please enter Billable Type',
-            'scope.required' => 'Please enter the Project as Private or Public',
+            'private.required' => 'Please set the Project as Private or Public',
+            'projectedTime.required' => "Please entered a projected time",
+            'projectedRevenue.required' => "Please entered the projected revenue",
+            'projectedRevenue.regex' => "Projected Revenue must be a dollar amount",
+            'projectedCost.required' => "Please entered the projected cost",
+            'projectedCost.regex' => "Projected Revenue must be a dollar amount",
         ];
         $rules = [
             'title' => 'required|string|min:1',
             'description' => 'sometimes|string|min:1',
             'clientID' => 'required|integer|exists:clients,id', // needs to exist
             'workspaceID' => 'required|integer|exists:workspaces,id',
-            'startDate' => 'required|date_format:"Y-m-d"', //must be in YYYY-MM-DD format
-            'endDate' => 'required|date_format:"Y-m-d"|after:startDate', //must be in YYYY-MM-DD format and come after the start date
+            'startDate' => 'required|date',
+            'endDate' => 'required|date',
             'projectedTime' => 'required|integer',
-            'projectedRevenue' => 'sometimes|numeric',
-            'billableType' => 'required|string|in:hourly,fixed', //must be hourly or fixed
-            'scope' => 'required|string|in:public,private', //must be public or private
+            'private' => 'required|boolean', //must be public or private
+            'projectedRevenue' => 'required|regex:/^\d+(\.\d\d)?$/',
+            'projectedCost' => 'required|regex:/^\d+(\.\d\d)?$/'
         ];
 
-        return Validator::make($tempData, $rules, $messages);
+        $v = Validator::make($data, $rules, $messages);
+
+        if(array_key_exists('endDate', $data)){
+            $v->sometimes('startDate', 'before:'.$data['endDate'], function(){
+                return true;
+            });
+        }
+
+        return $v;
     }
 
     public function queryUsers() {
@@ -92,5 +104,9 @@ class Project extends Model
      */
     public static function deleteProject($id){
         Project::destroy($id);
+    }
+
+    public function makePublic(){
+        $this->queryUsers()->detach();
     }
 }

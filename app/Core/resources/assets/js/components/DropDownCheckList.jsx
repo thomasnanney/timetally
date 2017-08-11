@@ -1,65 +1,66 @@
 import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
+
+import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
+import 'react-simple-dropdown/styles/Dropdown.css';
 
 export default class DropDownCheckList extends Component{
 
-    constructor(props){
+    constructor (props) {
         super(props);
-    }
-
-    componentWillMount(){
-
-    }
-
-    componentDidMount(){
-
-    }
-
-    componentDidUpdate(){
-        if(this.props.show){
-            ReactDOM.findDOMNode(this).focus();
+        this.state = {
+            active: false
         }
+        this.handleLinkClick = this.handleLinkClick.bind(this);
     }
 
-    handleBlur(e) {
-        let self = this;
-        let currentTarget = e.currentTarget;
-        setTimeout(function() {
-            if (!currentTarget.contains(document.activeElement)) {
-                self.props.collapse();
-            }
-        }, 0);
+    handleLinkClick () {
+        this.refs.dropdown.hide();
+    }
+
+    setIcon(visibility){
+        this.setState({active: visibility})
     }
 
     render(){
 
         return(
-            <div tabIndex="0" onBlur={this.handleBlur.bind(this)} ref="self" className="full-width">
-                <div className={"tk-dropdown tk-root" + this.props.align + " " + (this.props.show ? 'active' : '')}>
-                    <div className="row">
-                        <div className="col-xs-12">
-                            <ul className="no-list-style no-padding list">
-                            {
-                                this.props.data.map((item, id) => (
-                                    <li key={item.value} className="">
+            <Dropdown ref="dropdown" className="full-width relative" onShow={this.setIcon.bind(this, true)} onHide={this.setIcon.bind(this, false)}>
+                <DropdownTrigger className="full-width">
+                    <div className="search-input full-width">
+                        {this.props.triggerName}
+                        {
+                            (this.state.active)
+                                ? <i className="fa fa-chevron-up pull-right" aria-hidden="true"/>
+                                : <i className="fa fa-chevron-down pull-right" aria-hidden="true"/>
+                        }
+                    </div>
+                </DropdownTrigger>
+                <DropdownContent>
+                    <ul className="no-list-style no-padding list">
+                        {
+                            this.props.data.map((item, id) => (
+                                <li key={item.value} className="table no-padding no-margin">
+                                    <div className="table-cell width-20 valign-middle no-padding">
                                         <label className="switch">
                                             <input type="checkbox"
                                                    name={id}
+                                                   value={item.value}
                                                    checked={item.selected}
                                                    onChange={this.props.updateInput}
                                             />
                                             <div className="slider round"></div>
                                         </label>
+                                    </div>
+                                    <div className="table-cell width-80">
                                         {item.title}
-                                    </li>
-                                ))
-                            }
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div className="tk-arrow"></div>
-            </div>
+                                    </div>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                    <div className="tk-arrow"></div>
+                </DropdownContent>
+            </Dropdown>
         );
     }
 }

@@ -54,7 +54,7 @@ class Client extends Model
             'name' => 'required|string|min:1',
             'email' => 'required|email',
             'address1' => 'required|string|min:1',
-            'address2' => 'required|string',
+            'address2' => 'nullable|string',
             'city' => 'required|string|min:1',
             'state' => 'required|string|min:1',
             'postalCode' => 'required|regex:/^[0-9]{5}(-[0-9]{4}){0,1}$/',

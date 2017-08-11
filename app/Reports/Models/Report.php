@@ -5,6 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
+use DateInterval;
 use \SVGGraph;
 use Excel;
 use PDF;
@@ -25,6 +28,7 @@ class Report extends Model
         //figure out keys to filter and order by
         $groupField = '';
         $groupKey = '';
+
         switch($groupBy){
             case 'client':
                 $groupField = 'clientName';
@@ -85,6 +89,7 @@ class Report extends Model
             $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }else{
             $startDate = Carbon::parse($startDate)->format('Y-m-d');
+//            var_dump(Carbon::parse($startDate)->format('Y-m-d'));
             $endDate = Carbon::parse($endDate)->format('Y-m-d');
             $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
         }
@@ -94,29 +99,45 @@ class Report extends Model
             $timeEntries = $timeEntries->orderBy($groupField, 'asc')->get();
         }
 
+//        var_dump($timeEntries);
+
+//        //adjust all time entries to users local time zone so they are properly grouped
+//        $timeEntries = $timeEntries->map(function($entry) use($timezone) {
+//            $date = new DateTime($entry->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
+//            return $date->format('Y-m-d');
+//        });
+
         //clone collection to prepare bar adn pie data as well
         $barData = clone $timeEntries;
         $pieData = clone $timeEntries;
 
         //get bar data
-        $finalBarData = $barData->groupBy(function($entry, $key){
-            return date('Y-m-d', strtotime($entry->startTime));
+        $finalBarData = $barData->groupBy(function($entry){
+            $date = new DateTime($entry->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
+            return $date->format('m-d-Y');
         })->transform(function($entry){
+            $date = new DateTime($entry[0]->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
             return [
-                'name'=> date('Y-m-d', strtotime($entry[0]->startTime)),
-                'value' => $entry->sum('time')/60
+                'name'=> $date->format('m-d-Y'),
+                'value' => round(($entry->sum('time')/60),2)
             ];
         });
 
         $paddedBarData = collect();
-        $chartDate = date('Y-m-d', strtotime('+1 days', strtotime($startDate)));
-        while(strtotime($chartDate) <= strtotime($endDate)){
+        $chartDate = new DateTime($startDate);
+//        $chartDate->setTimezone(new DateTimeZone($timezone));
+        $endDate = new DateTime($endDate);
+//        $endDate->setTimezone(new DateTimeZone(($timezone)));
+        while($chartDate <= $endDate){
             $data = [
-                'name' => $chartDate,
+                'name' => $chartDate->format('m-d-Y'),
                 'value' => 0
             ];
-            $paddedBarData->put($chartDate, $data);
-            $chartDate = date('Y-m-d', strtotime('+1 days', strtotime($chartDate )));
+            $paddedBarData->put($chartDate->format('m-d-Y'), $data);
+            $chartDate->add(new DateInterval('P1D'));
         }
 
         $finalBarData = $finalBarData->union($paddedBarData)->sortBy(function($entry, $key){
@@ -127,47 +148,47 @@ class Report extends Model
         //get bar data
         $finalPieData = $pieData->groupBy('clientID')->transform(function($entry){
             return [
-                'name'=> $entry[0]->clientName,
-                'value' => $entry->sum('time')/60
-            ];
+                    'name'=> $entry[0]->clientName,
+                    'value' => round(($entry->sum('time')/60), 2)
+                ];
         })->values();
 
 
         if ($subGroup) {
             $timeEntries = [
-                'totalTime' => ($timeEntries->sum('time')/60),
+                'totalTime' => round(($timeEntries->sum('time')/60), 2),
                 'groups' => $timeEntries->groupBy($groupField)->transform(function ($item, $key) use($subGroupField) {
-                    return [
-                        'title' => $key,
-                        'totalTime' => $item->sum('time') / 60,
-                        'subGroups' => $item->groupBy($subGroupField)->transform(function ($entry, $key) {
-                            return [
-                                'title' => $key,
-                                'totalTime' => ($entry->sum('time') / 60),
-                                'entries' => $entry->transform(function ($item, $k) {
-                                    return [
-                                        'date' => date('Y-m-d', strtotime($item->startTime)),
-                                        'description' => $item->description,
-                                        'time' => ($item->time / 60)];
-                                })->sortBy('date')->values()->toArray()
-                            ];
-                        })->toArray()];
-                })->toArray()];
+                return [
+                    'title' => $key,
+                    'totalTime' => round(($item->sum('time') / 60), 2),
+                    'subGroups' => $item->groupBy($subGroupField)->transform(function ($entry, $key) {
+                        return [
+                            'title' => $key,
+                            'totalTime' => round(($entry->time / 60), 2),
+                            'entries' => $entry->transform(function ($item, $k) {
+                                return [
+                                    'date' => date('Y-m-d', strtotime($item->startTime)),
+                                    'description' => $item->description,
+                                    'time' => round(($item->time / 60), 2)];
+                            })->sortBy('date')->values()->toArray()
+                        ];
+                    })->toArray()];
+            })->toArray()];
         }else{
             $timeEntries = [
-                'totalTime' => ($timeEntries->sum('time') / 60),
+                'totalTime' => round(($timeEntries->sum('time') / 60),2),
                 'groups' => $timeEntries->groupBy($groupField)->transform(function($entry, $key){
-                    return [
-                        'title' => $key,
-                        'totalTime' => ($entry->sum('time') / 60),
-                        'entries' => $entry->transform(function($item){
-                            return [
-                                'date' => date('Y-m-d', strtotime($item->startTime)),
-                                'description' => $item->description,
-                                'time' => ($item->time / 60)];
-                        })->sortBy('date')->values()->toArray()
-                    ];
-                })->toArray()];
+                return [
+                    'title' => $key,
+                    'totalTime' => round(($entry->sum('time') / 60), 2),
+                    'entries' => $entry->transform(function($item){
+                        return [
+                            'date' => date('Y-m-d', strtotime($item->startTime)),
+                            'description' => $item->description,
+                            'time' => round(($item->time / 60), 2)];
+                    })->sortBy('date')->values()->toArray()
+                ];
+            })->toArray()];
         }
 
         $report = array_add($timeEntries, 'groupByType', $groupBy);

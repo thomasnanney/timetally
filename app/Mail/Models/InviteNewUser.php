@@ -1,27 +1,29 @@
 <?php
 
-namespace App\Mail;
+namespace App\Mail\Models;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use App\Workspaces\Models\WorkspaceInvite;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Workspaces\Models\Workspace;
 
-class Invite extends Mailable
+class InviteNewUser extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $invite;
+    public $invite, $workspace;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(WorkspaceInvite $invite)
+    public function __construct(WorkspaceInvite $invite, Workspace $workspace)
     {
         $this->invite = $invite;
+        $this->workspace = $workspace;
     }
 
     /**
@@ -32,6 +34,6 @@ class Invite extends Mailable
     public function build()
     {
         return $this->from('TimeTallyPremiere@gmail.com')
-            ->view('invite');
+            ->view('inviteNewUser');
     }
 }

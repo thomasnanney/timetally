@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddTitleToProjects extends Migration
+class AddRoleToUserWorkspacePivot extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class AddTitleToProjects extends Migration
      */
     public function up()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            //
-            $table->string('title');
-
+        Schema::table('user_workspace_pivot', function (Blueprint $table) {
+            $table->boolean('admin')->after('workspaceID');
         });
     }
 
@@ -27,9 +25,8 @@ class AddTitleToProjects extends Migration
      */
     public function down()
     {
-        Schema::table('projects', function (Blueprint $table) {
-            //
-            $table->dropColumn('title');
+        Schema::table('user_workspace_pivot', function (Blueprint $table) {
+            $table->dropColumn('admin');
         });
     }
 }

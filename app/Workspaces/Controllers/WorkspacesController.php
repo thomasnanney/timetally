@@ -4,8 +4,10 @@ namespace App\Workspaces\Controllers;
 
 use App\Workspaces\Models\Workspace;
 use App\Core\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Exception;
+use App\Users\Models\User;
 
 
 class WorkspacesController extends Controller
@@ -30,15 +32,16 @@ class WorkspacesController extends Controller
         return view('workspaces');
     }
 
-    public function getEdit(){
-        return view('editWorkspace');
+    public function getEdit(Workspace $workspace){
+
+        return view('editWorkspace', ['workspace' => $workspace]);
     }
 
     public function postEdit(Request $request, Workspace $workspace)
     {
         $data = $request->input('data');
 
-        if(isset($request['data'])) {
+        if($data) {
             $validator = Workspace::validate($data);
 
             if($validator->fails()) {
@@ -47,11 +50,12 @@ class WorkspacesController extends Controller
                     'errors' => $validator->errors(),
                 ]);
             }
-            $workspace->name = $request->input('name');
-            $workspace->description = $request->input('description');
-            $workspace->organizationID = $request->input('organizationID');
+
+            $workspace->fill($data);
             $workspace->save();
+
             return response()->json([
+                'status' => 'success',
                 'errors' => 'false'
             ]);
         }
@@ -63,9 +67,9 @@ class WorkspacesController extends Controller
     }
 
     public function postCreate(Request $request) {
-
         // validate info
         $data = $request->input('data');
+        $data['ownerID'] = Auth::id();
 
         $v = Workspace::validate($data);
 
@@ -75,9 +79,15 @@ class WorkspacesController extends Controller
                 'errors' => $v->errors(),
             ]);
         }
-
         // workspace information
-        Workspace::create($data);
+        $workspace = Workspace::create($data);
+
+        //attach the current user since they created the workspace;
+        $workspace->attachAdminUser(Auth::id());
+
+        $users = $request->input('users');
+        //add users to workspace
+        $workspace->inviteUsersByEmail($users);
 
         return response()->json([
            'status' => 'success',
@@ -91,25 +101,28 @@ class WorkspacesController extends Controller
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
 
-    public function getAllUsers($workspace = null){
+    public function getAllUsers(Request $request, $workspace = null){
 
         if(!$workspace){
             $user = Auth::user();
-            $workspaceId = $user->getCurrentWorkspace();
-            $workspace = Workspace::find($workspaceId);
+            $workspace = $user->getCurrentWorkspace();
         }else{
             $workspace = Workspace::find($workspace);
         }
 
-        $users = $workspace->queryUsers()->get();
+        if(!$request->input('raw')){
+            $users = $workspace->queryUsers()->get();
 
-        $users = $users->transform(function($user, $key){
-            return[
-                'value' => $user->id,
-                'title' => $user->name,
-                'selected' => false
-            ];
-        })->values();
+            $users = $users->transform(function($user, $key){
+                return[
+                    'value' => $user->id,
+                    'title' => $user->email,
+                    'selected' => false
+                ];
+            })->values();
+        }else{
+            $users = $workspace->queryUsersWithPrivileges()->get();
+        }
 
         return $users;
     }
@@ -117,8 +130,7 @@ class WorkspacesController extends Controller
     public function getAllClients($workspace = null){
         if(!$workspace){
             $user = Auth::user();
-            $workspaceId = $user->getCurrentWorkspace();
-            $workspace = Workspace::find($workspaceId);
+            $workspace = $user->getCurrentWorkspace();
         }else{
             $workspace = Workspace::find($workspace);
         }
@@ -140,8 +152,7 @@ class WorkspacesController extends Controller
 
         if(!$workspace){
             $user = Auth::user();
-            $workspaceId = $user->getCurrentWorkspace();
-            $workspace = Workspace::find($workspaceId);
+            $workspace = $user->getCurrentWorkspace();
         }else{
             $workspace = Workspace::find($workspace);
         }
@@ -157,5 +168,25 @@ class WorkspacesController extends Controller
         })->values();
 
         return $projects;
+    }
+
+    public function addAdmin(User $user){
+        $currentUser = Auth::user();
+        $workspace = $currentUser->getCurrentWorkspace();
+        //ToDo: Implement try catch
+        $workspace->addAdmin($user);
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
+
+    public function removeAdmin(User $user){
+        $currentUser = Auth::user();
+        $workspace = $currentUser->getCurrentWorkspace();
+        //ToDo: Implement try catch
+        $workspace->removeAdmin($user);
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }

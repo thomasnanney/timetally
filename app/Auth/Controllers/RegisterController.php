@@ -8,6 +8,7 @@ use App\Workspaces\Models\Workspace;
 use App\Core\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -76,16 +77,17 @@ class RegisterController extends Controller
             ]);
 
             $workspace = Workspace::create([
-                'title' => $data['firstname'] . "'s Worskpace",
+                'name' => $data['firstname'] . "'s Workspace",
                 'ownerID' => $user->id,
                 'description' => 'Please edit this description',
             ]);
 
             $user->current_workspace_id = $workspace->id;
             $user->save();
-            $user->queryWorkspaces()->attach($workspace->id);
+            $workspace->attachAdminUser($user->id);
         }else{
-            $invite = WorkspaceInvite::where('token', $data['token'])->first();
+            $invite = WorkspaceInvite::where('token', '=', $data['token'])->first();
+
             $user = User::create([
                 'name' => $data['firstname'] . " " . $data['lastname'],
                 'email' => $data['email'],
@@ -93,7 +95,8 @@ class RegisterController extends Controller
                 'password' => bcrypt($data['password']),
             ]);
 
-            $user->queryWorkspaces()->attach($invite->workspaceID);
+            $workspace = Workspace::find($invite->workspaceID);
+            $workspace->attachRegularUser($user->id);
 
             $invite->delete();
         }
@@ -109,6 +112,15 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm($token = null)
     {
+
+        if($token){
+            $invite = WorkspaceInvite::where('token', '=', $token)->exists();
+            if($invite){
+                return view('register')->with('token', $token);
+            }
+            return view('inviteExpired');
+        }
+
         return view('register')->with('token', $token);
     }
 }

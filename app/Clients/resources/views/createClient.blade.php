@@ -6,9 +6,8 @@
 
 @section('content')
     <div class="tk-container">
-        <div id="addClient"></div>
+        <div id="createClient"></div>
     </div>
-
 @endsection
 
 @section('js')

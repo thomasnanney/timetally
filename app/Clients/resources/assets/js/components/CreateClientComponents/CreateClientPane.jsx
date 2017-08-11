@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 
 //components imports
+import Textarea from 'react-textarea-autosize';
 
 export default class ViewClientPane extends Component {
     constructor(props) {
         super(props);
-        this.state ={
-            projects: []
-        };
     }
 
     componentDidMount() {
@@ -15,15 +13,7 @@ export default class ViewClientPane extends Component {
     }
 
     componentWillMount(){
-        let self = this;
-        axios.post('/clients/getProjects/'+tk.client.id)
-            .then(function(response){
-                self.setState({projects: response.data});
-            })
-            .catch(function(error){
-               alert('We were unable to retrieve projects for this client.  Please reload the page or contanct you' +
-                   ' system administrator');
-            });
+
     }
 
     componentWillUnmount() {
@@ -52,7 +42,7 @@ export default class ViewClientPane extends Component {
                                                name="name"
                                                className="tk-form-input"
                                                value={this.props.client.name}
-                                               onChange={this.updateInput.bind(this)}
+                                               onChange={this.props.updateClient}
                                         />
                                         {
                                             this.props.errors && this.props.errors.name &&
@@ -63,11 +53,27 @@ export default class ViewClientPane extends Component {
                                                name="email"
                                                className="tk-form-input"
                                                value={this.props.client.email}
-                                               onChange={this.updateInput.bind(this)}
+                                               onChange={this.props.updateClient}
                                         />
                                         {
                                             this.props.errors && this.props.errors.email &&
                                             <small className="error">{this.props.errors.email}</small>
+                                        }
+                                    </div>
+                                </div>
+                                <br/>
+                                <div className="row">
+                                    <div className="col-xs-12">
+                                            <Textarea
+                                                className="tk-form-textarea"
+                                                name="description"
+                                                placeholder="Description..."
+                                                value={this.props.client.description}
+                                                onChange={this.props.updateClient}
+                                            />
+                                        {(this.props.errors) &&  this.props.errors.description
+                                            ? <small className="error">{this.props.errors.description}</small>
+                                            : ''
                                         }
                                     </div>
                                 </div>
@@ -80,7 +86,7 @@ export default class ViewClientPane extends Component {
                                        className="tk-form-input"
                                        placeholder="Address 1"
                                        value={this.props.client.address1}
-                                       onChange={this.updateInput.bind(this)}
+                                       onChange={this.props.updateClient}
                                        name="address1"
                                 />
                                 {
@@ -91,7 +97,7 @@ export default class ViewClientPane extends Component {
                                        className="tk-form-input"
                                        placeholder="Address 2"
                                        value={this.props.client.address2}
-                                       onChange={this.updateInput.bind(this)}
+                                       onChange={this.props.updateClient}
                                        name="address2"
                                 />
                                 {
@@ -102,7 +108,7 @@ export default class ViewClientPane extends Component {
                                        className="tk-form-input"
                                        placeholder="City"
                                        value={this.props.client.city}
-                                       onChange={this.updateInput.bind(this)}
+                                       onChange={this.props.updateClient}
                                        name="city"
                                 />
                                 {
@@ -113,7 +119,7 @@ export default class ViewClientPane extends Component {
                                        className="tk-form-input"
                                        placeholder="State"
                                        value={this.props.client.state}
-                                       onChange={this.updateInput.bind(this)}
+                                       onChange={this.props.updateClient}
                                        name="state"
                                 />
                                 {
@@ -124,34 +130,13 @@ export default class ViewClientPane extends Component {
                                        className="tk-form-input"
                                        placeholder="Zip"
                                        value={this.props.client.postalCode}
-                                       onChange={this.updateInput.bind(this)}
+                                       onChange={this.props.updateClient}
                                        name="postalCode"
                                 />
                                 {
                                     this.props.errors && this.props.errors.postalCode &&
                                     <small className="error">{this.props.errors.postalCode}</small>
                                 }
-                            </div>
-                        );
-                    case 3:
-                        return (
-                            <div className="pane medium-container margin-center">
-                                <ul className="no-list-style no-margin no-padding list">
-                                    {
-                                        this.state.projects.length > 0
-                                            ?
-                                            this.state.projects.map((project) =>
-                                                <li><a href={"/projects/view/" + project.id } className="no-link-style">{project.title}</a></li>
-                                            )
-                                            :
-                                            <p>This client has no projects</p>
-                                    }
-                                </ul>
-                                <div className="row">
-                                    <div className="col-xs-12 text-center">
-                                        <a href="/projects/create">+ Add Project</a>
-                                    </div>
-                                </div>
                             </div>
                         );
                 }
