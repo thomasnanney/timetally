@@ -478,4 +478,98 @@ class WorkspaceTest extends TestCase
         $this->assertEquals('Workspace not found', $data['messages'][0]);
     }
 
+
+    public function testCreateWorkspaceRobustOwnerID() {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '1111111111111111111111111111111111111111111111111111111111111111111111',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter an Owner ID', $data['messages']['ownerID'][0]);
+    }
+
+    public function testCreateWorkspaceRobustOrganizationID(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '1',
+                    'organizaitonID' => '1111111111111111111111111111111111111111111111111111111111111111111111'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter an Organization ID', $data['messages']['organizationID'][0]);
+
+    }
+
+    public function testEditWorkspaceRobustOwnerID() {
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/edit',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '1111111111111111111111111111111111111111111111111111111111111111111111',
+                    'organizaitonID' => '1'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter an Owner ID', $data['messages']['ownerID'][0]);
+    }
+
+    public function testEditWorkspaceRobustOrganizationID(){
+        $user = factory(User::class)->make();
+        $this->be($user);
+        $response = $this->call('POST', '/workspaces/edit',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'name' => 'Workspace 1',
+                    'description' => 'Description',
+                    'ownerID' => '1',
+                    'organizaitonID' => '1111111111111111111111111111111111111111111111111111111111111111111111'
+                ]
+            ));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('workspaces', [
+            'name' => 'Workspace 1'
+        ]);
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('true', $data['errors']);
+        $this->assertEquals('Please enter an Organization ID', $data['messages']['organizationID'][0]);
+
+    }
 }
