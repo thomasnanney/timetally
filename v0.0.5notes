@@ -13,3 +13,8 @@ change pivot tables to sync without detaching
 paginate timer
 
 Dashboard UI
+
+Add in email to registration field when token is present
+
+Update create project
+
