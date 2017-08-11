@@ -337,7 +337,7 @@ export default class WorkspaceSettingsPane extends Component {
                                             </select>
 
                                             {
-                                                this.state.clients.lenght
+                                                this.state.clients.length
                                                 ?
                                                     <ul className="no-list-style no-margin no-padding list">
                                                         {

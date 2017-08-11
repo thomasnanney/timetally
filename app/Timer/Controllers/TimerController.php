@@ -7,6 +7,7 @@ use App\Core\Controllers\Controller;
 use App\Projects\Models\Project;
 use Illuminate\Support\Facades\Auth;
 use App\Timer\Models\TimeEntries;
+use DateTime;
 
 class TimerController extends Controller
 {
@@ -44,8 +45,8 @@ class TimerController extends Controller
 
         $user = Auth::user();
 
-        $data['startTime'] = date("Y-m-d h:i:s",strtotime($data['startTime']));
-        $data['endTime'] = date("Y-m-d h:i:s",strtotime($data['endTime']));
+        $data['startTime'] = new DateTime($data['startTime']);
+        $data['endTime'] = new DateTime($data['endTime']);
         $data['userID'] = $user->id;
         $data['workspaceID'] = $user->current_workspace_id;
         if($data['projectID']){

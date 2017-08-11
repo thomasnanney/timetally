@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 
+import DateFormat from 'dateformat';
+
 export default class TimerEntry extends Component{
 
     constructor(props){
@@ -23,10 +25,10 @@ export default class TimerEntry extends Component{
                         }
                     </div>
                     <div className="col-xs-2 col-md-2">
-                        {msToTime(new Date(this.props.entry.endTime) - new Date(this.props.entry.startTime))}
+                        {this.props.entry.formattedTotalTime}
                     </div>
                     <div className="col-xs-4 col-md-2">
-                        {msToTime(new Date(this.props.entry.startTime)) +' - ' + msToTime(new Date(this.props.entry.endTime))}
+                        {this.props.entry.formattedStartTime + ' - ' + this.props.entry.formattedEndTime}
                         <i className="fa fa-trash pull-right error clickable" aria-hidden="true" onClick={() => this.props.removeItem(this.props.entry)}/>
                     </div>
                 </div>

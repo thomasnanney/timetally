@@ -53,7 +53,7 @@ class ProjectsController extends Controller
 
         //attach the current user if the project is private
         if($project->private){
-            $project->queryUsers()->attach(Auth::user()->id);
+            $project->queryUsers()->attach(Auth::user());
 
             //also attach users supplied
             $users = $request->get('users');
@@ -127,6 +127,8 @@ class ProjectsController extends Controller
         $project->fill($data);
 
         if($project->private){
+            $project->addUser(Auth::user());
+
             //also attach users supplied
             $users = $request->get('users');
 

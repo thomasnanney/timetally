@@ -122,7 +122,7 @@ class Report extends Model
 //            $date->setTimezone(new DateTimeZone($timezone));
             return [
                 'name'=> $date->format('m-d-Y'),
-                'value' => $entry->sum('time')/60
+                'value' => round(($entry->sum('time')/60),2)
             ];
         });
 
@@ -148,44 +148,44 @@ class Report extends Model
         //get bar data
         $finalPieData = $pieData->groupBy('clientID')->transform(function($entry){
             return [
-                'name'=> $entry[0]->clientName,
-                'value' => $entry->sum('time')/60
-            ];
+                    'name'=> $entry[0]->clientName,
+                    'value' => round(($entry->sum('time')/60), 2)
+                ];
         })->values();
 
 
         if ($subGroup) {
             $timeEntries = [
-                'totalTime' => ($timeEntries->sum('time')/60),
+                'totalTime' => round(($timeEntries->sum('time')/60), 2),
                 'groups' => $timeEntries->groupBy($groupField)->transform(function ($item, $key) use($subGroupField) {
                 return [
                     'title' => $key,
-                    'totalTime' => $item->sum('time') / 60,
+                    'totalTime' => round(($item->sum('time') / 60), 2),
                     'subGroups' => $item->groupBy($subGroupField)->transform(function ($entry, $key) {
                         return [
                             'title' => $key,
-                            'totalTime' => ($entry->sum('time') / 60),
+                            'totalTime' => round(($entry->time / 60), 2),
                             'entries' => $entry->transform(function ($item, $k) {
                                 return [
                                     'date' => date('Y-m-d', strtotime($item->startTime)),
                                     'description' => $item->description,
-                                    'time' => ($item->time / 60)];
+                                    'time' => round(($item->time / 60), 2)];
                             })->sortBy('date')->values()->toArray()
                         ];
                     })->toArray()];
             })->toArray()];
         }else{
             $timeEntries = [
-                'totalTime' => ($timeEntries->sum('time') / 60),
+                'totalTime' => round(($timeEntries->sum('time') / 60),2),
                 'groups' => $timeEntries->groupBy($groupField)->transform(function($entry, $key){
                 return [
                     'title' => $key,
-                    'totalTime' => ($entry->sum('time') / 60),
+                    'totalTime' => round(($entry->sum('time') / 60), 2),
                     'entries' => $entry->transform(function($item){
                         return [
                             'date' => date('Y-m-d', strtotime($item->startTime)),
                             'description' => $item->description,
-                            'time' => ($item->time / 60)];
+                            'time' => round(($item->time / 60), 2)];
                     })->sortBy('date')->values()->toArray()
                 ];
             })->toArray()];

@@ -63,10 +63,30 @@ class UsersController extends Controller
             $date = new DateTime($entry->startTime);
             $date->setTimezone(new DateTimeZone($timezone));
             return $date->format('Y-m-d');
-        })->transform(function($entries){
-           return $entries->sortByDesc(function($entry){
+        })->transform(function($entries) use($timezone){
+           return $entries->map(function($entry) use($timezone){
+               $formattedStartTime = new DateTime($entry->startTime);
+               $formattedStartTime->setTimezone(new DateTimeZone($timezone));
+
+               $formattedEndTime = new DateTime($entry->endTime);
+               $formattedEndTime->setTimezone(new DateTimeZone($timezone));
+
+               $formattedTotalTime = $formattedEndTime->diff($formattedStartTime);
+               if($formattedTotalTime->d > 0){
+                   $hours = ($formattedTotalTime->d * 24) +$formattedTotalTime->h;
+                   $formattedTotalTime = $hours.':'.$formattedTotalTime->format('%I');
+               }else{
+                   $formattedTotalTime = $formattedTotalTime->format('%H:%I');
+               }
+
+               $entry['formattedStartTime'] = $formattedStartTime->format('H:i A');
+               $entry['formattedEndTime'] = $formattedEndTime->format('H:i A');
+               $entry['formattedTotalTime'] = $formattedTotalTime;
+
+               return $entry;
+           })->sortByDesc(function($entry){
                //not translating these to user time zone because it is just for ordering
-               return date('Y-m-d h:i', strtotime($entry['startTime']));
+               return new DateTime($entry->startTime);
            })->values();
         })->sortByDesc(function($entry, $key){
             return date('Y-m-d', strtotime($key));

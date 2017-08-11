@@ -105,4 +105,8 @@ class Project extends Model
     public static function deleteProject($id){
         Project::destroy($id);
     }
+
+    public function makePublic(){
+        $this->queryUsers()->detach();
+    }
 }
