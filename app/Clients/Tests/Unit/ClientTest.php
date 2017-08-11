@@ -188,7 +188,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
-        $this->assertEquals('Please enter an E-Mail', $data['messages']['email'][0]);
+        $this->assertEquals('Please enter an eMail', $data['messages']['email'][0]);
 
     }
 
@@ -240,7 +240,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
-        $this->assertEquals('Please enter a valid E-Mail', $data['messages']['email'][0]);
+        $this->assertEquals('Please enter a valid eMail', $data['messages']['email'][0]);
 
     }
 
@@ -500,7 +500,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
-        $this->assertEquals('Please enter a Postal Code', $data['messages']['postalCode'][0]);
+        $this->assertEquals('Please enter a valid Postal Code. xxxxx[-xxxx]', $data['messages']['postalCode'][0]);
 
     }
 
@@ -552,7 +552,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
-        $this->assertEquals('Please enter a valid Postal Code', $data['messages']['postalCode'][0]);
+        $this->assertEquals('Please enter a valid Postal Code. xxxxx[-xxxx]', $data['messages']['postalCode'][0]);
 
     }
 
@@ -757,7 +757,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
-        $this->assertEquals('Please enter an E-Mail', $data['messages']['email'][0]);
+        $this->assertEquals('Please enter an eMail', $data['messages']['email'][0]);
     }
 
     public function testEditClientInvalidEmail()
@@ -809,7 +809,7 @@ class ClientTest extends TestCase
 
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
-        $this->assertEquals('Please enter a valid E-Mail', $data['messages']['email'][0]);
+        $this->assertEquals('Please enter a valid eMail', $data['messages']['email'][0]);
     }
 
     public function testEditClientNoAddress1()
