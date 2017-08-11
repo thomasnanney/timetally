@@ -9,8 +9,7 @@ class CreateProject extends Component{
             activeView: 0,
             project: {
                 title: '',
-                scope: 'public',
-                workspaceID: '',
+                private: false,
                 clientID: '',
                 billableType: 'fixed',
                 startDate: '',
@@ -18,9 +17,9 @@ class CreateProject extends Component{
                 projectedTime: '',
                 projectedRevenue: '',
                 projectedCost: '',
-                users: [],
                 description: ''
             },
+            users: [],
             clients: [],
             errors: {},
             workspaces: []
@@ -73,7 +72,8 @@ class CreateProject extends Component{
         let self = this;
 
         axios.post('/projects/create', {
-            data: self.state.project
+            data: self.state.project,
+            users: self.state.users
         })
             .then(function(response){
                 if(response.status == 200){
@@ -96,27 +96,27 @@ class CreateProject extends Component{
     }
 
     addUserField(){
-        let newProject = this.state.project;
-        newProject.users.push('');
-        this.setState({project : newProject});
+        let newState = this.state;
+        newState.users.push('');
+        this.setState(newState);
     };
 
     //ToDo: convert to updateInput for dynamic fields as well via arrays
     updateUserName(id, evt){
-        let users = this.state.project.users.slice();
+        let users = this.state.users.slice();
         users[id] = evt.target.value;
-        let newProject = this.state.project;
-        newProject.users = users;
-        this.setState({project: newProject});
+        let newState = this.state;
+        newState.users = users;
+        this.setState(newState);
     }
 
     updateInput(event){
         let name = event.target.name;
-        let value = event.target.value;
-        this.updateState(name, value);
+        let value = event.target.type == 'checkbox' ? event.target.checked : event.target.value;
+        this.updateProject(name, value);
     }
 
-    updateState(name, value){
+    updateProject(name, value){
         let newProject = this.state.project;
         newProject[name] = value;
         this.setState({ project: newProject});
@@ -124,32 +124,6 @@ class CreateProject extends Component{
 
     makeTabActive(tab){
         this.setState({activeView: tab});
-    }
-
-    updateCheckbox(event){
-        let name = event.target.name;
-        let value = event.target.checked;
-        if(name == 'scope'){
-            if(value){
-                this.updateState(name, 'private');
-            }else{
-                this.updateState(name, 'public');
-            }
-        }
-        if(name == 'billableType'){
-            if(value){
-                this.updateState(name, 'hourly');
-            }else{
-                this.updateState(name, 'fixed');
-            }
-        }
-        if(name == 'billableHourlyType'){
-            if(value){
-                this.updateState(name, 'employee');
-            }else{
-                this.updateState(name, 'project');
-            }
-        }
     }
 
     render(){
@@ -194,30 +168,6 @@ class CreateProject extends Component{
                                                 ? <small className="error">{this.state.errors.title}</small>
                                                 : ''
                                             }
-                                            {this.state.workspaces.length > 1 &&
-                                                <div>
-                                                    <h1>Workspace</h1>
-                                                    <select className="tk-form-input"
-                                                        value={this.state.project.workspaceID}
-                                                        onChange={this.updateInput.bind(this)}
-                                                        name="workspaceID">
-                                                    {
-                                                        this.state.workspaces.length > 0
-                                                        ?
-                                                        this.state.workspaces.map((workspace) =>
-                                                            <option value={workspace.id} key={workspace.id}>{workspace.name}</option>
-                                                        )
-                                                        :
-                                                        <option>Add a workspace</option>
-                                                    }
-                                                        </select>
-                                                </div>
-                                            }
-                                            {this.state.errors.workspaceID
-                                                ? <small className="error">{this.state.errors.workspaceID}</small>
-                                                : ''
-                                            }
-
                                         </div>
                                         <br></br>
                                         <div className="row">
@@ -225,16 +175,16 @@ class CreateProject extends Component{
                                                 Public
                                                 <label className="switch">
                                                     <input type="checkbox"
-                                                           name="scope"
-                                                           checked={this.state.project.scope == 'private'}
-                                                           onChange={this.updateCheckbox.bind(this)}
+                                                           name="private"
+                                                           checked={this.state.project.private}
+                                                           onChange={this.updateInput.bind(this)}
 
                                                     />
                                                     <div className="slider round"></div>
                                                 </label>
                                                 Private
-                                                {this.state.errors.scope
-                                                    ? <small className="error">{this.state.errors.scope}</small>
+                                                {this.state.errors.private
+                                                    ? <small className="error">{this.state.errors.private}</small>
                                                     : ''
                                                 }
                                             </div>
@@ -349,7 +299,7 @@ class CreateProject extends Component{
                                     <div>
                                         <h1>Add Users</h1>
                                         {
-                                            this.state.project.users.map((user, id) => (
+                                            this.state.users.map((user, id) => (
                                                 <input type="text"
                                                        className="tk-form-input"
                                                        placeholder="User's Email..."
@@ -384,25 +334,22 @@ function hasErrors(pane, errors){
     const errorFields = [
         [
             'title',
-            'scope'
+            'workspaceID',
+            'private',
+            'description'
         ],
         [
             'clientID',
-            'billableType',
-            'projectedRevenue',
-            'billableHourlyType',
-            'billableRate',
-        ],
-        [
             'startDate',
             'endDate',
             'projectedTime',
         ],
         [
-
+            'projectedRevenue',
+            'projectedCost',
         ],
         [
-            'description'
+            'users'
         ]
     ];
 

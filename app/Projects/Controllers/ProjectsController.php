@@ -51,8 +51,23 @@ class ProjectsController extends Controller
 
         $project = Project::create($data);
 
-        //since project was created, link the current user
-        $project->queryUsers()->attach(Auth::user()->id);
+        //attach the current user if the project is private
+        if($project->private){
+            $project->queryUsers()->attach(Auth::user()->id);
+
+            //also attach users supplied
+            $users = $request->get('users');
+
+            //ToDo: If user does not exist we need to noitfy and offer the opportunitty to invite
+            foreach($users as $userEmail){
+                if(gettype($userEmail) == 'string'){
+                    $user = User::where('email', '=', $userEmail)->first();
+                    if($user){
+                        $project->addUser($user);
+                    }
+                }
+            }
+        }
 
         return response()->json([
             'status' => 'success',
@@ -96,6 +111,8 @@ class ProjectsController extends Controller
     {
 
         $data = $request->input('data');
+        $user = Auth::user();
+        $data['workspaceID'] = $user->getCurrentWorkspace()->id;
 
         $v = Project::validate($data);
 
@@ -108,9 +125,24 @@ class ProjectsController extends Controller
         }
 
         $project->fill($data);
-        $project->save();
 
-        var_dump($project);
+        if($project->private){
+            //also attach users supplied
+            $users = $request->get('users');
+
+            foreach($users as $userEmail){
+                if(gettype($userEmail) == 'string'){
+                    $user = User::where('email', '=', $userEmail)->first();
+                    if($user){
+                        $project->addUser($user);
+                    }
+                }
+            }
+        }else{
+            $project->makePublic();
+        }
+
+        $project->save();
 
         return response()->json([
             'status' => 'success',

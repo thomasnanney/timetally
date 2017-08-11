@@ -13,10 +13,7 @@ export default class TimerEntry extends Component{
                     <div className="col-xs-12 col-md-6">
                         {this.props.entry.description}
                     </div>
-                    <div className="col-xs-4 col-md-2">
-                        {this.props.entry.project_name}
-                    </div>
-                    <div className="col-xs-4 col-md-2 text-right">
+                    <div className="col-xs-2 col-md-2 text-right">
                         {
                             this.props.entry.billable
                                 ?
@@ -25,8 +22,11 @@ export default class TimerEntry extends Component{
                                     ''
                         }
                     </div>
-                    <div className="col-xs-4 col-md-2">
+                    <div className="col-xs-2 col-md-2">
                         {msToTime(new Date(this.props.entry.endTime) - new Date(this.props.entry.startTime))}
+                    </div>
+                    <div className="col-xs-4 col-md-2">
+                        {msToTime(new Date(this.props.entry.startTime)) +' - ' + msToTime(new Date(this.props.entry.endTime))}
                         <i className="fa fa-trash pull-right error clickable" aria-hidden="true" onClick={() => this.props.removeItem(this.props.entry)}/>
                     </div>
                 </div>

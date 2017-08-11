@@ -63,7 +63,7 @@ class User extends Authenticatable
     }
 
     public function queryPublicProjects(){
-        return $this->getCurrentWorkspace()->queryProjects()->where('scope', '=', 'public');
+        return $this->getCurrentWorkspace()->queryProjects()->where('private', '=', 'false');
     }
 
     public function queryPrivateProjects(){

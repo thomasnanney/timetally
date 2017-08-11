@@ -78,13 +78,13 @@ class DatabaseSeeder extends Seeder
 
             //link users to project
             //link primary user to all projects
-            if($project->scope == 'private'){
+            if($project->private){
                 $project->queryUsers()->attach($primaryUser->id);
             }
 
             //link all 5 users to each of the projects
             foreach($subUsers as $user){
-                if($project->scope == 'private'){
+                if($project->private){
                     $rand = rand(0, 8);
                     if($rand%2){
                         $project->queryUsers()->attach($user->id);

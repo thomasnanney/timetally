@@ -77,8 +77,6 @@ class TimerManager extends Component{
             body = 'Are you sure you want to delete ' + this.state.promptDeleteEntry.description;
         }
 
-        console.log(this.state.timeEntries);
-
         return (
             <div>
                 <TimerBar updateEntries={this.updateEntries.bind(this)}/>
