@@ -153,6 +153,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('true', $data['errors']);
         $this->assertEquals('Please enter a Workspace Name', $data['messages']['name'][0]);
     }
+
     public function testCreateTimeEntryMissingProjectID()
     {
         $user = factory(User::class)->make();
@@ -183,6 +184,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('true', $data['errors']);
         $this->assertEquals('Please enter a Project Name', $data['messages']['name'][0]);
     }
+
     public function testCreateTimeEntryMissingUserID()
     {
         $user = factory(User::class)->make();
@@ -212,6 +214,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
     }
+
     public function testCreateTimeEntryMissingClientID()
     {
         $user = factory(User::class)->make();
@@ -241,6 +244,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
     }
+
     public function testCreateTimeEntryInvalidWorkspaceID()
     {
         $user = factory(User::class)->make();
@@ -271,6 +275,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('true', $data['errors']);
         $this->assertEquals('Please enter a Workspace Name', $data['messages']['name'][0]);
     }
+
     public function testCreateTimeEntryInvalidProjectID()
     {
         $user = factory(User::class)->make();
@@ -301,6 +306,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('true', $data['errors']);
         $this->assertEquals('Please enter a Project Name', $data['messages']['name'][0]);
     }
+
     public function testCreateTimeEntryInvalidUserID()
     {
         $user = factory(User::class)->make();
@@ -330,6 +336,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
     }
+
     public function testCreateTimeEntryInvalidClientID()
     {
         $user = factory(User::class)->make();
@@ -359,6 +366,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
     }
+
     public function testCreateTimeEntryMissingStartTime()
     {
         $user = factory(User::class)->make();
@@ -388,6 +396,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
     }
+
     public function testCreateTimeEntryMissingEndTime()
     {
         $user = factory(User::class)->make();
@@ -417,6 +426,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
     }
+
     public function testCreateTimeEntryInvalidStartTime()
     {
         $user = factory(User::class)->make();
@@ -446,6 +456,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
     }
+
     public function testCreateTimeEntryInvalidEndTime()
     {
         $user = factory(User::class)->make();
@@ -475,6 +486,7 @@ class TimeEntryTest extends TestCase
         $this->assertEquals('fail', $data['status']);
         $this->assertEquals('true', $data['errors']);
     }
+
     public function testCreateTimeEntryNoDescription()
 
     {
