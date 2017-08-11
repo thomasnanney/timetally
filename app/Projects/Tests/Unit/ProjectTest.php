@@ -31,7 +31,6 @@ class ProjectsTest extends TestCase
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
 
         $response = $this->call('POST', '/projects/create',
             array(

@@ -164,7 +164,7 @@ class Report extends Model
                     'subGroups' => $item->groupBy($subGroupField)->transform(function ($entry, $key) {
                         return [
                             'title' => $key,
-                            'totalTime' => round(($entry->time / 60), 2),
+                            'totalTime' => round(($entry->sum('time') / 60), 2),
                             'entries' => $entry->transform(function ($item, $k) {
                                 return [
                                     'date' => date('Y-m-d', strtotime($item->startTime)),
