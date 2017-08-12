@@ -23,14 +23,12 @@ body{
     padding:8px;
 }
 
-.timer-container div[class*="timer-"]{
-    display: table;
+.timer-container.table .table-cell{
+    vertical-align: center;
 }
 
 .timer-container .timer-element{
-    display: table-cell;
     vertical-align: middle;
-    height:50px;
 }
 
 .timer-container .timer-set-time:hover{
@@ -43,6 +41,10 @@ body{
 
 .inline-block{
     display: inline-block !important;
+}
+
+.block{
+    display: block !important;
 }
 
 .icon-check-box{
@@ -390,6 +392,70 @@ li.tab.active{
     color: #991304;
     font-weight:700;
 }
+
+/***************TC COL SIZES******************************/
+.tc-md-1{
+    width: 5%;
+}
+.tc-md-2{
+    width: 10%;
+}
+.tc-md-3{
+    width: 15%;
+}
+.tc-md-4{
+    width: 20%;
+}
+.tc-md-5{
+    width: 25%;
+}
+.tc-md-6{
+    width: 30%;
+}
+.tc-md-7{
+    width: 35%;
+}
+.tc-md-8{
+    width: 40%;
+}
+.tc-md-9{
+    width: 45%;
+}
+.tc-md-10{
+    width: 50%;
+}
+.tc-md-11{
+    width: 55%;
+}
+.tc-md-12{
+    width: 60%;
+}
+.tc-md-13{
+    width: 65%;
+}
+.tc-md-14{
+    width: 70%;
+}
+.tc-md-15{
+    width: 75%;
+}
+.tc-md-16{
+    width: 80%;
+}
+.tc-md-17{
+    width: 85%;
+}
+.tc-md-18{
+    width: 90%;
+}
+.tc-md-19{
+    width: 95%;
+}
+.tc-md-20{
+    width: 100%;
+}
+
+
 /**********************ERRORS***************************/
 .error-box{
     background-color: rgba(255,0,0,0.3);

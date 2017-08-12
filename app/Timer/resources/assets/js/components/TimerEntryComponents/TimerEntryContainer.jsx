@@ -3,19 +3,36 @@ import React, {Component} from 'react';
 import TimerEntry from './TimerEntry';
 import DateFormat from 'dateformat';
 
+import ReactPaginate from 'react-paginate';
+
 export default class TimerEntryContainer extends Component{
 
     constructor(props){
         super(props);
+        this.state = {
+            offset: 0,
+            perPage: 50,
+        }
     }
 
     componentWillMount(){
 
     }
 
-    render(){
+    updatePerPage(evt){
+        let newState = this.state;
+        newState.perPage = evt.target.value;
+        this.setState(newState);
+    }
 
-        console.log(Object.keys(this.props.timeEntries).length);
+    handlePageClick(data){
+        let newState = this.state;
+        let selected = data.selected;
+        newState.offset = Math.ceil(selected * newState.perPage);
+        this.setState(newState);
+    };
+
+    render(){
 
         return(
             <div className="log-container">

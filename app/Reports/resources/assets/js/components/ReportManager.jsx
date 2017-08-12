@@ -29,7 +29,7 @@ class ReportManager extends Component{
                         <h2>Reports</h2>
                     </div>
                     <div className="col-xs-12 col-md-6">
-                        <button className="btn tk-btn-success pull-right">Custom Report</button>
+                        {/*<button className="btn tk-btn-success pull-right">Custom Report</button>*/}
                     </div>
                 </div>
                 {(this.state.mode == "standard")

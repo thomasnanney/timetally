@@ -46,10 +46,10 @@ class ViewProject extends Component {
                     ' Administrator');
             });
 
-        let newState = this.state;
-        newState.project.startDate = DateFormat(newState.project.startDate, 'yyyy-mm-dd');
-        newState.project.endDate = DateFormat(newState.project.endDate, 'yyyy-mm-dd');
-        this.setState(newState);
+        let newState = self.state;
+        newState.project.startDate = DateFormat(self.state.project.startDate, 'yyyy-mm-dd');
+        newState.project.endDate = DateFormat(self.state.project.endDate, 'yyyy-mm-dd');
+        self.setState(newState);
     }
 
     saveProject(){
@@ -63,6 +63,9 @@ class ViewProject extends Component {
                 console.log(response);
                 if(response.status == 200){
                     self.showSuccess();
+                    let newState = self.state;
+                    newState.errors = {};
+                    self.setState(errors);
                 }
             })
             .catch(function(error){
@@ -231,7 +234,7 @@ class ViewProject extends Component {
                                                type="date"
                                                className="tk-form-input"
                                                onChange={this.updateInput.bind(this)}
-                                               value={DateFormat(this.state.project.startDate, 'yyyy-mm-dd')}
+                                               value={this.state.project.startDate}
                                         />
                                         {this.state.errors.startDate
                                             ? <small className="error">{this.state.errors.startDate}</small>
@@ -244,7 +247,7 @@ class ViewProject extends Component {
                                                type="date"
                                                className="tk-form-input"
                                                onChange={this.updateInput.bind(this)}
-                                               value={DateFormat(this.state.project.endDate, 'yyyy-mm-dd')}
+                                               value={this.state.project.endDate}
                                         />
                                         {this.state.errors.endDate
                                             ? <small className="error">{this.state.errors.endDate}</small>

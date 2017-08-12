@@ -93,9 +93,9 @@ export default class DropDownDateTimePicker extends Component{
                 <DropdownContent>
                     <div className="row">
                         <div className="">
-                            <DayPicker onDayClick={this.handleDayClick.bind(this)} selectedDays={new Date(this.state.selectedTime)}/>
+                            <DayPicker onDayClick={this.handleDayClick.bind(this)} selectedDays={new Date(this.state.selectedTime)} className="block"/>
                         </div>
-                        <div className="">
+                        <div className="text-center">
                             <Timepicker
                                 size={300}
                                 radius={80}
@@ -105,7 +105,7 @@ export default class DropDownDateTimePicker extends Component{
                                 onChange={this.handleTimeClick.bind(this)}
                             />
                             <div className="row">
-                                <div className="col-xs-12">
+                                <div className="col-xs-12 text-center">
                                     <div className="btn-group" role="group">
                                         <button type="button" className={"btn btn-primary " + (new Date(this.state.selectedTime).getHours() <= 11 ? 'active' : '')} value="AM" onClick={(e) => this.handleTimeOfDayClick(e)}>AM</button>
                                         <button type="button" className={"btn btn-primary " + (new Date(this.state.selectedTime).getHours() > 11  ? 'active' : '')} value="PM" onClick={(e) => this.handleTimeOfDayClick(e)}>PM</button>

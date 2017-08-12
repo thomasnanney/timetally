@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 
 // import SearchBar from 'projects/ProjectManagerComponents/SearchBar'
 import Modal from 'core/Modal';
+import SuccessNotification from 'core/SuccessNotification';
+import ErrorNotification from 'core/ErrorNotification';
 
 class UsersManager extends Component{
 
@@ -13,7 +15,9 @@ class UsersManager extends Component{
             promptDelete: false,
             promptDeleteUser: null,
             promptToggleAdmin: false,
-            promptToggleAdminUser: null
+            promptToggleAdminUser: null,
+            showSuccess: false,
+            showError: false,
         }
     }
 
@@ -91,18 +95,42 @@ class UsersManager extends Component{
         axios.post(url).then(function(response){
             if(response.status == 200){
                 self.cancelToggleAdmin();
-                alert("Users privileges successfully updated");
+                self.showSuccess();
                 self.getUsers();
             }
         }).catch(function(error){
-            console.log(error);
-            alert("We experienced an error updating the privileges, please refresh the page and try again.");
+            if(error.response.status == 400){
+                self.cancelToggleAdmin();
+                self.showError();
+            }
+
+            if(error.response.status == 403){
+                self.cancelToggleAdmin();
+                self.showError();
+                alert("You do not have permission to alter users");
+            }
         });
     }
 
     cancelToggleAdmin(){
         this.setState({promptToggleAdmin: false});
         this.setState({promptToggleAdminUser: null});
+    }
+
+    showSuccess(){
+        let self = this;
+        this.setState({showSuccess: true});
+        window.setTimeout(function(){
+            self.setState({showSuccess: false});
+        }, 3000);
+    }
+
+    showError(){
+        let self = this;
+        this.setState({showError: true});
+        window.setTimeout(function(){
+            self.setState({showError: false});
+        }, 3000);
     }
 
     render(){
@@ -128,58 +156,62 @@ class UsersManager extends Component{
         }
 
         return (
-            <div className="log-container">
-                <div className="row">
-                    <div className="col-xs-12">
-                        <span className="tk-header">Users</span>
-                    </div>
-                </div>
-                <br/>
-                <ul>
-                    <li>
-                        <div className="row">
-                            <div className="col-xs-12 col-md-6">
-                                Name:
-                            </div>
-                            <div className="col-xs-4 col-md-3">
-                                Level:
-                            </div>
-                            <div className="col-xs-4 col-md-3">
-                                Email:
-                            </div>
+            <div>
+                <SuccessNotification show={this.state.showSuccess}/>
+                <ErrorNotification show={this.state.showError}/>
+                <div className="log-container">
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <span className="tk-header">Users</span>
                         </div>
-                    </li>
-                    {
-                        this.state.users.map((user, id) => (
-                            <li key={id}>
-                                <div className="row">
-                                    <div className="col-xs-12 col-md-6">
-                                        {user.name}
-                                    </div>
-                                    <div className="col-xs-4 col-md-3">
-                                        {
-                                            user.pivot.admin
-                                            ?
-                                                <span className="label label-success clickable" onClick={this.promptToggleAdmin.bind(this, user)}>Admin</span>
-                                            :
-                                                <span className="label label-default clickable" onClick={this.promptToggleAdmin.bind(this, user)}>Regular</span>
-                                        }
-                                    </div>
-                                    <div className="col-xs-4 col-md-3">
-                                        {user.email}
-                                    </div>
+                    </div>
+                    <br/>
+                    <ul>
+                        <li>
+                            <div className="row">
+                                <div className="col-xs-12 col-md-6">
+                                    Name:
                                 </div>
-                            </li>
-                        ))
-                    }
-                </ul>
+                                <div className="col-xs-4 col-md-3">
+                                    Level:
+                                </div>
+                                <div className="col-xs-4 col-md-3">
+                                    Email:
+                                </div>
+                            </div>
+                        </li>
+                        {
+                            this.state.users.map((user, id) => (
+                                <li key={id}>
+                                    <div className="row">
+                                        <div className="col-xs-12 col-md-6">
+                                            {user.name}
+                                        </div>
+                                        <div className="col-xs-4 col-md-3">
+                                            {
+                                                user.pivot.admin
+                                                ?
+                                                    <span className="label label-success clickable" onClick={this.promptToggleAdmin.bind(this, user)}>Admin</span>
+                                                :
+                                                    <span className="label label-default clickable" onClick={this.promptToggleAdmin.bind(this, user)}>Regular</span>
+                                            }
+                                        </div>
+                                        <div className="col-xs-4 col-md-3">
+                                            {user.email}
+                                        </div>
+                                    </div>
+                                </li>
+                            ))
+                        }
+                    </ul>
 
-                {this.state.promptDelete &&
-                <Modal show={true} header={header} body={body} onConfirm={this.removeUser.bind(this)} onClose={this.cancelDelete.bind(this)} />
-                }
-                {this.state.promptToggleAdmin &&
-                <Modal show={true} header={adminHeader} body={adminBody} onConfirm={this.toggleAdmin.bind(this)} onClose={this.cancelToggleAdmin.bind(this)} />
-                }
+                    {this.state.promptDelete &&
+                    <Modal show={true} header={header} body={body} onConfirm={this.removeUser.bind(this)} onClose={this.cancelDelete.bind(this)} />
+                    }
+                    {this.state.promptToggleAdmin &&
+                    <Modal show={true} header={adminHeader} body={adminBody} onConfirm={this.toggleAdmin.bind(this)} onClose={this.cancelToggleAdmin.bind(this)} />
+                    }
+                </div>
             </div>
         );
     }
