@@ -54,8 +54,8 @@ class Project extends Model
             'description' => 'sometimes|string|min:1',
             'clientID' => 'required|integer|exists:clients,id', // needs to exist
             'workspaceID' => 'required|integer|exists:workspaces,id',
-            'startDate' => 'required|date_format:Y-m-d',
-            'endDate' => 'required|date_format:Y-m-d',
+            'startDate' => 'required|date_format:"Y-m-d H:i:s"', //must be in YYYY-MM-DD format
+            'endDate' => 'required|date_format:"Y-m-d H:i:s"|after:startDate', //must be in YYYY-MM-DD format and come after the start date
             'projectedTime' => 'required|integer',
             'private' => 'required|boolean', //must be public or private
             'projectedRevenue' => 'required|regex:/^\d+(\.\d\d)?$/',
