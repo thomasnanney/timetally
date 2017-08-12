@@ -59,11 +59,13 @@ class ProjectsController extends Controller
             $users = $request->get('users');
 
             //ToDo: If user does not exist we need to noitfy and offer the opportunitty to invite
-            foreach($users as $userEmail){
-                if(gettype($userEmail) == 'string'){
-                    $user = User::where('email', '=', $userEmail)->first();
-                    if($user){
-                        $project->addUser($user);
+            if($users){
+                foreach($users as $userEmail){
+                    if(gettype($userEmail) == 'string'){
+                        $user = User::where('email', '=', $userEmail)->first();
+                        if($user){
+                            $project->addUser($user);
+                        }
                     }
                 }
             }
@@ -132,11 +134,13 @@ class ProjectsController extends Controller
             //also attach users supplied
             $users = $request->get('users');
 
-            foreach($users as $userEmail){
-                if(gettype($userEmail) == 'string'){
-                    $user = User::where('email', '=', $userEmail)->first();
-                    if($user){
-                        $project->addUser($user);
+            if($users){
+                foreach($users as $userEmail){
+                    if(gettype($userEmail) == 'string'){
+                        $user = User::where('email', '=', $userEmail)->first();
+                        if($user){
+                            $project->addUser($user);
+                        }
                     }
                 }
             }
