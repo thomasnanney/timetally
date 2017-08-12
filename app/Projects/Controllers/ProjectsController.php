@@ -36,17 +36,15 @@ class ProjectsController extends Controller
     public function postCreate(Request $request) {
 
         $data = $request->input('data');
-        $user = Auth::user();
-        $data['workspaceID'] = $user->getCurrentWorkspace()->id;
+        $user = $request->user();
+        $data['workspaceID'] = $user->current_workspace_id;
 
         $v = Project::validate($data);
 
         if($v->fails()) {
             return response()->json([
-                'status' => 'fail',
-                'errors' => 'true',
                 'messages' => $v->errors(),
-            ]);
+            ], 400);
         }
 
         $project = Project::create($data);
@@ -59,20 +57,19 @@ class ProjectsController extends Controller
             $users = $request->get('users');
 
             //ToDo: If user does not exist we need to noitfy and offer the opportunitty to invite
-            foreach($users as $userEmail){
-                if(gettype($userEmail) == 'string'){
-                    $user = User::where('email', '=', $userEmail)->first();
-                    if($user){
-                        $project->addUser($user);
+            if($users){
+                foreach($users as $userEmail){
+                    if(gettype($userEmail) == 'string'){
+                        $user = User::where('email', '=', $userEmail)->first();
+                        if($user){
+                            $project->addUser($user);
+                        }
                     }
                 }
             }
         }
 
-        return response()->json([
-            'status' => 'success',
-            'errors' => 'false',
-        ]);
+        return response('Projected created', 201);
     }
 
     public function deleteProject($id) {
@@ -111,17 +108,15 @@ class ProjectsController extends Controller
     {
 
         $data = $request->input('data');
-        $user = Auth::user();
-        $data['workspaceID'] = $user->getCurrentWorkspace()->id;
+        $user = $request->user();
+        $data['workspaceID'] = $user->current_workspace_id;
 
         $v = Project::validate($data);
 
         if ($v->fails()) {
             return response()->json([
-                'status' => 'fail',
-                'errors' => 'true',
                 'messages' => $v->errors()
-            ]);
+            ], 400);
         }
 
         $project->fill($data);
@@ -132,11 +127,13 @@ class ProjectsController extends Controller
             //also attach users supplied
             $users = $request->get('users');
 
-            foreach($users as $userEmail){
-                if(gettype($userEmail) == 'string'){
-                    $user = User::where('email', '=', $userEmail)->first();
-                    if($user){
-                        $project->addUser($user);
+            if($users){
+                foreach($users as $userEmail){
+                    if(gettype($userEmail) == 'string'){
+                        $user = User::where('email', '=', $userEmail)->first();
+                        if($user){
+                            $project->addUser($user);
+                        }
                     }
                 }
             }
@@ -146,11 +143,7 @@ class ProjectsController extends Controller
 
         $project->save();
 
-        return response()->json([
-            'status' => 'success',
-            'errors' => 'false',
-            'messages' => 'Project successfully updated'
-        ]);
+        return response('Project successfully updated', 200);
     }
 
     public function getUsers(Project $project){

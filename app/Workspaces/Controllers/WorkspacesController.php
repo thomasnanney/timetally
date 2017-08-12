@@ -46,24 +46,17 @@ class WorkspacesController extends Controller
 
             if($validator->fails()) {
                 return response()->json([
-                    'status' => 'Fail',
                     'errors' => $validator->errors(),
-                ]);
+                ], 400);
             }
 
             $workspace->fill($data);
             $workspace->save();
 
-            return response()->json([
-                'status' => 'success',
-                'errors' => 'false'
-            ]);
+            return response('Workspace saved', 200);
         }
 
-        return response()->json([
-            'status' => 'Fail',
-            'errors' => 'No input',
-        ]);
+        return response('Invalid input', 400);
     }
 
     public function postCreate(Request $request) {
@@ -75,9 +68,8 @@ class WorkspacesController extends Controller
 
         if($v->fails()) {
             return response()->json([
-                'status' => 'Fail',
                 'errors' => $v->errors(),
-            ]);
+            ], 400);
         }
         // workspace information
         $workspace = Workspace::create($data);
@@ -89,10 +81,7 @@ class WorkspacesController extends Controller
         //add users to workspace
         $workspace->inviteUsersByEmail($users);
 
-        return response()->json([
-           'status' => 'success',
-            'errors' => null
-        ]);
+        return response('Workspace created', 201);
     }
 
     public function deleteWorkspace(Workspace $workspace) {

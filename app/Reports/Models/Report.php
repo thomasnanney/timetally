@@ -164,7 +164,7 @@ class Report extends Model
                     'subGroups' => $item->groupBy($subGroupField)->transform(function ($entry, $key) {
                         return [
                             'title' => $key,
-                            'totalTime' => round(($entry->time / 60), 2),
+                            'totalTime' => round(($entry->sum('time') / 60), 2),
                             'entries' => $entry->transform(function ($item, $k) {
                                 return [
                                     'date' => date('Y-m-d', strtotime($item->startTime)),
@@ -202,6 +202,124 @@ class Report extends Model
 
     }
 
+    public static function generateBarData($data){
+        $clientFilter = $data['filters']['clients'];
+        $projectFilter = $data['filters']['projects'];
+        $userFilter = $data['filters']['users'];
+        $startDate = $data['startDate'];
+        $endDate = $data['endDate'];
+        $groupBy = $data['groupBy'];
+        $subGroup = $data['subGroup'];
+        $subGroupBy = $data['subGroupBy'];
+        $reportType = $data['reportType'];
+
+        //figure out keys to filter and order by
+        $groupField = '';
+        $groupKey = '';
+
+        switch($groupBy){
+            case 'client':
+                $groupField = 'clientName';
+                $groupKey = 'clientID';
+                break;
+            case 'user':
+                $groupField = 'userName';
+                $groupKey = 'userID';
+                break;
+            case 'project':
+                $groupField = 'projectTitle';
+                $groupKey = 'projectID';
+                break;
+        }
+
+        if($subGroup){
+            $subGroupField = '';
+            $subGroupKey = '';
+            switch($subGroupBy){
+                case 'client':
+                    $subGroupField = 'clientName';
+                    $subGroupKey = 'clientID';
+                    break;
+                case 'user':
+                    $subGroupField = 'userName';
+                    $subGroupKey = 'userID';
+                    break;
+                case 'project':
+                    $subGroupField = 'projectTitle';
+                    $subGroupKey = 'projectID';
+                    break;
+            }
+        }
+
+        //Retrieve entries from DB
+        $user = Auth::user();
+        $workspace = $user->current_workspace_id;
+
+        $timeEntries = DB::table('timereports')->select('*')->where('workspaceID', $workspace);
+        $timeEntries->where(function ($timeEntries) use ($clientFilter, $projectFilter, $userFilter) {
+            if (!is_null($clientFilter) && !empty($clientFilter)) {
+                $timeEntries->whereIn('clientID', $clientFilter);
+            }
+            if (!is_null($projectFilter) && !empty($projectFilter)) {
+                $timeEntries->whereIn('projectID', $projectFilter);
+            }
+            if (!is_null($userFilter) && !empty($userFilter)) {
+                $timeEntries->whereIn('userID', $userFilter);
+            }
+        });
+
+        if(is_null($startDate) || is_null($endDate)){
+            $startDate = Carbon::parse('Monday this week')->format('y-m-d');
+            $endDate = Carbon::parse('Sunday this week')->format('y-m-d');
+            $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
+        }else{
+            $startDate = Carbon::parse($startDate)->format('Y-m-d');
+//            var_dump(Carbon::parse($startDate)->format('Y-m-d'));
+            $endDate = Carbon::parse($endDate)->format('Y-m-d');
+            $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
+        }
+        if($subGroup){
+            $timeEntries = $timeEntries->orderBy($groupField, 'asc')->orderBy($subGroupField, 'asc')->get();
+        }else{
+            $timeEntries = $timeEntries->orderBy($groupField, 'asc')->get();
+        }
+
+        //clone collection to prepare bar adn pie data as well
+        $barData = clone $timeEntries;
+
+        //get bar data
+        $finalBarData = $barData->groupBy(function($entry){
+            $date = new DateTime($entry->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
+            return $date->format('m-d-Y');
+        })->transform(function($entry){
+            $date = new DateTime($entry[0]->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
+            return [
+                'name'=> $date->format('m-d-Y'),
+                'value' => round(($entry->sum('time')/60),2)
+            ];
+        });
+
+        $paddedBarData = collect();
+        $chartDate = new DateTime($startDate);
+//        $chartDate->setTimezone(new DateTimeZone($timezone));
+        $endDate = new DateTime($endDate);
+//        $endDate->setTimezone(new DateTimeZone(($timezone)));
+        while($chartDate <= $endDate){
+            $data = [
+                'name' => $chartDate->format('m-d-Y'),
+                'value' => 0
+            ];
+            $paddedBarData->put($chartDate->format('m-d-Y'), $data);
+            $chartDate->add(new DateInterval('P1D'));
+        }
+
+        return $finalBarData->union($paddedBarData)->sortBy(function($entry, $key){
+            return $key;
+        })->values();
+    }
+
     public static function createPDF($reportData)
     {
 
@@ -209,7 +327,7 @@ class Report extends Model
         switch($reportData['reportType']) {
             case 'timeEntry':
                 $titles = [
-                    'reportTitle' => 'Time Entry Report',
+                    'reportTitle' => 'Time_Entry_Report',
                     'barReportTitle' => 'Hours By Day',
                     'barAxisTitles' => [
                         'y' => 'Number of Hours',
@@ -220,7 +338,7 @@ class Report extends Model
                 break;
             case 'billableRatePerEmployee':
                 $titles = [
-                    'reportTitle' => 'Billable Rate Per Employee Report',
+                    'reportTitle' => 'Billable_Rate_Per_Employee_Report',
                     'barReportTitle' => 'Cost by Day',
                     'barAxisTitles' => [
                         'y' => 'Cost',
@@ -231,7 +349,7 @@ class Report extends Model
                 break;
             default:
                 $titles = [
-                    'reportTitle' => 'No Report Type Specified',
+                    'reportTitle' => 'Report'.uniqid(),
                     'barReportTitle' => '',
                     'barAxisTitles' => [
                         'y' => '',
@@ -316,7 +434,8 @@ class Report extends Model
 
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.
-        PDF::Output($titles['reportTitle'].'.pdf', 'D');
+        PDF::Output(storage_path('app/public').'/'.$titles['reportTitle'].'.pdf', 'F');
+        return $titles['reportTitle'].'.pdf';
     }
 
     public static function createBarGraph($barData, $titles){
@@ -380,20 +499,61 @@ class Report extends Model
     public static function createReportXLS($reportData){
         $data = array('data' => $reportData);
 
-        Excel::create($reportData['reportType'], function($excel) use($data) {
+        $titles = array();
+        switch($reportData['reportType']) {
+            case 'timeEntry':
+                $titles = [
+                    'reportTitle' => 'Time_Entry_Report',
+                ];
+                break;
+            case 'billableRatePerEmployee':
+                $titles = [
+                    'reportTitle' => 'Billable_Rate_Per_Employee_Report',
+                ];
+                break;
+            default:
+                $titles = [
+                    'reportTitle' => 'Report'.uniqid(),
+                ];
+        }
+
+        Excel::create($titles['reportTitle'], function($excel) use($data) {
             $excel->sheet('Detail', function($sheet) use($data) {
                 $sheet->loadView('reportXLS', $data);
             });
-        })->export('xls');
+        })->store('xls', storage_path('app/public'), $titles['reportTitle'].'.xls');
+
+        return $titles['reportTitle'].'.xls';
     }
 
-    public static function createReportCSV($reportData){
+    public static function createReportCSV($reportData)
+    {
         $data = array('data' => $reportData);
 
-        Excel::create($reportData['reportType'], function($excel) use($data) {
-            $excel->sheet('Detail', function($sheet) use($data) {
+        $titles = array();
+        switch ($reportData['reportType']) {
+            case 'timeEntry':
+                $titles = [
+                    'reportTitle' => 'Time_Entry_Report',
+                ];
+                break;
+            case 'billableRatePerEmployee':
+                $titles = [
+                    'reportTitle' => 'Billable_Rate_Per_Employee_Report',
+                ];
+                break;
+            default:
+                $titles = [
+                    'reportTitle' => 'Report' . uniqid(),
+                ];
+        }
+
+        Excel::create($titles['reportTitle'], function ($excel) use ($data) {
+            $excel->sheet('Detail', function ($sheet) use ($data) {
                 $sheet->loadView('reportXLS', $data);
             });
-        })->export('csv');
+        })->store('xls', storage_path('app/public'), $titles['reportTitle'].'.xls');
+
+        return $titles['reportTitle'].'.xls';
     }
 }

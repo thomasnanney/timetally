@@ -13,6 +13,8 @@ class ProjectsTest extends TestCase
 {
     use DatabaseTransactions;
 
+    //var_dump(json_decode($response->getContent()), true);
+
     public function testProjectIndex()
     {
         $user = factory(User::class)->make();
@@ -32,6 +34,8 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -39,16 +43,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -59,6 +60,88 @@ class ProjectsTest extends TestCase
 
         $data = json_decode($response->getContent(), true);
         $this->assertEquals('success', $data['status']);
+    }
+
+    public function testCreateProjectPrivate()
+    {
+        $user = factory(User::class)->create();
+        $this->be($user);
+        $client = factory(Client::class)->create();
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
+
+        $response = $this->call('POST', '/projects/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'title' => 'Project 1',
+                    'clientID' => $client->id,
+                    'description' => 'Description for Project 1',
+                    'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 10,
+                    'private' => 1,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
+                ]
+            ));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('projects', [
+            'title' => 'Project 1',
+        ]);
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('success', $data['status']);
+    }
+
+    public function testEditProjectPrivate()
+    {
+        $user = factory(User::class)->create();
+        $this->be($user);
+        $client = factory(Client::class)->create();
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
+
+
+        $projectedRevenue = ($project->projectedRevenue = 20.00 ? 21.00 : 20.00);
+        $projectedCost = ($project->projectedCost = 8.00 ? 9.00 : 8.00);
+        $projectedTime = ($project->projectedTime = 20 ? 21 : 20);
+
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => $projectedRevenue,
+                    'projectedCost' => $projectedCost,
+                    'projectedTime' => $projectedTime,
+                    'private' => 1,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
+                ]
+            ));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('projects', [
+            'id' => $project->id,
+            'title' => 'Project 2',
+            'description' => 'Description for Project 2',
+            'projectedRevenue' => $projectedRevenue,
+            'projectedCost' => $projectedCost,
+            'projectedTime' => $projectedTime,
+            'private' => 1,
+        ]);
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('Project successfully updated', $data['messages']);
     }
 
     /**
@@ -73,6 +156,7 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -80,16 +164,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => null,
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -99,7 +180,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter a Project Title', $data['messages']['title']['0']);
     }
 
     /**
@@ -113,6 +194,7 @@ class ProjectsTest extends TestCase
         $user = factory(User::class)->create();
         $this->be($user);
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -120,16 +202,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => null,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -139,7 +218,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter a Client Name', $data['messages']['clientID']['0']);
     }
 
     /**
@@ -154,7 +233,9 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $test = ($client->id = 1 ? 2 : 1);
+        $user['current_workspace_id'] = $workspace->id;
+
+        $test = ($client->id = 72 ? 73 : 72);
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -162,16 +243,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $test,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -181,7 +259,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.exists', $data['messages']['clientID']['0']);
     }
 
     /**
@@ -202,16 +280,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => null,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -221,7 +296,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.exists', $data['messages']['workspaceID']['0']);
     }
 
     /**
@@ -236,7 +311,9 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $test = ($workspace->id = 1 ? 2 : 1);
+
+        $test = ($workspace->id = 72 ? 73 : 72);
+        $user['current_workspace_id'] = $test;
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -244,16 +321,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $test,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -263,7 +337,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.exists', $data['messages']['workspaceID']['0']);
     }
 
     /**
@@ -278,6 +352,8 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -285,16 +361,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
+                    'private' => 0,
                     'startDate' => null,
-                    'endDate' => '2017-06-05',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -304,7 +377,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter a Start Date', $data['messages']['startDate']['0']);
     }
 
     /**
@@ -319,6 +392,8 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -326,16 +401,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '05-03-2017', //invalid format
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '05-03-2017',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -345,7 +417,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
     }
 
     /**
@@ -360,6 +432,8 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -367,15 +441,12 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
                     'endDate' => null,
                 ]
             ));
@@ -386,7 +457,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter an End Date', $data['messages']['endDate']['0']);
     }
 
     /**
@@ -401,6 +472,8 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -408,16 +481,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-05-30', //end date must be after startDate
+                    'private' => 0,
+                    'startDate' => '2017-06-05 00:00:00',
+                    'endDate' => '05-03-2017',
                 ]
             ));
 
@@ -427,7 +497,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
     }
 
     /**
@@ -442,6 +512,7 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -449,16 +520,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => null,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -468,7 +536,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please entered a projected time', $data['messages']['projectedTime']['0']);
     }
 
     /**
@@ -483,6 +551,7 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -490,16 +559,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
-                    'projectedTime' => '2 days', //must be an integer
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 'test',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -509,178 +575,11 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    /**
-     * Test to create a new project
-     * with a missing Billable Type
-     *
-     * @return void
-     */
-    public function testCreateProjectMissingBillableType()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-
-        $response = $this->call('POST', '/projects/create',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => null,
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    /**
-     * Test to create a new project
-     * with an invalid Billable Type
-     *
-     * @return void
-     */
-    public function testCreateProjectInvalidBillableType()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-
-        $response = $this->call('POST', '/projects/create',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'by user', // must be hourly or fixed
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    /**
-     * Test to create a new project
-     * with a missing Scope
-     *
-     * @return void
-     */
-    public function testCreateProjectMissingScope()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-
-        $response = $this->call('POST', '/projects/create',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'fixed',
-                    'scope' => null,
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    /**
-     * Test to create a new project
-     * with an invalid Scope
-     *
-     * @return void
-     */
-    public function testCreateProjectInvalidScope()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-
-        $response = $this->call('POST', '/projects/create',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'by user',
-                    'scope' => 'none', // must be public or private
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.integer', $data['messages']['projectedTime']['0']);
     }
 
     /**
      * Test to edit an existing project.
-     * Updates the record's Title, description, projectedRevenue, projectedTime,
-     * billableType, scope, billableHourlyType, billableRate,
-     * startDate, and endDate
      *
      * @return void
      */
@@ -690,12 +589,17 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
         $project = factory(Project::class)->create([
             'clientID' => $client->id,
             'workspaceID' => $workspace->id,
         ]);
-        $scope = ($project->scope = 'private' ? 'public' : 'private');
-        $billableType = ($project->billableType = 'fixed' ? 'hourly' : 'fixed');
+
+
+        $projectedRevenue = ($project->projectedRevenue = 20.00 ? 21.00 : 20.00);
+        $projectedCost = ($project->projectedCost = 8.00 ? 9.00 : 8.00);
+        $projectedTime = ($project->projectedTime = 20 ? 21 : 20);
+        $private = ($project->private = 0 ? 1 : 0);
 
         $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
@@ -703,16 +607,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 2',
                     'clientID' => $project->clientID,
-                    'workspaceID' => $project->workspaceID,
                     'description' => 'Description for Project 2',
-                    'projectedRevenue' => 20.00,
-                    'projectedTime' => 20,
-                    'billableType' => $billableType,
-                    'scope' => $scope,
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'projectedRevenue' => $projectedRevenue,
+                    'projectedCost' => $projectedCost,
+                    'projectedTime' => $projectedTime,
+                    'private' => $private,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -720,13 +621,15 @@ class ProjectsTest extends TestCase
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,
             'title' => 'Project 2',
-            'billableType' => $billableType,
-            'scope' => $scope,
-            'billableHourlyType' => 'none',
+            'description' => 'Description for Project 2',
+            'projectedRevenue' => $projectedRevenue,
+            'projectedCost' => $projectedCost,
+            'projectedTime' => $projectedTime,
+            'private' => $private,
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('success', $data['status']);
+        $this->assertEquals('Project successfully updated', $data['messages']);
     }
 
     /**
@@ -738,6 +641,8 @@ class ProjectsTest extends TestCase
     {
         $user = factory(User::class)->create();
         $this->be($user);
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
         $project = factory(Project::class)->create();
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,
@@ -753,7 +658,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('success', $data['status']);
+        $this->assertEquals('Project deleted', $data['messages']['0']);
     }
 
     /**
@@ -795,9 +700,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $data = json_decode($response->getContent(), true);
-
-        $this->assertEquals('fail', $data['status']);
-        $this->assertEquals('true', $data['errors']);
         $this->assertEquals('Project not found', $data['messages'][0]);
     }
 
@@ -895,30 +797,31 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
                     'title' => null,
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'description' => 'Description for Project 1',
+            'description' => 'Description for Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
@@ -935,31 +838,33 @@ class ProjectsTest extends TestCase
     {
         $user = factory(User::class)->create();
         $this->be($user);
+        $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
+                    'title' => 'Project 2',
                     'clientID' => null,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
@@ -978,25 +883,27 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $test = ($client->id = 1 ? 2 : 1);
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
+        $test = ($client->id = 72 ? 73 : 72);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $test,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -1020,24 +927,23 @@ class ProjectsTest extends TestCase
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
-        $project = factory(Project::class)->create();
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => null,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -1047,7 +953,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.exists', $data['messages']['workspaceID']['0']);
     }
 
     /**
@@ -1062,25 +968,25 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $test = ($workspace->id = 1 ? 2 : 1);
-        $project = factory(Project::class)->create();
+        $test = ($workspace->id = 72 ? 73 : 72);
+        $user['current_workspace_id'] = $test;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $test,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -1090,7 +996,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.exists', $data['messages']['workspaceID']['0']);
     }
 
     /**
@@ -1105,34 +1011,35 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
                     'startDate' => null,
-                    'endDate' => '2017-06-05',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter a Start Date', $data['messages']['startDate']['0']);
     }
 
     /**
@@ -1147,34 +1054,35 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '05-03-2017', //invalid format
-                    'endDate' => '2017-06-05',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '05-03-2017',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
     }
 
     /**
@@ -1189,34 +1097,35 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-06-05 00:00:00',
                     'endDate' => null,
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter an End Date', $data['messages']['endDate']['0']);
     }
 
     /**
@@ -1231,34 +1140,35 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-05-30', //end date must be after startDate
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-06-05 00:00:00',
+                    'endDate' => '05-30-2017',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
     }
 
     /**
@@ -1273,34 +1183,35 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => null,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please entered a projected time', $data['messages']['projectedTime']['0']);
     }
 
     /**
@@ -1315,118 +1226,35 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => '2 days', //must be an integer
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 'two',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    /**
-     * Test to edit a project
-     * with a missing Billable Type
-     *
-     * @return void
-     */
-    public function testEditProjectMissingBillableType()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
-
-        $response = $this->call('POST', '/projects/edit/{$project}',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => null,
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    /**
-     * Test to edit a project
-     * with an invalid Billable Type
-     *
-     * @return void
-     */
-    public function testEditProjectInvalidBillableType()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
-
-        $response = $this->call('POST', '/projects/edit/{$project}',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'by user', // must be hourly or fixed
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.integer', $data['messages']['projectedTime']['0']);
     }
 
     /**
@@ -1435,40 +1263,41 @@ class ProjectsTest extends TestCase
      *
      * @return void
      */
-    public function testEditProjectMissingScope()
+    public function testEditProjectMissingPrivate()
     {
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'fixed',
-                    'scope' => null,
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => null,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please set the Project as Private or Public', $data['messages']['private']['0']);
     }
 
     /**
@@ -1477,134 +1306,112 @@ class ProjectsTest extends TestCase
      *
      * @return void
      */
-    public function testEditProjectInvalidScope()
+    public function testEditProjectInvalidPrivate()
     {
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'by user',
-                    'scope' => 'none', // must be public or private
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 2,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
+            'title' => 'Project 2',
+        ]);
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('validation.boolean', $data['messages']['private']['0']);
+    }
+
+    public function testCreateProjectNoDescription()
+    {
+        $user = factory(User::class)->create();
+        $this->be($user);
+        $client = factory(Client::class)->create();
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
+        $response = $this->call('POST', '/projects/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'title' => 'Project 1',
+                    'clientID' => $client->id,
+                    'description' => null,
+                    'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 10,
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
+                ]
+            ));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    public function testCreateProjectNoDescription()
-
-    {
-
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
-
-        $response = $this->call('POST', '/projects/create',
-
-            array(
-
-                '_token' => csrf_token(),
-
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => null,
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'by user',
-                    'scope' => 'none', // must be public or private
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
-                ]
-
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-
-        $this->assertDatabaseHas('projects', [
-
-            'name' => 'Project 1'
-
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-
         $this->assertEquals('success', $data['status']);
-
     }
 
     public function testEditProjectNoDescription()
-
     {
-
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/create',
-
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
-
                 '_token' => csrf_token(),
-
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
                     'description' => null,
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'by user',
-                    'scope' => 'none', // must be public or private
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
-
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
-
         $this->assertDatabaseHas('projects', [
-
-            'name' => 'Project 1'
-
+            'title' => 'Project 2',
+            'description' => null,
         ]);
 
         $data = json_decode($response->getContent(), true);
-
         $this->assertEquals('success', $data['status']);
-
     }
 
     public function testEditProjectRobustClientID()
@@ -1612,70 +1419,69 @@ class ProjectsTest extends TestCase
         $user = factory(User::class)->create();
         $this->be($user);
         $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
         $project = factory(Project::class)->create();
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
+                    'title' => 'Project 2',
                     'clientID' => '111111111111111111111111111111111111111',
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.integer', $data['messages']['clientID']['0']);
     }
 
     public function testEditProjectRobustWorkspaceID()
     {
         $user = factory(User::class)->create();
         $this->be($user);
-        $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
         $client = factory(Client::class)->create();
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = '111111111111111111111111111111111111111';
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => '111111111111111111111111111111111111111',
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => 'Description for Project 2',
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.integer', $data['messages']['workspaceID']['0']);
     }
 
     public function testCreateProjectRobustClientID()
@@ -1683,7 +1489,7 @@ class ProjectsTest extends TestCase
         $user = factory(User::class)->create();
         $this->be($user);
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -1691,16 +1497,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => '111111111111111111111111111111111111111',
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -1710,16 +1513,17 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.integer', $data['messages']['clientID']['0']);
     }
 
     public function testCreateProjectRobustWorkspaceID()
     {
         $user = factory(User::class)->create();
         $this->be($user);
-        $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
         $client = factory(Client::class)->create();
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = '111111111111111111111111111111111111111';
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -1727,16 +1531,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => '111111111111111111111111111111111111111',
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01',
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -1746,7 +1547,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.integer', $data['messages']['workspaceID']['0']);
     }
 
     public function testEditProjectInvalidDayStartDate()
@@ -1755,69 +1556,72 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-1', //invalid day format
-                    'endDate' => '2017-06-05',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => null,
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-06-1',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
     }
+
     public function testEditProjectInvalidYearStartDate()
     {
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '17-06-01', //invalid  year format
-                    'endDate' => '2017-06-05',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => null,
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '17-06-01',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
     }
 
     public function testEditProjectInvalidMonthStartDate()
@@ -1826,34 +1630,35 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-6-01', //invalid  month format
-                    'endDate' => '2017-06-05',
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => null,
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-6-01',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
     }
 
     public function testCreateProjectInvalidDayStartDate()
@@ -1862,7 +1667,8 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -1870,16 +1676,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-1', //invalid day format
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-1',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -1889,15 +1692,17 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
     }
+
     public function testCreateProjectInvalidYearStartDate()
     {
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -1905,16 +1710,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '17-06-01', //invalid  year format
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '17-06-01',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -1924,7 +1726,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
     }
 
     public function testCreateProjectInvalidMonthStartDate()
@@ -1933,7 +1735,8 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -1941,16 +1744,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-6-01', //invalid  month format
-                    'endDate' => '2017-06-05',
+                    'private' => 0,
+                    'startDate' => '2017-6-01',
+                    'endDate' => '2017-06-05 00:00:00',
                 ]
             ));
 
@@ -1960,7 +1760,7 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
     }
 
     public function testEditProjectInvalidDayEndDate()
@@ -1969,176 +1769,72 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01', //invalid day format
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => null,
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
                     'endDate' => '2017-06-5',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
     }
+
     public function testEditProjectInvalidYearEndDate()
     {
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01', //invalid  year format
+                    'title' => 'Project 2',
+                    'clientID' => $project->clientID,
+                    'description' => null,
+                    'projectedRevenue' => 20.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 20,
+                    'private' => 0,
+                    'startDate' => '2017-06-01 00:00:00',
                     'endDate' => '17-06-05',
                 ]
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
+            'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    public function testEditProjectInvalidMonthEndDate()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
-
-        $response = $this->call('POST', '/projects/edit/{$project}',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01', //invalid  month format
-                    'endDate' => '2017-6-05',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-
-    public function testCreateProjectInvalidDayEndDate()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
-
-        $response = $this->call('POST', '/projects/create',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01', //invalid day format
-                    'endDate' => '2017-06-5',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
-    }
-    public function testCreateProjectInvalidYearEndDate()
-    {
-        $user = factory(User::class)->create();
-        $this->be($user);
-        $client = factory(Client::class)->create();
-        $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
-
-        $response = $this->call('POST', '/projects/create',
-            array(
-                '_token' => csrf_token(),
-                'data' => [
-                    'title' => 'Project 1',
-                    'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
-                    'description' => 'Description for Project 1',
-                    'projectedRevenue' => 10.00,
-                    'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01', //invalid  year format
-                    'endDate' => '17-06-05',
-                ]
-            ));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertDatabaseMissing('projects', [
-            'title' => 'Project 1',
-        ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
     }
 
     public function testCreateProjectInvalidMonthEndDate()
@@ -2147,7 +1843,8 @@ class ProjectsTest extends TestCase
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
-        $project = factory(Project::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -2155,16 +1852,13 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
-                    'startDate' => '2017-06-01', //invalid  month format
-                    'endDate' => '2017-6-05',
+                    'private' => 0,
+                    'startDate' => '2017-06-05 00:00:00',
+                    'endDate' => '05-3-2017',
                 ]
             ));
 
@@ -2174,8 +1868,109 @@ class ProjectsTest extends TestCase
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
     }
 
+    public function testCreateProjectInvalidYearEndDate()
+    {
+        $user = factory(User::class)->create();
+        $this->be($user);
+        $client = factory(Client::class)->create();
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
+
+        $response = $this->call('POST', '/projects/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'title' => 'Project 1',
+                    'clientID' => $client->id,
+                    'description' => 'Description for Project 1',
+                    'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 10,
+                    'private' => 0,
+                    'startDate' => '2017-06-05 00:00:00',
+                    'endDate' => '17-06-05',
+                ]
+            ));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('projects', [
+            'title' => 'Project 1',
+        ]);
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+    }
+
+    public function testCreateProjectInvalidDayEndDate()
+    {
+        $user = factory(User::class)->create();
+        $this->be($user);
+        $client = factory(Client::class)->create();
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
+
+        $response = $this->call('POST', '/projects/create',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'title' => 'Project 1',
+                    'clientID' => $client->id,
+                    'description' => 'Description for Project 1',
+                    'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 10,
+                    'private' => 0,
+                    'startDate' => '2017-06-05 00:00:00',
+                    'endDate' => '2017-06-5',
+                ]
+            ));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseMissing('projects', [
+            'title' => 'Project 1',
+        ]);
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+    }
+
+    /*public function testEditProjectInvalidMonthEndDate()
+    {
+        $user = factory(User::class)->create();
+        $this->be($user);
+        $client = factory(Client::class)->create();
+        $workspace = factory(Workspace::class)->create();
+        $user['current_workspace_id'] = $workspace->id;
+
+        $response = $this->call('POST', '/projects/edit/{$project}',
+            array(
+                '_token' => csrf_token(),
+                'data' => [
+                    'title' => 'Project 1',
+                    'clientID' => $client->id,
+                    'description' => 'Description for Project 1',
+                    'projectedRevenue' => 10.00,
+                    'projectedCost' => 8.00,
+                    'projectedTime' => 10,
+                    'private' => 0,
+                    'startDate' => '2017-06-05 00:00:00',
+                    'endDate' => '2017-6-05',
+                ]
+            ));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertDatabaseHas('projects', [
+            'title' => 'Project 1',
+            'endDate' => $project
+        ]);
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+    }*/
 
 }

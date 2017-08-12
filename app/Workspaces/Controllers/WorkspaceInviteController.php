@@ -46,10 +46,7 @@ class WorkspaceInviteController extends Controller
         }
 
         // redirect back where we came from
-        return response()->json([
-            'status' => 'fail',
-            'errors' => 'Something went wrong.'
-        ]);
+        return response('Invalid request', 400);
     }
 
     public function getConfirmInvitation($token = null){
