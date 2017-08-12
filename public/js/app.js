@@ -44960,10 +44960,10 @@ var ViewProject = function (_Component) {
                 alert('We were unable to retrieve all users for this project, please reload the page or contact your' + ' System' + ' Administrator');
             });
 
-            var newState = this.state;
-            newState.project.startDate = __WEBPACK_IMPORTED_MODULE_3_dateformat___default()(newState.project.startDate, 'yyyy-mm-dd');
-            newState.project.endDate = __WEBPACK_IMPORTED_MODULE_3_dateformat___default()(newState.project.endDate, 'yyyy-mm-dd');
-            this.setState(newState);
+            var newState = self.state;
+            newState.project.startDate = __WEBPACK_IMPORTED_MODULE_3_dateformat___default()(self.state.project.startDate, 'yyyy-mm-dd');
+            newState.project.endDate = __WEBPACK_IMPORTED_MODULE_3_dateformat___default()(self.state.project.endDate, 'yyyy-mm-dd');
+            self.setState(newState);
         }
     }, {
         key: 'saveProject',
@@ -44977,11 +44977,14 @@ var ViewProject = function (_Component) {
                 console.log(response);
                 if (response.status == 200) {
                     self.showSuccess();
+                    var newState = self.state;
+                    newState.errors = {};
+                    self.setState(errors);
                 }
             }).catch(function (error) {
                 if (error.response.status == 400) {
-                    var errors = error.response.data.messages;
-                    self.setState({ errors: errors });
+                    var _errors = error.response.data.messages;
+                    self.setState({ errors: _errors });
                     self.showError();
                 }
                 console.log(error);
@@ -45199,7 +45202,7 @@ var ViewProject = function (_Component) {
                                             type: 'date',
                                             className: 'tk-form-input',
                                             onChange: _this2.updateInput.bind(_this2),
-                                            value: __WEBPACK_IMPORTED_MODULE_3_dateformat___default()(_this2.state.project.startDate, 'yyyy-mm-dd')
+                                            value: _this2.state.project.startDate
                                         }),
                                         _this2.state.errors.startDate ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                             'small',
@@ -45215,7 +45218,7 @@ var ViewProject = function (_Component) {
                                             type: 'date',
                                             className: 'tk-form-input',
                                             onChange: _this2.updateInput.bind(_this2),
-                                            value: __WEBPACK_IMPORTED_MODULE_3_dateformat___default()(_this2.state.project.endDate, 'yyyy-mm-dd')
+                                            value: _this2.state.project.endDate
                                         }),
                                         _this2.state.errors.endDate ? __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                                             'small',
