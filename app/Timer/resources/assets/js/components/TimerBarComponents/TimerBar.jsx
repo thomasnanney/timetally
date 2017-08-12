@@ -160,74 +160,60 @@ export default class TimerBar extends Component{
 
         return(
             <div>
-                <div className="timer-container">
-                    <div className="row">
-                        <div className="co-xs-12 col-md-5 timer-description">
-                            <input type="text"
-                                   className="tk-timer-input timer-element"
-                                   placeholder="Task Description..."
-                                   onChange={this.updateEntry.bind(this)}
-                                   value={this.state.entry.description}
-                                   name="description"
-                            />
-                        </div>
-                        <div className="col-xs-12 col-md-7">
-                            <div className="row">
-                                <div className="timer-project col-xs-3 ">
-                                    <DropDownSelect
-                                        data={this.state.projects}
-                                        updateInput={this.updateProject.bind(this)}
-                                        triggerName={this.state.project.title.length ? this.state.project.title : "Select project"}
-                                        name="project"
-                                        emptyMessage="You have no projects.  Go add some and get to work!"
-                                    />
-                                    {/*//ToDo: Update to new drop down*/}
-                                    {/*<input type="text" value={this.state.project.title} className="tk-timer-input" onClick={ ()=>this.toggleMenu('isProjectMenuActive')} placeholder="Project / Task"/>*/}
-                                    {/*<DropDownList items={this.state.projects} updateInput={this.updateProject.bind(this)} align="align-right"/>*/}
-                                </div>
-                                <div className="timer-billable col-xs-1 text-center">
-                                    <i className={" timer-element clickable fa fa-usd " + (this.state.entry.billable ? 'active' : '')} aria-hidden="true"/>
-                                    <input
-                                        type="checkbox"
-                                        name="billable"
-                                        className="timer-element icon-check-box clickable"
-                                        onClick={this.updateEntry.bind(this)}
-                                        checked={this.state.entry.billable}
-                                    />
-                                </div>
-                                <div className="timer-set-time col-xs-5 text-center">
-                                    <div className="row">
-                                        <div className="col-xs-6 no-padding">
-                                            <div className="timer-project">
-                                                <DropDownDateTimePicker updateInput={this.updateEntry.bind(this)} time={this.state.entry.startTime} placeholder="Start time" name="startTime"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-xs-6 no-padding">
-                                            <div className="timer-project">
-                                                <DropDownDateTimePicker updateInput={this.updateEntry.bind(this)} time={this.state.entry.endTime} placeholder="End time" name="endTime"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="timer-start-stop col-xs-1 text-center">
-                                    {
-                                        this.state.running
-                                            ?
-                                                <i className="fa clickable fa-pause-circle error timer-element" aria-hidden="true" onClick={this.stopTimer.bind(this)}/>
-                                            :
-                                                <i className="fa clickable fa-play-circle timer-element" aria-hidden="true" onClick={this.startTimer.bind(this)}/>
-                                    }
-                                </div>
-                                <div className="timer-clock col-xs-2">
-                                    {this.state.running
-                                        ?
-                                            <p className=" timer-element">{this.state.timer}</p>
-                                        :
-                                            <p className=" timer-element">00:00:00</p>
-                                    }
-                                </div>
-                            </div>
-                        </div>
+                <div className="timer-container table">
+                    <div className="table-cell tc-md-6">
+                        <input type="text"
+                               className="tk-timer-input timer-element"
+                               placeholder="Task Description..."
+                               onChange={this.updateEntry.bind(this)}
+                               value={this.state.entry.description}
+                               name="description"
+                        />
+                    </div>
+                    <div className="timer-project table-cell tc-md-3">
+                        <DropDownSelect
+                            data={this.state.projects}
+                            updateInput={this.updateProject.bind(this)}
+                            triggerName={this.state.project.title.length ? this.state.project.title : "Select project"}
+                            name="project"
+                            emptyMessage="You have no projects.  Go add some and get to work!"
+                        />
+                        {/*//ToDo: Update to new drop down*/}
+                        {/*<input type="text" value={this.state.project.title} className="tk-timer-input" onClick={ ()=>this.toggleMenu('isProjectMenuActive')} placeholder="Project / Task"/>*/}
+                        {/*<DropDownList items={this.state.projects} updateInput={this.updateProject.bind(this)} align="align-right"/>*/}
+                    </div>
+                    <div className="timer-billable table-cell tc-md-1 text-center">
+                        <i className={" timer-element clickable fa fa-usd " + (this.state.entry.billable ? 'active' : '')} aria-hidden="true"/>
+                        <input
+                            type="checkbox"
+                            name="billable"
+                            className="timer-element icon-check-box clickable"
+                            onClick={this.updateEntry.bind(this)}
+                            checked={this.state.entry.billable}
+                        />
+                    </div>
+                    <div className="timer-project table-cell tc-md-3">
+                        <DropDownDateTimePicker updateInput={this.updateEntry.bind(this)} time={this.state.entry.startTime} placeholder="Start time" name="startTime"/>
+                    </div>
+                    <div className="timer-project tc-md-3 table-cell">
+                        <DropDownDateTimePicker updateInput={this.updateEntry.bind(this)} time={this.state.entry.endTime} placeholder="End time" name="endTime"/>
+                    </div>
+                    <div className="timer-start-stop table-cell tc-md-1 text-center">
+                        {
+                            this.state.running
+                                ?
+                                <i className="fa clickable fa-pause-circle error timer-element" aria-hidden="true" onClick={this.stopTimer.bind(this)}/>
+                                :
+                                <i className="fa clickable fa-play-circle timer-element" aria-hidden="true" onClick={this.startTimer.bind(this)}/>
+                        }
+                    </div>
+                    <div className="timer-clock table-cell tc-md-2">
+                        {this.state.running
+                            ?
+                            <p className="">{this.state.timer}</p>
+                            :
+                            <p className="">00:00:00</p>
+                        }
                     </div>
                 </div>
                 {
