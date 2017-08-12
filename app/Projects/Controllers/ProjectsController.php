@@ -118,10 +118,8 @@ class ProjectsController extends Controller
 
         if ($v->fails()) {
             return response()->json([
-                'status' => 'fail',
-                'errors' => 'true',
                 'messages' => $v->errors()
-            ]);
+            ], 400);
         }
 
         $project->fill($data);
@@ -146,11 +144,7 @@ class ProjectsController extends Controller
 
         $project->save();
 
-        return response()->json([
-            'status' => 'success',
-            'errors' => 'false',
-            'messages' => 'Project successfully updated'
-        ]);
+        return response('Project successfully updated', 200);
     }
 
     public function getUsers(Project $project){

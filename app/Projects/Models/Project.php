@@ -3,6 +3,7 @@ namespace App\Projects\Models;
 use App\Users\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
+use App\Clients\Models\Client;
 
 class Project extends Model
 {
@@ -108,5 +109,9 @@ class Project extends Model
 
     public function makePublic(){
         $this->queryUsers()->detach();
+    }
+
+    public function getClient(){
+        return Client::find($this->clientID);
     }
 }

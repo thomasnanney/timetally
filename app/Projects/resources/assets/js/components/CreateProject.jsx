@@ -296,26 +296,36 @@ class CreateProject extends Component{
                                 </div>);
                             case 3:
                                 return (<div className="pane medium-container margin-center">
-                                    <div>
-                                        <h1>Add Users</h1>
-                                        {
-                                            this.state.users.map((user, id) => (
-                                                <input type="text"
-                                                       className="tk-form-input"
-                                                       placeholder="User's Email..."
-                                                       value={user}
-                                                       key={id}
-                                                       onChange={this.updateUserName.bind(this, id)}
-                                                />
-                                            ))
-                                        }
-                                    </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12 text-center">
-                                            <button onClick={() => this.addUserField()} className="btn tk-btn">Add User</button>
-                                        </div>
-                                    </div>
+                                    {
+                                        this.state.project.private
+                                            ?
+                                            <div>
+                                                <div>
+                                                    <h1>Add Users</h1>
+                                                    {
+                                                        this.state.users.map((user, id) => (
+                                                            <input type="text"
+                                                                   className="tk-form-input"
+                                                                   placeholder="User's Email..."
+                                                                   value={user}
+                                                                   key={id}
+                                                                   onChange={this.updateUserName.bind(this, id)}
+                                                            />
+                                                        ))
+                                                    }
+                                                </div>
+                                                <br/>
+                                                <div className="row">
+                                                    <div className="col-xs-12 text-center">
+                                                        <button onClick={() => this.addUserField()} className="btn tk-btn">Add User</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            :
+                                            <div>
+                                                <p>This project is public, all users in the workspace will be able to view it and add time entries</p>
+                                            </div>
+                                    }
                                 </div>);
                         }
                     }) ()}

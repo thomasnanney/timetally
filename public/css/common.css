@@ -354,6 +354,42 @@ li.tab.active{
     margin-bottom: 15px;
     padding-bottom:15px;
 }
+
+.loading{
+    position: fixed;
+    top:0;
+    left: 0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 9999999;
+    padding:50px;
+}
+
+.v-h-center{
+    position: absolute;
+    top:50%;
+    left:50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.notification-img{
+    max-width:250px;
+}
+
+.success-text{
+    color: #085917;
+    font-weight:700;
+}
+
+.error-text{
+    color: #991304;
+    font-weight:700;
+}
 /**********************ERRORS***************************/
 .error-box{
     background-color: rgba(255,0,0,0.3);

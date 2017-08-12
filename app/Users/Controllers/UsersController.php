@@ -39,10 +39,22 @@ class UsersController extends Controller
         return $clients;
     }
 
-    public function postGetAllProjectsByUser(){
-        $user = Auth::user();
+    public function postGetAllProjectsByUser(Request $request){
+        $user = $request->user();
+        $allProjects = $user->getAllProjectsByUser();
 
-        return $user->getAllProjectsByUser();
+        //merge in names of clients
+        //ToDo: refactor this, ridiculously inefficient
+        $formattedProjects = $allProjects->reduce(function($formattedProjects, $project){
+            $clientName = $project->getClient()->name;
+            $project['clientName'] = $clientName;
+            if(!$formattedProjects){
+                $formattedProjects = collect();
+            }
+            return $formattedProjects->push($project);
+        });
+
+        return $formattedProjects;
     }
 
     public function postGetAllWorkspacesByUser(){

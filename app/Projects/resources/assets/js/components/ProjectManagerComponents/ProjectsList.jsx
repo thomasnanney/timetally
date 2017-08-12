@@ -24,7 +24,6 @@ export default class ProjectsList extends Component{
                     <div className="table-cell valign-bottom"></div>
                     <div className="table-cell valign-bottom">Project </div>
                     <div className="table-cell valign bottom">Client</div>
-                    <div className="table-cell valign bottom">Workspace</div>
                 </div>
                 {
                     this.props.projects.length
