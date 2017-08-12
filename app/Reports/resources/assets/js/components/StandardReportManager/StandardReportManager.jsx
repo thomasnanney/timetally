@@ -103,7 +103,6 @@ export default class StandardReportManager extends Component{
         this.setState(newState);
     }
 
-    //ToDo: upon successfully setting state make this update the data instead of hitting apply
     updateGroupings(item, value){
         let self = this;
         if(item == 'subGroupBy'){
@@ -122,6 +121,61 @@ export default class StandardReportManager extends Component{
             self.setState(newState);
             self.getReportData();
         }
+    }
+
+    downloadPDF(){
+        let self = this;
+        let data = this.state.params;
+        data.startDate = new Date(data.startDate).toUTCString();
+        data.endDate = new Date(data.endDate).toUTCString();
+        axios.post('/reports/getReportPDF', {
+            data: data,
+            timezone: jstz.determine().name(),
+        })
+            .then(function(response){
+                data.startDate = new Date(data.startDate);
+                data.endDate = new Date(data.endDate);
+                window.location.href = '/reports/downloadReport/' + response.data;
+            }).catch(function(error){
+                console.log(error);
+        });
+
+    }
+
+    downloadXLS(){
+        let self = this;
+        let data = this.state.params;
+        data.startDate = new Date(data.startDate).toUTCString();
+        data.endDate = new Date(data.endDate).toUTCString();
+        axios.post('/reports/getReportXLS', {
+            data: data,
+            timezone: jstz.determine().name(),
+        })
+            .then(function(response){
+                data.startDate = new Date(data.startDate);
+                data.endDate = new Date(data.endDate);
+                window.location.href = '/reports/downloadReport/' + response.data;
+            }).catch(function(error){
+            console.log(error);
+        });
+    }
+
+    downloadCSV(){
+        let self = this;
+        let data = this.state.params;
+        data.startDate = new Date(data.startDate).toUTCString();
+        data.endDate = new Date(data.endDate).toUTCString();
+        axios.post('/reports/getReportCSV', {
+            data: data,
+            timezone: jstz.determine().name(),
+        })
+            .then(function(response){
+                data.startDate = new Date(data.startDate);
+                data.endDate = new Date(data.endDate);
+                window.location.href = '/reports/downloadReport/' + response.data;
+            }).catch(function(error){
+            console.log(error);
+        });
     }
 
     render(){
@@ -195,9 +249,9 @@ export default class StandardReportManager extends Component{
                                 <p><strong>Total Hours:</strong> {this.state.data.totalTime} hours</p>
                             </div>
                             <div className="col-xs-12 col-md-6 text-right">
-                                <button><i className="fa fa-file-pdf-o" aria-hidden="true"/>  PDF</button>
-                                <button><i className="fa fa-file-excel-o" aria-hidden="true"/>  XLS</button>
-                                <button><i className="fa fa-file-excel-o" aria-hidden="true"/>  CSV</button>
+                                <button onClick={this.downloadPDF.bind(this)}><i className="fa fa-file-pdf-o" aria-hidden="true"/>  PDF</button>
+                                <button onClick={this.downloadXLS.bind(this)}><i className="fa fa-file-excel-o" aria-hidden="true"/>  XLS</button>
+                                <button onClick={this.downloadCSV.bind(this)}><i className="fa fa-file-excel-o" aria-hidden="true"/>  CSV</button>
                             </div>
                         </div>
                         <div className="row">

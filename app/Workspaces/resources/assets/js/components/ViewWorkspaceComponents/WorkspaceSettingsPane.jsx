@@ -23,6 +23,7 @@ export default class WorkspaceSettingsPane extends Component {
             },
             newUser: "",
             addingUser: false,
+            errors: {}
         };
 
     }
@@ -107,11 +108,13 @@ export default class WorkspaceSettingsPane extends Component {
         }).then(function(response){
             if(response.status == 201){
                 self.setState({newUser: "", addingUser: false, userError: null})
+                self.props.showSuccess();
             }
         }).catch(function(error){
             if(error.response.status == 400){
                 let errorMessage = error.response.data.errors['userEmails.0'][0];
                 self.setState({userError: errorMessage});
+                self.props.showError();
             }
         });
 
@@ -122,10 +125,20 @@ export default class WorkspaceSettingsPane extends Component {
         axios.post('/workspaces/edit/' + this.state.workspace.id, {
             data: this.state.workspace
         }).then(function(response){
-            alert("Workspace updated.");
+            if(response.status == 200){
+                let newState = self.state;
+                newState.errors = {};
+                self.setState(newState);
+                self.props.showSuccess();
+            }
         }).catch(function(error){
-            console.log(error);
-            alert("There was an error updating the workspace, please try again");
+            if(error.response){
+                if(error.response.status){
+                    self.props.showError();
+                    self.setState({errors: error.response.data.errors});
+                    console.log(error.response);
+                }
+            }
         })
     }
 
@@ -169,7 +182,12 @@ export default class WorkspaceSettingsPane extends Component {
                                             name="name"
                                             value={this.state.workspace.name}
                                             onChange={this.updateWorkspace.bind(this)}
+
                                         />
+                                        {this.state.errors.name
+                                            ? <small className="error">{this.state.errors.name}</small>
+                                            : ''
+                                        }
                                     </div>
                                     {/*ToDo: Add in description text area*/}
                                 </div>

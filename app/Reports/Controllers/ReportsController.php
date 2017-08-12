@@ -45,28 +45,41 @@ class ReportsController extends Controller
     public function createReportPDF(Request $request)
     {
         $data = $request->input('data');
+        $data['reportType'] = 'PDF';
 
         $report = Report::generateReportData($data);
 
-        Report::createPDF($report);
+        $fileName = Report::createPDF($report);
+
+        return response($fileName, 201);
     }
 
     public function createReportXLS(Request $request)
     {
         $data = $request->input('data');
+        $data['reportType'] = 'XLS';
 
         $report = Report::generateReportData($data);
 
-        Report::createReportXLS($report);
+        $filename = Report::createReportXLS($report);
+
+        return response($filename, 201);
     }
 
     public function createReportCSV(Request $request)
     {
         $data = $request->input('data');
+        $data['reportType'] = 'CSV';
 
         $report = Report::generateReportData($data);
 
-        Report::createReportCSV($report);
+        $filename = Report::createReportCSV($report);
+
+        return response($filename, 201);
+    }
+
+    public function getDownloadReport($fileName){
+        return response()->download(storage_path('app/public/'.$fileName))->deleteFileAfterSend(true);
     }
 
 }

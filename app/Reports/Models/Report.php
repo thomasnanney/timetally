@@ -209,7 +209,7 @@ class Report extends Model
         switch($reportData['reportType']) {
             case 'timeEntry':
                 $titles = [
-                    'reportTitle' => 'Time Entry Report',
+                    'reportTitle' => 'Time_Entry_Report',
                     'barReportTitle' => 'Hours By Day',
                     'barAxisTitles' => [
                         'y' => 'Number of Hours',
@@ -220,7 +220,7 @@ class Report extends Model
                 break;
             case 'billableRatePerEmployee':
                 $titles = [
-                    'reportTitle' => 'Billable Rate Per Employee Report',
+                    'reportTitle' => 'Billable_Rate_Per_Employee_Report',
                     'barReportTitle' => 'Cost by Day',
                     'barAxisTitles' => [
                         'y' => 'Cost',
@@ -231,7 +231,7 @@ class Report extends Model
                 break;
             default:
                 $titles = [
-                    'reportTitle' => 'No Report Type Specified',
+                    'reportTitle' => 'Report'.uniqid(),
                     'barReportTitle' => '',
                     'barAxisTitles' => [
                         'y' => '',
@@ -316,7 +316,8 @@ class Report extends Model
 
         // Close and output PDF document
         // This method has several options, check the source code documentation for more information.
-        PDF::Output($titles['reportTitle'].'.pdf', 'D');
+        PDF::Output(storage_path('app/public').'/'.$titles['reportTitle'].'.pdf', 'F');
+        return $titles['reportTitle'].'.pdf';
     }
 
     public static function createBarGraph($barData, $titles){
@@ -380,20 +381,61 @@ class Report extends Model
     public static function createReportXLS($reportData){
         $data = array('data' => $reportData);
 
-        Excel::create($reportData['reportType'], function($excel) use($data) {
+        $titles = array();
+        switch($reportData['reportType']) {
+            case 'timeEntry':
+                $titles = [
+                    'reportTitle' => 'Time_Entry_Report',
+                ];
+                break;
+            case 'billableRatePerEmployee':
+                $titles = [
+                    'reportTitle' => 'Billable_Rate_Per_Employee_Report',
+                ];
+                break;
+            default:
+                $titles = [
+                    'reportTitle' => 'Report'.uniqid(),
+                ];
+        }
+
+        Excel::create($titles['reportTitle'], function($excel) use($data) {
             $excel->sheet('Detail', function($sheet) use($data) {
                 $sheet->loadView('reportXLS', $data);
             });
-        })->export('xls');
+        })->store('xls', storage_path('app/public'), $titles['reportTitle'].'.xls');
+
+        return $titles['reportTitle'].'.xls';
     }
 
-    public static function createReportCSV($reportData){
+    public static function createReportCSV($reportData)
+    {
         $data = array('data' => $reportData);
 
-        Excel::create($reportData['reportType'], function($excel) use($data) {
-            $excel->sheet('Detail', function($sheet) use($data) {
+        $titles = array();
+        switch ($reportData['reportType']) {
+            case 'timeEntry':
+                $titles = [
+                    'reportTitle' => 'Time_Entry_Report',
+                ];
+                break;
+            case 'billableRatePerEmployee':
+                $titles = [
+                    'reportTitle' => 'Billable_Rate_Per_Employee_Report',
+                ];
+                break;
+            default:
+                $titles = [
+                    'reportTitle' => 'Report' . uniqid(),
+                ];
+        }
+
+        Excel::create($titles['reportTitle'], function ($excel) use ($data) {
+            $excel->sheet('Detail', function ($sheet) use ($data) {
                 $sheet->loadView('reportXLS', $data);
             });
-        })->export('csv');
+        })->store('xls', storage_path('app/public'), $titles['reportTitle'].'.xls');
+
+        return $titles['reportTitle'].'.xls';
     }
 }

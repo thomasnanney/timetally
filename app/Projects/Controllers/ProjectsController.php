@@ -43,10 +43,8 @@ class ProjectsController extends Controller
 
         if($v->fails()) {
             return response()->json([
-                'status' => 'fail',
-                'errors' => 'true',
                 'messages' => $v->errors(),
-            ]);
+            ], 400);
         }
 
         $project = Project::create($data);
@@ -69,10 +67,7 @@ class ProjectsController extends Controller
             }
         }
 
-        return response()->json([
-            'status' => 'success',
-            'errors' => 'false',
-        ]);
+        return response('Projected created', 201);
     }
 
     public function deleteProject($id) {
