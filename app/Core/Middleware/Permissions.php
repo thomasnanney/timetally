@@ -21,6 +21,9 @@ class Permissions
         if($request->user()->isAdmin()){
             return $next($request);
         }
+        if($request->isXmlHttpRequest()){
+            return response('Unauthorized', 403);
+        }
         return redirect('/dashboard')->with('warning', 'You do not have permission to do that');
     }
 }

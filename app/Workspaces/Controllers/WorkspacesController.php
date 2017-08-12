@@ -20,6 +20,7 @@ class WorkspacesController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
     }
 
     /**
@@ -159,23 +160,27 @@ class WorkspacesController extends Controller
         return $projects;
     }
 
-    public function addAdmin(User $user){
-        $currentUser = Auth::user();
+    public function addAdmin(Request $request, User $user){
+        $currentUser = $request->user();
         $workspace = $currentUser->getCurrentWorkspace();
         //ToDo: Implement try catch
-        $workspace->addAdmin($user);
-        return response()->json([
-            'status' => 'success'
-        ]);
+        try{
+            $workspace->addAdmin($user);
+        }catch(Exception $e){
+            return response('Fail', 400);
+        }
+        return response('Success', 200);
     }
 
-    public function removeAdmin(User $user){
-        $currentUser = Auth::user();
+    public function removeAdmin(Request $request, User $user){
+        $currentUser = $request->user();
         $workspace = $currentUser->getCurrentWorkspace();
         //ToDo: Implement try catch
-        $workspace->removeAdmin($user);
-        return response()->json([
-            'status' => 'success'
-        ]);
+        try{
+            $workspace->removeAdmin($user);
+        }catch(Exception $e){
+            return response('Fail', 400);
+        }
+        return response('Success', 200);
     }
 }

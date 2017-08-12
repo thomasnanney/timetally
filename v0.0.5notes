@@ -19,3 +19,5 @@ Add in email to registration field when token is present
 Check for orphaned foreign key records
 
 Need to add filters to Reports view
+
+update user permissions, neeed success/error
