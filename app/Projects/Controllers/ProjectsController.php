@@ -36,8 +36,8 @@ class ProjectsController extends Controller
     public function postCreate(Request $request) {
 
         $data = $request->input('data');
-        $user = Auth::user();
-        $data['workspaceID'] = $user->getCurrentWorkspace()->id;
+        $user = $request->user();
+        $data['workspaceID'] = $user->current_workspace_id;
 
         $v = Project::validate($data);
 
@@ -111,8 +111,8 @@ class ProjectsController extends Controller
     {
 
         $data = $request->input('data');
-        $user = Auth::user();
-        $data['workspaceID'] = $user->getCurrentWorkspace()->id;
+        $user = $request->user();
+        $data['workspaceID'] = $user->current_workspace_id;
 
         $v = Project::validate($data);
 
