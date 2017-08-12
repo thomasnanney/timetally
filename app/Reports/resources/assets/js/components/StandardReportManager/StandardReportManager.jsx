@@ -56,9 +56,7 @@ export default class StandardReportManager extends Component{
                 data.endDate = new Date(data.endDate);
                 let newState = self.state;
                 newState.data = response.data;
-                self.setState(newState, () => {
-                    console.log(self.state.data);
-                });
+                self.setState(newState);
             })
             .catch(function(error){
                 console.log(error);
