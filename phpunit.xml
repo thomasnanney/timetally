@@ -18,7 +18,7 @@
             <directory suffix="Test.php">app/Clients/Tests/Unit</directory>
             <directory suffix="Test.php">app/Projects/Tests/Unit</directory>
             <directory suffix="Test.php">app/Organizations/Tests/Unit</directory>
-            <directory suffix="Test.php">app/Timer/Tests/Unit</directory>
+            <directory suffix="Test.php">app/Timer/Tests/Unit</directory
             <directory suffix="Test.php">app/Reports/Tests/Unit</directory>
             <directory suffix="Test.php">app/Workspaces/Tests/Unit</directory>
         </testsuite>

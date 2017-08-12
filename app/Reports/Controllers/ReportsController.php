@@ -4,7 +4,6 @@ namespace App\Reports\Controllers;
 
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
-use PDF;
 use App\Reports\Models\Report;
 
 class ReportsController extends Controller

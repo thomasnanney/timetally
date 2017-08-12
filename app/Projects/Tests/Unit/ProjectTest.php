@@ -53,13 +53,11 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('Project created', $response->getContent());
         $this->assertDatabaseHas('projects', [
             'title' => 'Project 1',
         ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('success', $data['status']);
     }
 
     public function testCreateProjectPrivate()
@@ -87,13 +85,11 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('Project created', $response->getContent());
         $this->assertDatabaseHas('projects', [
             'title' => 'Project 1',
         ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('success', $data['status']);
     }
 
     public function testEditProjectPrivate()
@@ -130,6 +126,7 @@ class ProjectsTest extends TestCase
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Project successfully updated', $response->getContent());
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,
             'title' => 'Project 2',
@@ -139,17 +136,8 @@ class ProjectsTest extends TestCase
             'projectedTime' => $projectedTime,
             'private' => 1,
         ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('Project successfully updated', $data['messages']);
     }
 
-    /**
-     * Test to create a new project
-     * with a missing Title
-     *
-     * @return void
-     */
     public function testCreateProjectMissingTitle()
     {
         $user = factory(User::class)->create();
@@ -174,21 +162,14 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals('Please enter a Project Title', $data['messages']['title']['0']);
         $this->assertDatabaseMissing('projects', [
             'description' => 'Description for Project 1',
         ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('Please enter a Project Title', $data['messages']['title']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with a missing Client ID
-     *
-     * @return void
-     */
     public function testCreateProjectMissingClientID()
     {
         $user = factory(User::class)->create();
@@ -212,7 +193,7 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
@@ -221,12 +202,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Please enter a Client Name', $data['messages']['clientID']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with an invalid Client ID
-     *
-     * @return void
-     */
     public function testCreateProjectInvalidClientID()
     {
         $user = factory(User::class)->create();
@@ -253,26 +228,21 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.exists', $data['messages']['clientID']['0']);
+        $this->assertEquals('The selected client i d is invalid.', $data['messages']['clientID']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with a missing Workspace ID
-     *
-     * @return void
-     */
     public function testCreateProjectMissingWorkspaceID()
     {
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
+        $user['current_workspace_id'] = null;
 
         $response = $this->call('POST', '/projects/create',
             array(
@@ -290,21 +260,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.exists', $data['messages']['workspaceID']['0']);
+        $this->assertEquals('The workspace i d field is required.', $data['messages']['workspaceID']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with an invalid Workspace ID
-     *
-     * @return void
-     */
     public function testCreateProjectInvalidWorkspaceID()
     {
         $user = factory(User::class)->create();
@@ -331,21 +295,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.exists', $data['messages']['workspaceID']['0']);
+        $this->assertEquals('The selected workspace i d is invalid.', $data['messages']['workspaceID']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with a missing Start Date
-     *
-     * @return void
-     */
     public function testCreateProjectMissingStartDate()
     {
         $user = factory(User::class)->create();
@@ -371,7 +329,7 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
@@ -380,12 +338,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Please enter a Start Date', $data['messages']['startDate']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with an invalid Start Date
-     *
-     * @return void
-     */
     public function testCreateProjectInvalidStartDate()
     {
         $user = factory(User::class)->create();
@@ -411,21 +363,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
+        $this->assertEquals('The start date does not match the format Y-m-d H:i:s.', $data['messages']['startDate']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with a missing End Date
-     *
-     * @return void
-     */
     public function testCreateProjectMissingEndDate()
     {
         $user = factory(User::class)->create();
@@ -451,7 +397,7 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
@@ -460,12 +406,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Please enter an End Date', $data['messages']['endDate']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with an invalid End Date
-     *
-     * @return void
-     */
     public function testCreateProjectInvalidEndDate()
     {
         $user = factory(User::class)->create();
@@ -491,21 +431,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+        $this->assertEquals('The end date does not match the format Y-m-d H:i:s.', $data['messages']['endDate']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with a missing Projected Time
-     *
-     * @return void
-     */
     public function testCreateProjectMissingProjectedTime()
     {
         $user = factory(User::class)->create();
@@ -530,7 +464,7 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
@@ -539,12 +473,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Please entered a projected time', $data['messages']['projectedTime']['0']);
     }
 
-    /**
-     * Test to create a new project
-     * with an invalid Projected Time
-     *
-     * @return void
-     */
     public function testCreateProjectInvalidProjectedTime()
     {
         $user = factory(User::class)->create();
@@ -569,20 +497,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.integer', $data['messages']['projectedTime']['0']);
+        $this->assertEquals('The projected time must be an integer.', $data['messages']['projectedTime']['0']);
     }
 
-    /**
-     * Test to edit an existing project.
-     *
-     * @return void
-     */
     public function testEditProject()
     {
         $user = factory(User::class)->create();
@@ -618,6 +541,7 @@ class ProjectsTest extends TestCase
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Project successfully updated', $response->getContent());
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,
             'title' => 'Project 2',
@@ -627,16 +551,8 @@ class ProjectsTest extends TestCase
             'projectedTime' => $projectedTime,
             'private' => $private,
         ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('Project successfully updated', $data['messages']);
     }
 
-    /**
-     * Test to delete an existing project
-     *
-     * @return void
-     */
     public function testDeleteProject()
     {
         $user = factory(User::class)->create();
@@ -661,12 +577,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Project deleted', $data['messages']['0']);
     }
 
-    /**
-     * Test to delete an exising project without passing
-     * the projectID to be deleted.
-     *
-     * @return void
-     */
     public function testDeleteProjectNoId()
     {
         $user = factory(User::class)->create();
@@ -682,12 +592,6 @@ class ProjectsTest extends TestCase
         //should redirect to  a custom 404 page
     }
 
-    /**
-     * Test to delete an exising project by passing
-     * an invalid projectID.
-     *
-     * @return void
-     */
     public function testDeleteProjectInvalidId()
     {
         $user = factory(User::class)->create();
@@ -703,12 +607,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Project not found', $data['messages'][0]);
     }
 
-    /**
-     * Test to add a user to a project by updating the
-     * project_user_pivot table.
-     *
-     * @return void
-     */
     public function testAddUser()
     {
         $user = factory(User::class)->create();
@@ -729,12 +627,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('success', $data['status']);
     }
 
-    /**
-     * Test to add a user to a project by updating the
-     * project_user_pivot table.
-     *
-     * @return void
-     */
     public function testAddExistingUser()
     {
         $user = factory(User::class)->create();
@@ -757,12 +649,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('success', $data['status']);
     }
 
-    /**
-     * Test to remove a user from a project by updating the
-     * project_user_pivot table.
-     *
-     * @return void
-     */
     public function testRemoveUser()
     {
         $user = factory(User::class)->create();
@@ -785,12 +671,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('success', $data['status']);
     }
 
-    /**
-     * Test to edit a project
-     * with a missing Title
-     *
-     * @return void
-     */
     public function testEditProjectMissingTitle()
     {
         $user = factory(User::class)->create();
@@ -819,21 +699,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'description' => 'Description for Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter a Project Title', $data['messages']['title']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with a missing Client ID
-     *
-     * @return void
-     */
     public function testEditProjectMissingClientID()
     {
         $user = factory(User::class)->create();
@@ -862,21 +736,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('Please enter a Client Name', $data['messages']['clientID']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with an invalid Client ID
-     *
-     * @return void
-     */
     public function testEditProjectInvalidClientID()
     {
         $user = factory(User::class)->create();
@@ -907,21 +775,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('fail', $data['status']);
+        $this->assertEquals('The selected client i d is invalid.', $data['messages']['clientID']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with a missing Workspace ID
-     *
-     * @return void
-     */
     public function testEditProjectMissingWorkspaceID()
     {
         $user = factory(User::class)->create();
@@ -930,6 +792,7 @@ class ProjectsTest extends TestCase
         $project = factory(Project::class)->create([
             'clientID' => $client->id,
         ]);
+        $user['current_workspace_id'] = null;
 
         $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
@@ -947,21 +810,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.exists', $data['messages']['workspaceID']['0']);
+        $this->assertEquals('The workspace i d field is required.', $data['messages']['workspaceID']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with an invalid Workspace ID
-     *
-     * @return void
-     */
     public function testEditProjectInvalidWorkspaceID()
     {
         $user = factory(User::class)->create();
@@ -990,21 +847,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.exists', $data['messages']['workspaceID']['0']);
+        $this->assertEquals('The selected workspace i d is invalid.', $data['messages']['workspaceID']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with a missing Start Date
-     *
-     * @return void
-     */
     public function testEditProjectMissingStartDate()
     {
         $user = factory(User::class)->create();
@@ -1033,7 +884,7 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
@@ -1042,12 +893,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Please enter a Start Date', $data['messages']['startDate']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with an invalid Start Date
-     *
-     * @return void
-     */
     public function testEditProjectInvalidStartDate()
     {
         $user = factory(User::class)->create();
@@ -1076,21 +921,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
+        $this->assertEquals('The start date does not match the format Y-m-d H:i:s.', $data['messages']['startDate']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with a missing End Date
-     *
-     * @return void
-     */
     public function testEditProjectMissingEndDate()
     {
         $user = factory(User::class)->create();
@@ -1119,7 +958,7 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
@@ -1128,12 +967,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Please enter an End Date', $data['messages']['endDate']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with an invalid End Date
-     *
-     * @return void
-     */
     public function testEditProjectInvalidEndDate()
     {
         $user = factory(User::class)->create();
@@ -1162,21 +995,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+        $this->assertEquals('The end date does not match the format Y-m-d H:i:s.', $data['messages']['endDate']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with a missing Projected Time
-     *
-     * @return void
-     */
     public function testEditProjectMissingProjectedTime()
     {
         $user = factory(User::class)->create();
@@ -1205,7 +1032,7 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
@@ -1214,12 +1041,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Please entered a projected time', $data['messages']['projectedTime']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with an invalid Projected Time
-     *
-     * @return void
-     */
     public function testEditProjectInvalidProjectedTime()
     {
         $user = factory(User::class)->create();
@@ -1248,21 +1069,15 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.integer', $data['messages']['projectedTime']['0']);
+        $this->assertEquals('The projected time must be an integer.', $data['messages']['projectedTime']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with a missing Scope
-     *
-     * @return void
-     */
     public function testEditProjectMissingPrivate()
     {
         $user = factory(User::class)->create();
@@ -1291,7 +1106,7 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
@@ -1300,12 +1115,6 @@ class ProjectsTest extends TestCase
         $this->assertEquals('Please set the Project as Private or Public', $data['messages']['private']['0']);
     }
 
-    /**
-     * Test to edit a project
-     * with an invalid Scope
-     *
-     * @return void
-     */
     public function testEditProjectInvalidPrivate()
     {
         $user = factory(User::class)->create();
@@ -1334,13 +1143,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.boolean', $data['messages']['private']['0']);
+        $this->assertEquals('The private field must be true or false.', $data['messages']['private']['0']);
     }
 
     public function testCreateProjectNoDescription()
@@ -1367,13 +1176,12 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals('Project created', $response->getContent());
         $this->assertDatabaseHas('projects', [
             'title' => 'Project 1',
+            'description' => null,
         ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('success', $data['status']);
     }
 
     public function testEditProjectNoDescription()
@@ -1405,13 +1213,11 @@ class ProjectsTest extends TestCase
             ));
 
         $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Project successfully updated', $response->getContent());
         $this->assertDatabaseHas('projects', [
             'title' => 'Project 2',
             'description' => null,
         ]);
-
-        $data = json_decode($response->getContent(), true);
-        $this->assertEquals('success', $data['status']);
     }
 
     public function testEditProjectRobustClientID()
@@ -1438,13 +1244,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.integer', $data['messages']['clientID']['0']);
+        $this->assertEquals('The client i d must be an integer.', $data['messages']['clientID']['0']);
     }
 
     public function testEditProjectRobustWorkspaceID()
@@ -1475,13 +1281,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.integer', $data['messages']['workspaceID']['0']);
+        $this->assertEquals('The workspace i d must be an integer.', $data['messages']['workspaceID']['0']);
     }
 
     public function testCreateProjectRobustClientID()
@@ -1507,13 +1313,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.integer', $data['messages']['clientID']['0']);
+        $this->assertEquals('The client i d must be an integer.', $data['messages']['clientID']['0']);
     }
 
     public function testCreateProjectRobustWorkspaceID()
@@ -1541,13 +1347,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.integer', $data['messages']['workspaceID']['0']);
+        $this->assertEquals('The workspace i d must be an integer.', $data['messages']['workspaceID']['0']);
     }
 
     public function testEditProjectInvalidDayStartDate()
@@ -1578,13 +1384,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
+        $this->assertEquals('The start date does not match the format Y-m-d H:i:s.', $data['messages']['startDate']['0']);
     }
 
     public function testEditProjectInvalidYearStartDate()
@@ -1615,13 +1421,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
+        $this->assertEquals('The start date does not match the format Y-m-d H:i:s.', $data['messages']['startDate']['0']);
     }
 
     public function testEditProjectInvalidMonthStartDate()
@@ -1652,13 +1458,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
+        $this->assertEquals('The start date does not match the format Y-m-d H:i:s.', $data['messages']['startDate']['0']);
     }
 
     public function testCreateProjectInvalidDayStartDate()
@@ -1686,13 +1492,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
+        $this->assertEquals('The start date does not match the format Y-m-d H:i:s.', $data['messages']['startDate']['0']);
     }
 
     public function testCreateProjectInvalidYearStartDate()
@@ -1720,13 +1526,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
+        $this->assertEquals('The start date does not match the format Y-m-d H:i:s.', $data['messages']['startDate']['0']);
     }
 
     public function testCreateProjectInvalidMonthStartDate()
@@ -1754,13 +1560,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['startDate']['0']);
+        $this->assertEquals('The start date does not match the format Y-m-d H:i:s.', $data['messages']['startDate']['0']);
     }
 
     public function testEditProjectInvalidDayEndDate()
@@ -1791,13 +1597,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+        $this->assertEquals('The end date does not match the format Y-m-d H:i:s.', $data['messages']['endDate']['0']);
     }
 
     public function testEditProjectInvalidYearEndDate()
@@ -1828,13 +1634,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 2',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+        $this->assertEquals('The end date does not match the format Y-m-d H:i:s.', $data['messages']['endDate']['0']);
     }
 
     public function testCreateProjectInvalidMonthEndDate()
@@ -1862,13 +1668,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+        $this->assertEquals('The end date does not match the format Y-m-d H:i:s.', $data['messages']['endDate']['0']);
     }
 
     public function testCreateProjectInvalidYearEndDate()
@@ -1896,13 +1702,13 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+        $this->assertEquals('The end date does not match the format Y-m-d H:i:s.', $data['messages']['endDate']['0']);
     }
 
     public function testCreateProjectInvalidDayEndDate()
@@ -1930,24 +1736,28 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseMissing('projects', [
             'title' => 'Project 1',
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
+        $this->assertEquals('The end date does not match the format Y-m-d H:i:s.', $data['messages']['endDate']['0']);
     }
 
-    /*public function testEditProjectInvalidMonthEndDate()
+    public function testEditProjectInvalidMonthEndDate()
     {
         $user = factory(User::class)->create();
         $this->be($user);
         $client = factory(Client::class)->create();
         $workspace = factory(Workspace::class)->create();
         $user['current_workspace_id'] = $workspace->id;
+        $project = factory(Project::class)->create([
+            'clientID' => $client->id,
+            'workspaceID' => $workspace->id,
+        ]);
 
-        $response = $this->call('POST', '/projects/edit/{$project}',
+        $response = $this->call('POST', '/projects/edit/'.$project->id,
             array(
                 '_token' => csrf_token(),
                 'data' => [
@@ -1963,14 +1773,12 @@ class ProjectsTest extends TestCase
                 ]
             ));
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(400, $response->getStatusCode());
         $this->assertDatabaseHas('projects', [
-            'title' => 'Project 1',
-            'endDate' => $project
+            'title' => $project->title,
         ]);
 
         $data = json_decode($response->getContent(), true);
-        $this->assertEquals('validation.date_format', $data['messages']['endDate']['0']);
-    }*/
-
+        $this->assertEquals('The end date does not match the format Y-m-d H:i:s.', $data['messages']['endDate']['0']);
+    }
 }
