@@ -69,7 +69,7 @@ class ProjectsController extends Controller
             }
         }
 
-        return response('Projected created', 201);
+        return response('Project created', 201);
     }
 
     public function deleteProject($id) {

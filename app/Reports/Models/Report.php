@@ -23,7 +23,8 @@ class Report extends Model
         $groupBy = $data['groupBy'];
         $subGroup = $data['subGroup'];
         $subGroupBy = $data['subGroupBy'];
-        $reportType = $data['reportType'];
+        //$reportType = $data['reportType'];
+        $reportType = 'timeEntry';
 
         //figure out keys to filter and order by
         $groupField = '';
@@ -211,7 +212,8 @@ class Report extends Model
         $groupBy = $data['groupBy'];
         $subGroup = $data['subGroup'];
         $subGroupBy = $data['subGroupBy'];
-        $reportType = $data['reportType'];
+        //$reportType = $data['reportType'];
+        $reportType = 'timeEntry';
 
         //figure out keys to filter and order by
         $groupField = '';
@@ -328,12 +330,12 @@ class Report extends Model
             case 'timeEntry':
                 $titles = [
                     'reportTitle' => 'Time_Entry_Report',
-                    'barReportTitle' => 'Hours By Day',
+                    'barReportTitle' => 'Hours per Day',
                     'barAxisTitles' => [
                         'y' => 'Number of Hours',
                         'x' => 'Date'
                     ],
-                    'pieReportTitle' => 'Hours By Employee'
+                    'pieReportTitle' => 'Hours per Client'
                 ];
                 break;
             case 'billableRatePerEmployee':
