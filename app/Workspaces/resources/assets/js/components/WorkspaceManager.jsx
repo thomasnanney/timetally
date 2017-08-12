@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 //components imports
 import ListItem from 'workspaces/WorkspaceManagerComponents/ListItem';
 import AddWorkspaceWizard from 'workspaces/WorkspaceManagerComponents/AddWorkspaceWizard';
+import SuccessNotification from 'core/SuccessNotification';
+import ErrorNotification from 'core/ErrorNotification';
 
 class WorkspaceManager extends Component {
 
@@ -67,10 +69,49 @@ class WorkspaceManager extends Component {
         });
     }
 
+    leaveWorkspace(workspace){
+        let self = this;
+        axios.post('/workspaces/leave/' + workspace.id)
+            .then(function(response){
+                if(response.status == 200){
+                    self.showSuccess();
+                    self.getWorkspaces();
+                }
+            }).catch(function(error){
+                if(error.response.status == 400){
+                    self.showError();
+                }
+                if(error.response.status == 403){
+                    self.showError();
+                }
+                if(error.response.status == 409){
+                    self.showError();
+                    alert("You can not delete your active workspace.");
+                }
+        });
+    }
+
+    showSuccess(){
+        let self = this;
+        this.setState({showSuccess: true});
+        window.setTimeout(function(){
+            self.setState({showSuccess: false});
+        }, 2000);
+    }
+
+    showError(){
+        let self = this;
+        this.setState({showError: true});
+        window.setTimeout(function(){
+            self.setState({showError: false});
+        }, 2000);
+    }
+
     render() {
-        console.log(this.state);
         return (
             <div>
+                <SuccessNotification show={this.state.showSuccess}/>
+                <ErrorNotification show={this.state.showError}/>
                 <h1>Workspaces</h1>
                 <div className="list table workspace-list">
                     <div className="list-header table-row thick-border-bottom">
@@ -88,6 +129,7 @@ class WorkspaceManager extends Component {
                                 key={space.id}
                                 active={(space.id == this.state.currentWorkspace.id)}
                                 makeWorkspaceActive={this.makeWorkspaceActive.bind(this, space.id)}
+                                leaveWorkspace={this.leaveWorkspace.bind(this)}
                             />
                         )
                         :

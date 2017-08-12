@@ -10,6 +10,7 @@ export default class ListItem extends Component {
         super(props);
 
         this.handleLinkClick = this.handleLinkClick.bind(this);
+        this.leaveWorkspace = this.leaveWorkspace.bind(this);
     }
 
     handleLinkClick () {
@@ -19,6 +20,11 @@ export default class ListItem extends Component {
     makeWorkspaceActive(){
         this.handleLinkClick();
         this.props.makeWorkspaceActive();
+    }
+
+    leaveWorkspace(e){
+        e.preventDefault();
+        this.props.leaveWorkspace(this.props.workspace);
     }
 
     render() {
@@ -37,6 +43,7 @@ export default class ListItem extends Component {
                                     !this.props.active &&
                                         <li onClick={this.makeWorkspaceActive.bind(this)} className="clickable">Make Active Workspace</li>
                                 }
+                                <li onClick={this.leaveWorkspace}><a className="no-link-style" href="#">Leave Workspace</a></li>
                             </ul>
                             <div className="tk-arrow"></div>
                         </DropdownContent>

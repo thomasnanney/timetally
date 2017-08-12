@@ -47989,6 +47989,8 @@ var WorkspaceSettingsPane = function (_Component) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_workspaces_WorkspaceManagerComponents_ListItem__ = __webpack_require__(401);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_workspaces_WorkspaceManagerComponents_AddWorkspaceWizard__ = __webpack_require__(400);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_core_SuccessNotification__ = __webpack_require__(65);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_core_ErrorNotification__ = __webpack_require__(64);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -48001,6 +48003,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 
 //components imports
+
+
 
 
 
@@ -48068,14 +48072,55 @@ var WorkspaceManager = function (_Component) {
             });
         }
     }, {
+        key: 'leaveWorkspace',
+        value: function leaveWorkspace(workspace) {
+            var self = this;
+            axios.post('/workspaces/leave/' + workspace.id).then(function (response) {
+                if (response.status == 200) {
+                    self.showSuccess();
+                    self.getWorkspaces();
+                }
+            }).catch(function (error) {
+                if (error.response.status == 400) {
+                    self.showError();
+                }
+                if (error.response.status == 403) {
+                    self.showError();
+                }
+                if (error.response.status == 409) {
+                    self.showError();
+                    alert("You can not delete your active workspace.");
+                }
+            });
+        }
+    }, {
+        key: 'showSuccess',
+        value: function showSuccess() {
+            var self = this;
+            this.setState({ showSuccess: true });
+            window.setTimeout(function () {
+                self.setState({ showSuccess: false });
+            }, 2000);
+        }
+    }, {
+        key: 'showError',
+        value: function showError() {
+            var self = this;
+            this.setState({ showError: true });
+            window.setTimeout(function () {
+                self.setState({ showError: false });
+            }, 2000);
+        }
+    }, {
         key: 'render',
         value: function render() {
             var _this2 = this;
 
-            console.log(this.state);
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 'div',
                 null,
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_4_core_SuccessNotification__["a" /* default */], { show: this.state.showSuccess }),
+                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_5_core_ErrorNotification__["a" /* default */], { show: this.state.showError }),
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     'h1',
                     null,
@@ -48100,7 +48145,8 @@ var WorkspaceManager = function (_Component) {
                             workspace: space,
                             key: space.id,
                             active: space.id == _this2.state.currentWorkspace.id,
-                            makeWorkspaceActive: _this2.makeWorkspaceActive.bind(_this2, space.id)
+                            makeWorkspaceActive: _this2.makeWorkspaceActive.bind(_this2, space.id),
+                            leaveWorkspace: _this2.leaveWorkspace.bind(_this2)
                         });
                     }) : __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                         'p',
@@ -48377,6 +48423,7 @@ var ListItem = function (_Component) {
         var _this = _possibleConstructorReturn(this, (ListItem.__proto__ || Object.getPrototypeOf(ListItem)).call(this, props));
 
         _this.handleLinkClick = _this.handleLinkClick.bind(_this);
+        _this.leaveWorkspace = _this.leaveWorkspace.bind(_this);
         return _this;
     }
 
@@ -48390,6 +48437,12 @@ var ListItem = function (_Component) {
         value: function makeWorkspaceActive() {
             this.handleLinkClick();
             this.props.makeWorkspaceActive();
+        }
+    }, {
+        key: 'leaveWorkspace',
+        value: function leaveWorkspace(e) {
+            e.preventDefault();
+            this.props.leaveWorkspace(this.props.workspace);
         }
     }, {
         key: 'render',
@@ -48428,6 +48481,15 @@ var ListItem = function (_Component) {
                                     'li',
                                     { onClick: this.makeWorkspaceActive.bind(this), className: 'clickable' },
                                     'Make Active Workspace'
+                                ),
+                                __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                    'li',
+                                    { onClick: this.leaveWorkspace },
+                                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+                                        'a',
+                                        { className: 'no-link-style', href: '#' },
+                                        'Leave Workspace'
+                                    )
                                 )
                             ),
                             __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'tk-arrow' })

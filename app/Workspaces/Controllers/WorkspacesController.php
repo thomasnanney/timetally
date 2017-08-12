@@ -85,6 +85,19 @@ class WorkspacesController extends Controller
         return response('Workspace created', 201);
     }
 
+    public function leaveWorkspace(Request $request, Workspace $workspace){
+        try{
+            $user = $request->user();
+            if($workspace->id == $user->current_workspace_id){
+                return response('Can not delete active workspace', 409);
+            }
+            $workspace->queryUsers()->detach($user->id);
+            return response('Success', 200);
+        }catch(Exception $e){
+            return response('Fail', 400);
+        }
+    }
+
     public function deleteWorkspace(Workspace $workspace) {
         // Delete workspace from DB
         Workspace::destroy($workspace->id);
