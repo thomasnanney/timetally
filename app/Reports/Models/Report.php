@@ -333,7 +333,7 @@ class Report extends Model
                         'y' => 'Number of Hours',
                         'x' => 'Date'
                     ],
-                    'pieReportTitle' => 'Hours By Employee'
+                    'pieReportTitle' => 'Hours By Client'
                 ];
                 break;
             case 'billableRatePerEmployee':
