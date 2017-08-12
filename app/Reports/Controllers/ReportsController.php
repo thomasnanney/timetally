@@ -42,6 +42,20 @@ class ReportsController extends Controller
 
     }
 
+    public function getBarData(Request $request){
+
+        $data = $request->input('data');
+        $data['reportType'] = 'bar';
+        array_push($data['filters']['users'], $request->user()->id);
+
+        $timezone = $request->get('timezone');
+
+        $barData= Report::generateBarData($data, $timezone);
+
+        return response()->json($barData);
+
+    }
+
     public function createReportPDF(Request $request)
     {
         $data = $request->input('data');

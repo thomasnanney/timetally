@@ -11,11 +11,7 @@
             {{ session('warning') }}
         </div>
     @endif
-    <div class="row">
-        <div class="col-xs-12 text-center">
-            <h1>Under Construction<br/>Get to testing everything else!</h1>
-        </div>
-    </div>
+    <div id="dashboard"></div>
 @endsection
 
 

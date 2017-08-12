@@ -33,7 +33,7 @@ export default class AddWorkspaceWizard extends Component {
         let name = this.state.name;
         let users = this.state.users;
         let step = this.state.step;
-        let error = this.state.error;
+        let error = null;
 
         if(step == 2){
             if(name.length == 0){

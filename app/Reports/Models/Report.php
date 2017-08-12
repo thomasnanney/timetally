@@ -202,6 +202,124 @@ class Report extends Model
 
     }
 
+    public static function generateBarData($data){
+        $clientFilter = $data['filters']['clients'];
+        $projectFilter = $data['filters']['projects'];
+        $userFilter = $data['filters']['users'];
+        $startDate = $data['startDate'];
+        $endDate = $data['endDate'];
+        $groupBy = $data['groupBy'];
+        $subGroup = $data['subGroup'];
+        $subGroupBy = $data['subGroupBy'];
+        $reportType = $data['reportType'];
+
+        //figure out keys to filter and order by
+        $groupField = '';
+        $groupKey = '';
+
+        switch($groupBy){
+            case 'client':
+                $groupField = 'clientName';
+                $groupKey = 'clientID';
+                break;
+            case 'user':
+                $groupField = 'userName';
+                $groupKey = 'userID';
+                break;
+            case 'project':
+                $groupField = 'projectTitle';
+                $groupKey = 'projectID';
+                break;
+        }
+
+        if($subGroup){
+            $subGroupField = '';
+            $subGroupKey = '';
+            switch($subGroupBy){
+                case 'client':
+                    $subGroupField = 'clientName';
+                    $subGroupKey = 'clientID';
+                    break;
+                case 'user':
+                    $subGroupField = 'userName';
+                    $subGroupKey = 'userID';
+                    break;
+                case 'project':
+                    $subGroupField = 'projectTitle';
+                    $subGroupKey = 'projectID';
+                    break;
+            }
+        }
+
+        //Retrieve entries from DB
+        $user = Auth::user();
+        $workspace = $user->current_workspace_id;
+
+        $timeEntries = DB::table('timereports')->select('*')->where('workspaceID', $workspace);
+        $timeEntries->where(function ($timeEntries) use ($clientFilter, $projectFilter, $userFilter) {
+            if (!is_null($clientFilter) && !empty($clientFilter)) {
+                $timeEntries->whereIn('clientID', $clientFilter);
+            }
+            if (!is_null($projectFilter) && !empty($projectFilter)) {
+                $timeEntries->whereIn('projectID', $projectFilter);
+            }
+            if (!is_null($userFilter) && !empty($userFilter)) {
+                $timeEntries->whereIn('userID', $userFilter);
+            }
+        });
+
+        if(is_null($startDate) || is_null($endDate)){
+            $startDate = Carbon::parse('Monday this week')->format('y-m-d');
+            $endDate = Carbon::parse('Sunday this week')->format('y-m-d');
+            $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
+        }else{
+            $startDate = Carbon::parse($startDate)->format('Y-m-d');
+//            var_dump(Carbon::parse($startDate)->format('Y-m-d'));
+            $endDate = Carbon::parse($endDate)->format('Y-m-d');
+            $timeEntries->whereBetween('startTime', [$startDate, $endDate]);
+        }
+        if($subGroup){
+            $timeEntries = $timeEntries->orderBy($groupField, 'asc')->orderBy($subGroupField, 'asc')->get();
+        }else{
+            $timeEntries = $timeEntries->orderBy($groupField, 'asc')->get();
+        }
+
+        //clone collection to prepare bar adn pie data as well
+        $barData = clone $timeEntries;
+
+        //get bar data
+        $finalBarData = $barData->groupBy(function($entry){
+            $date = new DateTime($entry->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
+            return $date->format('m-d-Y');
+        })->transform(function($entry){
+            $date = new DateTime($entry[0]->startTime);
+//            $date->setTimezone(new DateTimeZone($timezone));
+            return [
+                'name'=> $date->format('m-d-Y'),
+                'value' => round(($entry->sum('time')/60),2)
+            ];
+        });
+
+        $paddedBarData = collect();
+        $chartDate = new DateTime($startDate);
+//        $chartDate->setTimezone(new DateTimeZone($timezone));
+        $endDate = new DateTime($endDate);
+//        $endDate->setTimezone(new DateTimeZone(($timezone)));
+        while($chartDate <= $endDate){
+            $data = [
+                'name' => $chartDate->format('m-d-Y'),
+                'value' => 0
+            ];
+            $paddedBarData->put($chartDate->format('m-d-Y'), $data);
+            $chartDate->add(new DateInterval('P1D'));
+        }
+
+        return $finalBarData->union($paddedBarData)->sortBy(function($entry, $key){
+            return $key;
+        })->values();
+    }
+
     public static function createPDF($reportData)
     {
 
