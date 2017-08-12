@@ -2,15 +2,17 @@ import React, {Component} from 'react';
 import Timepicker from 'react-timepicker';
 import DayPicker from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
+import Dropdown, { DropdownTrigger, DropdownContent } from 'react-simple-dropdown';
+import 'react-simple-dropdown/styles/Dropdown.css';
+
+import DateFormat from 'dateformat';
 
 export default class DropDownDateTimePicker extends Component{
 
     constructor(props){
         super(props);
         this.state = {
-            selectedDay: new Date(),
-            selectedTime: new Date().getHours() +':'+new Date().getMinutes(),
-            selectedTimeOfDay: ((new Date().getHours > 11) ? 'PM' : 'AM' )
+            selectedTime: new Date()
         }
     }
 
@@ -23,52 +25,98 @@ export default class DropDownDateTimePicker extends Component{
     }
 
     handleDayClick(day){
-        this.setState({selectedDay: day});
+        let current = new Date(this.state.selectedTime);
+        let newDay = new Date(day);
+        newDay.setHours(current.getHours(), current.getMinutes());
+        this.setState({selectedTime: newDay}, function(){
+            this.updateInput();
+        });
     }
 
     handleTimeClick(hour, minute){
-        this.setState({selectedTime: hour+':'+minute})
-
+        let current = new Date(this.state.selectedTime);
+        if(hour){
+            if(current.getHours() > 11){
+                current.setHours(hour + 12)
+                this.setState({selectedTime: current}, function(){
+                    this.updateInput();
+                });
+            }else{
+                current.setHours(hour)
+                this.setState({selectedTime: current}, function(){
+                    this.updateInput();
+                });
+            }
+        }
+        if(minute){
+            current.setMinutes(minute)
+            this.setState({selectedTime: current}, function(){
+                this.updateInput();
+            });
+        }
     }
 
     handleTimeOfDayClick(event){
         let value = event.target.value;
-        this.setState({selectedTimeOfDay: value});
+        let current = new Date(this.state.selectedTime);
+        if(value == 'AM' && current.getHours() > 11){
+            current.setHours(current.getHours()-12)
+            this.setState({selectedTime: current}, function(){
+                this.updateInput();
+            });
+        }
+        if(value == 'PM' && current.getHours() <= 11){
+            current.setHours(current.getHours()+12)
+            this.setState({selectedTime: current}, function(){
+                this.updateInput();
+            });
+        }
     }
 
-    handleSave(){
-        let time = this.state.selectedTime + ' ' + this.state.selectedTimeOfDay;
-        this.props.updateInput( this.state.selectedDay.toDateString(), time);
+    updateInput(){
+        let evt = {
+            target: {}
+        };
+        evt.target.name = this.props.name;
+        evt.target.type = 'text';
+        evt.target.value = new Date(this.state.selectedTime);
+        this.props.updateInput(evt);
     }
 
     render(){
+
         return(
-            <div>
-                <div className={"date-time-picker tk-dropdown tk-dropdown-list tk-root " + this.props.align}>
+            <Dropdown ref="dropdown" className="full-width relative">
+                <DropdownTrigger className="full-width">
+                    <input type="text" value={this.props.time ? DateFormat(this.props.time, "mm/dd/yy h:MM TT") : ''} className="timer-element tk-timer-input" placeholder={this.props.placeholder}/>
+                </DropdownTrigger>
+                <DropdownContent>
                     <div className="row">
-                        <div className="col-xs-12 col-sm-6">
-                            <DayPicker onDayClick={this.handleDayClick.bind(this)} selectedDays={this.state.selectedDay}/>
+                        <div className="">
+                            <DayPicker onDayClick={this.handleDayClick.bind(this)} selectedDays={new Date(this.state.selectedTime)}/>
                         </div>
-                        <div className="col-xs-12 col-sm-6">
-                            <Timepicker size={300} radius={80} militaryTime={false} onChange={this.handleTimeClick.bind(this)}/>
+                        <div className="">
+                            <Timepicker
+                                size={300}
+                                radius={80}
+                                militaryTime={false}
+                                hours={new Date(this.state.selectedTime).getHours() > 11 ? new Date(this.state.selectedTime).getHours() -11 : new Date(this.state.selectedTime).getHours() + 1}
+                                minutes={new Date(this.state.selectedTime).getMinutes()}
+                                onChange={this.handleTimeClick.bind(this)}
+                            />
                             <div className="row">
                                 <div className="col-xs-12">
                                     <div className="btn-group" role="group">
-                                        <button type="button" className={"btn btn-primary " + (this.state.selectedTimeOfDay == 'AM' ? 'active' : '')} value="AM" onClick={(e) => this.handleTimeOfDayClick(e)}>AM</button>
-                                        <button type="button" className={"btn btn-primary " + (this.state.selectedTimeOfDay == 'PM' ? 'active' : '')} value="PM" onClick={(e) => this.handleTimeOfDayClick(e)}>PM</button>
+                                        <button type="button" className={"btn btn-primary " + (new Date(this.state.selectedTime).getHours() <= 11 ? 'active' : '')} value="AM" onClick={(e) => this.handleTimeOfDayClick(e)}>AM</button>
+                                        <button type="button" className={"btn btn-primary " + (new Date(this.state.selectedTime).getHours() > 11  ? 'active' : '')} value="PM" onClick={(e) => this.handleTimeOfDayClick(e)}>PM</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className="row">
-                        <div className="col-xs-12">
-                            <button type="button" className="btn btn-success" onClick={this.handleSave.bind(this)}>Save</button>
-                        </div>
-                    </div>
-                </div>
-                <div className="tk-arrow"></div>
-            </div>
+                    <div className="tk-arrow"></div>
+                </DropdownContent>
+            </Dropdown>
         );
     }
 }

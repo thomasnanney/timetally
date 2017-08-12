@@ -27,7 +27,7 @@ body{
     display: table;
 }
 
-.timer-container div[class*="timer-"] > *:not(div){
+.timer-container .timer-element{
     display: table-cell;
     vertical-align: middle;
     height:50px;
@@ -40,37 +40,50 @@ body{
 .datepicker.datepicker-inline, .datepicker table{
     width:100%;
 }
-/********************DROPDOWN MENU STYLES*********************/
-.tk-dropdown-container[class*="active"] .tk-dropdown, .tk-dropdown-container[class*="active"] .tk-arrow{
-    display: block !important;
+
+.inline-block{
+    display: inline-block !important;
 }
 
-.tk-dropdown{
-    display: none;
-    position: absolute;
-    top: 100%;
+.icon-check-box{
+    position: relative;
+    left: -20px;
+    opacity: 0;
+    width: 30px;
+}
+/********************DROPDOWN MENU STYLES*********************/
+/*.tk-dropdown[class*="active"], .tk-dropdown[class*="active"] + .tk-arrow{*/
+    /*display: block !important;*/
+/*}*/
+
+.dropdown--active .dropdown__content{
     background-color: #fff;
     -webkit-box-shadow: -2px 2px 5px 0px #000;
     -moz-box-shadow: -2px 2px 5px 0px #000;
     box-shadow: -2px 2px 5px 0px #000;
     padding: 8px;
     z-index: 3;
+    min-width: 250px;
 }
 
-.tk-dropdown.align-right{
-    right: 0%;
+.dropdown--active .dropdown__content.scroll{
+    max-height: 400px;
+    overflow-y: auto;
 }
 
-.tk-dropdown.align-left{
-    left: 0%;
-}
+/*.tk-dropdown.align-right{*/
+    /*right: 0%;*/
+/*}*/
 
-.tk-dropdown li{
-    padding:10px 20px;
-}
+/*.tk-dropdown.align-left{*/
+    /*left: 0%;*/
+/*}*/
 
-.tk-dropdown + .tk-arrow{
-    display: none;
+/*.tk-dropdown li{*/
+    /*padding:10px 20px;*/
+/*}*/
+
+.dropdown--active .dropdown__content > .tk-arrow{
     position: absolute;
     z-index: 1002;
     width: 0;
@@ -81,46 +94,49 @@ body{
     transform: rotate(-135deg);
     box-shadow: 1px 1px 0 #c2c8cd;
     content: ' ';
-    top:calc(100% - 5px);
-    left:35%;
+    top:-5px;
+    left:10%;
 }
 
-.tk-dropdown input{
-    display: inline-block;
-    width:100%;
-    height: 50px;
-    padding: 6px 12px;
-    font-size: 24px;
-    line-height: 1.6;
+.dropdown__trigger{
     color: #555555;
     background-color: transparent;
-    border: none;
     transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
 }
 
-.tk-dropdown .input-group{
-    width:100%;
+.dropdown__trigger:hover{
+    color: #555555;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-.tk-dropdown input{
-    font-size:16px;
+.dropdown__trigger i[class*="fa-chevron"]{
+    margin-top: 0.3em;
 }
 
-.tk-dropdown-list{
-    max-height:300px;
-    overflow-y: scroll;
-}
+/*.tk-dropdown .input-group{*/
+    /*width:100%;*/
+/*}*/
 
-.timer-container .tk-dropdown{
-    min-width:100%;
-}
+/*.tk-dropdown input{*/
+    /*font-size:16px;*/
+/*}*/
 
-.date-time-picker.tk-dropdown{
-    height: auto;
-    max-height:none;
-    width: 600px;
-    overflow: hidden;
-}
+/*.tk-dropdown-list{*/
+    /*max-height:300px;*/
+    /*overflow-y: scroll;*/
+/*}*/
+
+/*.timer-container .tk-dropdown{*/
+    /*min-width:100%;*/
+/*}*/
+
+/*.date-time-picker.tk-dropdown{*/
+    /*height: auto;*/
+    /*max-height:none;*/
+    /*width: 600px;*/
+    /*overflow: hidden;*/
+/*}*/
 
 /**********************ICON STYLES*************************/
 
@@ -183,6 +199,7 @@ body{
 
 .clickable:hover {
     cursor: pointer;
+    text-decoration: underline;
 }
 
 .table{
@@ -197,6 +214,14 @@ body{
 .table-cell{
     display: table-cell;
     padding:10px;
+}
+
+.width-20{
+    width: 20%;
+}
+
+.width-80{
+    width: 80%;
 }
 
 .large-container{
@@ -220,11 +245,11 @@ body{
 }
 
 .no-margin{
-    margin:0px;
+    margin:0px !important;
 }
 
 .no-padding{
-    padding: 0px;
+    padding: 0px !important;
 }
 
 .tile{
@@ -258,6 +283,10 @@ li.tab.active{
     max-width: 600px;
 }
 
+.btn{
+    margin:0px 5px;
+}
+
 .tk-btn{
     background-color: #f9f9f9;
     color: #777;
@@ -274,6 +303,11 @@ li.tab.active{
     color: red !important;
     display: block;
 }
+
+.valign-middle{
+    vertical-align: middle;
+}
+
 
 .valign-bottom{
     vertical-align: bottom;
@@ -310,6 +344,52 @@ li.tab.active{
 .full-width{
     width: 100%;
 }
+
+.width-auto{
+    width: auto !important;
+}
+
+.main-list > li{
+    border-bottom: 1px solid #777;
+    margin-bottom: 15px;
+    padding-bottom:15px;
+}
+
+.loading{
+    position: fixed;
+    top:0;
+    left: 0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 9999999;
+    padding:50px;
+}
+
+.v-h-center{
+    position: absolute;
+    top:50%;
+    left:50%;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.notification-img{
+    max-width:250px;
+}
+
+.success-text{
+    color: #085917;
+    font-weight:700;
+}
+
+.error-text{
+    color: #991304;
+    font-weight:700;
+}
 /**********************ERRORS***************************/
 .error-box{
     background-color: rgba(255,0,0,0.3);
@@ -322,8 +402,8 @@ li.tab.active{
     content: '\f12a';
     color: red;
     font-family: FontAwesome;
+    padding-left: 10px;
 }
-
 /*********************MENU CSS*************************/
 
 .sidebar{
@@ -424,7 +504,7 @@ li.tab.active{
     background: transparent;
     border: none;
     border-bottom: 1px solid #cecece;
-    margin:15px 0px;
+    margin: 0px 0px 15px;
 }
 
 .tk-form-input:focus{
@@ -446,6 +526,7 @@ li.tab.active{
 .tk-form-textarea{
     display: block;
     width: 100%;
+    min-height: 80px;
     background: transparent;
     border: 1px dotted #cecece;
     -webkit-border-radius:5px;
@@ -531,6 +612,10 @@ input:checked + .slider:before {
     background-color: #2ca02c;
 }
 
+.tk-badge-active{
+    background-color: #FF173E;
+}
+
 .tk-header{
     font-size: 1.5vmax;
 }
@@ -591,4 +676,12 @@ input:checked + .slider:before {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 5vmax !important;
+}
+
+/************************CHARTS***********************/
+.pie-chart-tooltip{
+    padding: 5px 15px;
+    border: 1px solid #777;
+    border-radius: 5px;
+    background-color: #fff;
 }

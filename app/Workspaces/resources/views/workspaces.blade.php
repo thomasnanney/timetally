@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-    <div class="container">
+    <div class="tk-container">
         <div id="workspaceManager"></div>
     </div>
 

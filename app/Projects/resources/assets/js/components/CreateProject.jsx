@@ -1,30 +1,33 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+import SuccessNotification from 'core/SuccessNotification';
+import ErrorNotification from 'core/ErrorNotification';
+
 class CreateProject extends Component{
 
     constructor(props){
         super(props);
         this.state = {
-            step: 1,
+            activeView: 0,
             project: {
                 title: '',
-                scope: 'public',
-                workspaceID: '',
+                private: false,
                 clientID: '',
                 billableType: 'fixed',
                 startDate: '',
                 endDate: '',
                 projectedTime: '',
                 projectedRevenue: '',
-                billableRate: '',
-                billableHourlyType: 'project',
-                users: [],
+                projectedCost: '',
                 description: ''
             },
+            users: [],
             clients: [],
             errors: {},
-            workspaces: []
+            workspaces: [],
+            showSuccess: false,
+            showError: false,
         }
     }
 
@@ -54,312 +57,193 @@ class CreateProject extends Component{
                     ' Administrator');
             });
 
-        axios.post('/users/getAllWorkspaces')
-            .then(function(response){
-                self.setState({workspaces: response.data});
-                if(self.state.workspaces.length >0){
-                    let newProject = self.state.project;
-                    newProject.workspaceID = self.state.workspaces[0].id;
-                    self.setState({project: newProject});
-                }
-            })
-            .catch(function(error){
-                console.log(error);
-                alert('We were unable to retrieve all of your workspaces, please reload the page or contact your' +
-                    ' System Administrator');
-            });
-    }
-
-    nextStep(){
-        this.setState((prevState, props) => ({
-            step: prevState.step + 1
-        }));
-    }
-
-    prevStep(){
-        this.setState((prevState, props) => ({
-            step: prevState.step - 1
-        }));
+        // axios.post('/users/getAllWorkspaces')
+        //     .then(function(response){
+        //         self.setState({workspaces: response.data});
+        //         if(self.state.workspaces.length >0){
+        //             let newProject = self.state.project;
+        //             newProject.workspaceID = self.state.workspaces[0].id;
+        //             self.setState({project: newProject});
+        //         }
+        //     })
+        //     .catch(function(error){
+        //         console.log(error);
+        //         alert('We were unable to retrieve all of your workspaces, please reload the page or contact your' +
+        //             ' System Administrator');
+        //     });
     }
 
     createProject(){
         let self = this;
-        console.log(self.state.project);
+
         axios.post('/projects/create', {
-            data: self.state.project
+            data: self.state.project,
+            users: self.state.users
         })
             .then(function(response){
-                if(response.status == 200){
-                    if(response.data.errors == "true"){
-                        console.log("Setting state errors");
-                        console.log(response.data.messages);
-                        let errors = response.data.messages;
-                        self.setState({errors: errors});
-                        self.setState({step: 1});
-                    }else{
-                        window.location.href = '/projects';
-                    }
+                if(response.status == 201){
+                    self.showSuccess();
                 }
             })
             .catch(function(error){
-                console.log(error);
-               alert("We were unable to create your project, please try again");
+                if(error.response.status == 400){
+                    let errors = error.response.data.messages;
+                    self.setState({errors: errors});
+                    self.showError();
+                }
             });
     }
 
     addUserField(){
-        let newProject = this.state.project;
-        newProject.users.push('');
-        this.setState((prevState, props) => ({
-            project : newProject
-        }));
+        let newState = this.state;
+        newState.users.push('');
+        this.setState(newState);
     };
 
     //ToDo: convert to updateInput for dynamic fields as well via arrays
     updateUserName(id, evt){
-        let users = this.state.project.users.slice();
+        let users = this.state.users.slice();
         users[id] = evt.target.value;
-        let newProject = this.state.project;
-        newProject.users = users;
-        this.setState({project: newProject});
+        let newState = this.state;
+        newState.users = users;
+        this.setState(newState);
     }
 
     updateInput(event){
         let name = event.target.name;
-        let value = event.target.value;
-        this.updateState(name, value);
+        let value = event.target.type == 'checkbox' ? event.target.checked : event.target.value;
+        this.updateProject(name, value);
     }
 
-    updateState(name, value){
+    updateProject(name, value){
         let newProject = this.state.project;
         newProject[name] = value;
         this.setState({ project: newProject});
     }
 
-    updateCheckbox(event){
-        let name = event.target.name;
-        let value = event.target.checked;
-        if(name == 'scope'){
-            if(value){
-                this.updateState(name, 'private');
-            }else{
-                this.updateState(name, 'public');
-            }
-        }
-        if(name == 'billableType'){
-            if(value){
-                this.updateState(name, 'hourly');
-            }else{
-                this.updateState(name, 'fixed');
-            }
-        }
-        if(name == 'billableHourlyType'){
-            if(value){
-                this.updateState(name, 'employee');
-            }else{
-                this.updateState(name, 'project');
-            }
-        }
+    makeTabActive(tab){
+        this.setState({activeView: tab});
+    }
+
+    showSuccess(){
+        let self = this;
+        this.setState({showSuccess: true});
+        window.setTimeout(function(){
+            self.setState({showSuccess: false});
+            window.location.href = '/projects';
+        }, 3000);
+    }
+
+    showError(){
+        let self = this;
+        this.setState({showError: true});
+        window.setTimeout(function(){
+            self.setState({showError: false});
+        }, 3000);
     }
 
     render(){
-        return(
-            <div className="tile raise">
-                <div className="pane-container">
-                    {(() => {
-                        switch (this.state.step) {
-                            case 1:
-                                return (
-                                    <div className="pane medium-container margin-center">
-                                        <div>
-                                            <h1>Project Name</h1>
-                                            <input
-                                                type="text"
-                                                name="title"
-                                                className="tk-form-input"
-                                                placeholder="Project Name..."
-                                                value={this.state.project.title}
-                                                onChange={this.updateInput.bind(this)}
-                                            />
-                                            {this.state.errors.title
-                                                ? <small className="error">{this.state.errors.title}</small>
-                                                : ''
-                                            }
-                                            {this.state.workspaces.length > 1 &&
-                                                <div>
-                                                    <h1>Workspace</h1>
-                                                    <select className="tk-form-input"
-                                                        value={this.state.project.workspaceID}
-                                                        onChange={this.updateInput.bind(this)}
-                                                        name="workspaceID">
-                                                    {
-                                                        this.state.workspaces.length > 0
-                                                        ?
-                                                        this.state.workspaces.map((workspace) =>
-                                                            <option value={workspace.id} key={workspace.id}>{workspace.title}</option>
-                                                        )
-                                                        :
-                                                        <option>Add a workspace</option>
-                                                    }
-                                                        </select>
-                                                </div>
-                                            }
-                                            {this.state.errors.workspaceID
-                                                ? <small className="error">{this.state.errors.workspaceID}</small>
-                                                : ''
-                                            }
-                                        </div>
-                                        <br></br>
-                                        <div className="row">
-                                            <div className="col-xs-12">
-                                                Public
-                                                <label className="switch">
-                                                    <input type="checkbox"
-                                                           name="scope"
-                                                           checked={this.state.project.scope == 'private'}
-                                                           onChange={this.updateCheckbox.bind(this)}
 
-                                                    />
-                                                    <div className="slider round"></div>
-                                                </label>
-                                                Private
-                                                {this.state.errors.scope
-                                                    ? <small className="error">{this.state.errors.scope}</small>
+        const tabs = [
+            'General',
+            'Details',
+            'Finance',
+            'Users',
+        ];
+
+        return(
+            <div>
+                <SuccessNotification show={this.state.showSuccess}/>
+                <ErrorNotification show={this.state.showError}/>
+                <div className="tile raise">
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <ul className="no-list-style horizontal-menu text-center thin-border-bottom">
+                                {
+                                    tabs.map((tab, id) =>
+                                        <li className={"tab " + (this.state.activeView == id ? 'active ': '') + (hasErrors(id, this.state.errors) ? 'pane-error ' : '')} onClick={() => this.makeTabActive(id)} key={id}>{tab}</li>
+                                    )
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div className="pane-container">
+                        {(() => {
+                            switch (this.state.activeView) {
+                                case 0:
+                                    return (
+                                        <div className="pane medium-container margin-center">
+                                            <div>
+                                                <h1>Project Name</h1>
+                                                <input
+                                                    type="text"
+                                                    name="title"
+                                                    className="tk-form-input"
+                                                    placeholder="Project Name..."
+                                                    value={this.state.project.title}
+                                                    onChange={this.updateInput.bind(this)}
+                                                />
+                                                {this.state.errors.title
+                                                    ? <small className="error">{this.state.errors.title}</small>
                                                     : ''
                                                 }
                                             </div>
-                                        </div>
-                                        <br></br>
-                                        <div className="row">
-                                            <div className="col-xs-12">
-                                                <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right" aria-hidden="true">&nbsp;</i></a>
+                                            <br></br>
+                                            <div className="row">
+                                                <div className="col-xs-12">
+                                                    Public
+                                                    <label className="switch">
+                                                        <input type="checkbox"
+                                                               name="private"
+                                                               checked={this.state.project.private}
+                                                               onChange={this.updateInput.bind(this)}
+
+                                                        />
+                                                        <div className="slider round"></div>
+                                                    </label>
+                                                    Private
+                                                    {this.state.errors.private
+                                                        ? <small className="error">{this.state.errors.private}</small>
+                                                        : ''
+                                                    }
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                );
-                            case 2:
-                                return (<div className="pane medium-container margin-center">
-                                    <div>
-                                        <h1>Client</h1>
-                                        <select className="tk-form-input"
-                                                value={this.state.project.clientID}
-                                                onChange={this.updateInput.bind(this)}
-                                                name="clientID">
-                                            {
-                                                this.state.clients.length > 0
-                                                    ?
-                                                    this.state.clients.map((client) =>
-                                                        <option value={client.id} key={client.id}>{client.name}</option>
-                                                    )
-                                                    :
-                                                    <option>Add a client</option>
-                                            }
-                                        </select>
-                                        {this.state.errors.clientID
-                                            ? <small className="error">{this.state.errors.clientID}</small>
-                                            : ''
-                                        }
-                                    </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            Fixed Price
-                                            <label className="switch">
-                                                <input
-                                                    type="checkbox"
-                                                    name="billableType"
-                                                    checked = {this.state.project.billableType == 'hourly'}
-                                                    onChange={this.updateCheckbox.bind(this)}
-                                                />
-                                                <div className="slider round"></div>
-                                            </label>
-                                            Billed Hourly
-                                            {this.state.errors.billableType
-                                                ? <small className="error">{this.state.errors.billableType}</small>
+                                            <br/>
+                                            <textarea name="description"
+                                                      className="tk-form-textarea"
+                                                      placeholder="Project Description..."
+                                                      onChange={this.updateInput.bind(this)}
+                                            />
+                                            {this.state.errors.description
+                                                ? <small className="error">{this.state.errors.description}</small>
                                                 : ''
                                             }
                                         </div>
-                                    </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            {
-                                                this.state.project.billableType == 'fixed'
-                                                    ?
-                                                    <div>
-                                                        <input
-                                                            type="text"
-                                                            name="projectedRevenue"
-                                                            className="tk-form-input"
-                                                            placeholder="$$$ Total Cost..."
-                                                            value={this.state.project.projectedRevenue}
-                                                            onChange={this.updateInput.bind(this)}
-                                                        />
-                                                        {this.state.errors.projectedRevenue
-                                                            ? <small className="error">{this.state.errors.projectedRevenue}</small>
-                                                            : ''
-                                                        }
-                                                    </div>
-                                                    :
-                                                    <div>
-                                                        Project Hourly Rate
-                                                        <label className="switch">
-                                                            <input
-                                                                type="checkbox"
-                                                                name="billableHourlyType"
-                                                                checked={this.state.project.billableHourlyType == 'employee'}
-                                                                onChange={this.updateCheckbox.bind(this)}
-                                                            />
-                                                            <div className="slider round"></div>
-                                                        </label>
-                                                        Employee Hourly Rate
-                                                        {this.state.errors.projectedRevenue
-                                                            ? <small className="error">{this.state.errors.projectedRevenue}</small>
-                                                            : ''
-                                                        }
-                                                    </div>
+                                    );
+                                case 1:
+                                    return (<div className="pane medium-container margin-center">
+                                        <div>
+                                            <h1>Details</h1>
+                                            <label>Client</label>
+                                            <select className="tk-form-input"
+                                                    value={this.state.project.clientID}
+                                                    onChange={this.updateInput.bind(this)}
+                                                    name="clientID">
+                                                {
+                                                    this.state.clients.length > 0
+                                                        ?
+                                                        this.state.clients.map((client) =>
+                                                            <option value={client.id} key={client.id}>{client.name}</option>
+                                                        )
+                                                        :
+                                                        <option>Add a client</option>
+                                                }
+                                            </select>
+                                            {this.state.errors.clientID
+                                                ? <small className="error">{this.state.errors.clientID}</small>
+                                                : ''
                                             }
                                         </div>
-                                    </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            {
-                                                this.state.project.billableHourlyType == 'project' && this.state.project.billableType == 'hourly'
-                                                    ?
-                                                    <div>
-                                                        <input
-                                                            type="text"
-                                                            name="billableRate"
-                                                            className="tk-form-input"
-                                                            placeholder="$$$ Hourly Rate"
-                                                            value={this.state.project.billableRate}
-                                                            onChange={this.updateInput.bind(this)}
-                                                        />
-                                                        {this.state.errors.billableRate
-                                                            ? <small className="error">{this.state.errors.billableRate}</small>
-                                                            : ''
-                                                        }
-                                                    </div>
-                                                    :
-
-                                                    ''
-                                            }
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
-                                                Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right"
-                                                                                                                                     aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>);
-                            case 3:
-                                return (<div className="pane medium-container margin-center">
-                                    <div>
-                                        <h1>Details</h1>
                                         <label>
                                             Start Date:
                                         </label>
@@ -396,78 +280,123 @@ class CreateProject extends Component{
                                             ? <small className="error">{this.state.errors.projectedTime}</small>
                                             : ''
                                         }
-                                    </div>
-                                    <br/>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
-                                                Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right"
-                                                                                                                                     aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>);
-                            case 4:
-                                return (<div className="pane medium-container margin-center">
-                                    <div>
-                                        <h1>Add Users</h1>
-                                        {
-                                            this.state.project.users.map((user, id) => (
-                                                <input type="text"
-                                                       className="tk-form-input"
-                                                       placeholder="User's Email..."
-                                                       value={user}
-                                                       key={id}
-                                                       onChange={this.updateUserName.bind(this, id)}
+                                    </div>);
+                                case 2:
+                                    return (
+                                        <div className="pane medium-container margin-center">
+                                            <div>
+                                                <label>Projected Revenue</label>
+                                                <input
+                                                    type="text"
+                                                    name="projectedRevenue"
+                                                    className="tk-form-input"
+                                                    placeholder="$$$ Projected Revenue"
+                                                    value={this.state.project.projectedRevenue}
+                                                    onChange={this.updateInput.bind(this)}
                                                 />
-                                            ))
+                                                {this.state.errors.projectedRevenue
+                                                    ? <small className="error">{this.state.errors.projectedRevenue}</small>
+                                                    : ''
+                                                }
+                                                <label>Projected Cost</label>
+                                                <input
+                                                    type="text"
+                                                    name="projectedCost"
+                                                    className="tk-form-input"
+                                                    placeholder="$$$ Projected Cost"
+                                                    value={this.state.project.projectedCost}
+                                                    onChange={this.updateInput.bind(this)}
+                                                />
+                                                {this.state.errors.projectedRevenue
+                                                    ? <small className="error">{this.state.errors.projectedCost}</small>
+                                                    : ''
+                                                }
+                                            </div>
+                                        </div>);
+                                case 3:
+                                    return (<div className="pane medium-container margin-center">
+                                        {
+                                            this.state.project.private
+                                                ?
+                                                <div>
+                                                    <div>
+                                                        <h1>Add Users</h1>
+                                                        {
+                                                            this.state.users.map((user, id) => (
+                                                                <input type="text"
+                                                                       className="tk-form-input"
+                                                                       placeholder="User's Email..."
+                                                                       value={user}
+                                                                       key={id}
+                                                                       onChange={this.updateUserName.bind(this, id)}
+                                                                />
+                                                            ))
+                                                        }
+                                                    </div>
+                                                    <br/>
+                                                    <div className="row">
+                                                        <div className="col-xs-12 text-center">
+                                                            <button onClick={() => this.addUserField()} className="btn tk-btn">Add User</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                :
+                                                <div>
+                                                    <p>This project is public, all users in the workspace will be able to view it and add time entries</p>
+                                                </div>
                                         }
-                                    </div>
-                                    <br></br>
-                                    <div className="row">
-                                        <div className="col-xs-12 text-center">
-                                            <button onClick={() => this.addUserField()} className="btn tk-btn">Add User</button>
-                                        </div>
-                                    </div>
-                                    <br></br>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
-                                                Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.nextStep()}>Next <i className="fa fa-chevron-right" aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>);
-                            case 5:
-                                return (<div className="pane medium-container margin-center">
-                                    <div>
-                                        <h1>Project Details</h1>
-                                        <textarea name="description"
-                                                  className="tk-form-textarea"
-                                                  placeholder="Project Description..."
-                                                  onChange={this.updateInput.bind(this)}
-                                        />
-                                        {this.state.errors.description
-                                            ? <small className="error">{this.state.errors.description}</small>
-                                            : ''
-                                        }
-                                    </div>
-                                    <br></br>
-                                    <div className="row">
-                                        <div className="col-xs-12">
-                                            <a href="#" className="no-link-style" onClick={() => this.prevStep()}><i className="fa fa-chevron-left" aria-hidden="true"></i>
-                                                Back</a>
-                                            <a href="#" className="no-link-style pull-right" onClick={() => this.createProject()}>Finish <i className="fa fa-chevron-right"
-                                                                                                       aria-hidden="true"></i></a>
-                                        </div>
-                                    </div>
-                                </div>);
-                        }
-                    }) ()}
+                                    </div>);
+                            }
+                        }) ()}
+                        <div className="row">
+                            <div className="col-xs-12 text-right">
+                                <button className="btn tk-btn-success" onClick={this.createProject.bind(this)}>Save</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     }
+}
+
+function hasErrors(pane, errors){
+    const errorFields = [
+        [
+            'title',
+            'workspaceID',
+            'private',
+            'description'
+        ],
+        [
+            'clientID',
+            'startDate',
+            'endDate',
+            'projectedTime',
+        ],
+        [
+            'projectedRevenue',
+            'projectedCost',
+        ],
+        [
+            'users'
+        ]
+    ];
+
+    let hasErrors = false;
+
+    if(errors){
+        Object.keys(errors).forEach(function(field){
+            for(let key in errorFields[pane]){
+                if(field ==  errorFields[pane][key]){
+                    hasErrors = true;
+                    break;
+                }
+            }
+        });
+    }
+
+    return hasErrors;
 }
 
 if(document.getElementById('createProject')){

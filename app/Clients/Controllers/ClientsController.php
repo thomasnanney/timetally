@@ -4,8 +4,8 @@ namespace App\Clients\Controllers;
 
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
-use JavaScript;
 use App\Clients\Models\Client;
+use Illuminate\Support\Facades\Auth;
 
 class ClientsController extends Controller
 {
@@ -47,7 +47,12 @@ class ClientsController extends Controller
             ]);
         }
 
-        Client::create($data);
+        $client = Client::create($data);
+
+        //link the client to users current workspace
+        $user = Auth::user();
+        $workspace = $user->getCurrentWorkspace();
+        $workspace->queryClients()->attach($client->id);
 
         return response()->json([
             'errors' => 'false',

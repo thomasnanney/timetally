@@ -1,0 +1,21 @@
+modify/consolidate routes for reports
+
+change validation to make sure confirmation password matches
+
+Move reset password to a settings page modal
+
+delete user functionality for workspace
+
+Link up reports
+
+change pivot tables to sync without detaching
+
+paginate timer
+
+Dashboard UI
+
+Add in email to registration field when token is present
+
+Check for orphaned foreign key records
+
+Need to add filters to Reports view

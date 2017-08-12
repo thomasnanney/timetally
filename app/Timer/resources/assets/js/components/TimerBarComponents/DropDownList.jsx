@@ -19,17 +19,24 @@ export default class DropDownList extends Component {
 
     render() {
 
+        console.log(this.props.items);
+        console.log(this.props.items.length > 0);
+
         return (
             <div>
                 <div className={"tk-dropdown tk-dropdown-list tk-root " + this.props.align}>
                     <ul className="no-list-style no-margin no-padding text-center">
-                        {(this.props.items && this.props.items.length >0)
+                        {(this.props.items && this.props.items.length > 0)
                             ?
                                 this.props.items.map((item, id) =>
                                     <DropDownListItem item={item} onAction={this.props.updateInput} key={id} />
                                 )
                             :
-                                <a href="/projects/create">Add Project</a>
+                                <div>
+                                    <br/>
+                                    {this.props.emptyMessage ? this.props.emptyMessage : 'No items to display'}
+                                    <br/>
+                                </div>
                         }
                     </ul>
                 </div>

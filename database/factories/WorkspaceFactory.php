@@ -15,7 +15,7 @@
 $factory->define(App\Workspaces\Models\Workspace::class, function (Faker\Generator $faker) {
 
     return [
-        'title' => $faker->word,
+        'name' => $faker->word,
         'description' => $faker->sentence,
         'ownerID' => 1
     ];

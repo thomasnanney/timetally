@@ -5,10 +5,9 @@ namespace App\Timer\Controllers;
 use Illuminate\Http\Request;
 use App\Core\Controllers\Controller;
 use App\Projects\Models\Project;
-use App\Workspaces\Models\Workspace;
 use Illuminate\Support\Facades\Auth;
 use App\Timer\Models\TimeEntries;
-use Illuminate\Support\Facades\DB;
+use DateTime;
 
 class TimerController extends Controller
 {
@@ -29,39 +28,16 @@ class TimerController extends Controller
      */
     public function index()
     {
-        $user = Auth::user();
-
-        // get projects user belongs to
-        $userProjects = $user->queryProjects();
-
-        //  get all time entries created by user
-        $entries = TimeEntries::where('userID', '=', $user->id);
-
-
-        return view('timer',
-            [
-                'entries' => $entries,
-                'user' => $user,
-                'projects' => $userProjects,
-            ]);
+        return view('timer');
     }
 
     public function postDelete(TimeEntries $entry) {
-        if(TimeEntries::find($entry->id)){
+        if($entry){
             TimeEntries::destroy($entry->id);
-            return response()->json([
-                'status' => 'success',
-                'errors' => 'false'
-            ]);
+            return response('success', 200);
         }
 
-        return response()->json([
-            'status' => 'fail',
-            'errors' => 'true',
-            'messages' => [
-                'Unable to find time entry'
-            ]
-        ]);
+        return response('Invalid time entry', 404);
     }
 
     public function postCreate(Request $request) {
@@ -69,9 +45,13 @@ class TimerController extends Controller
 
         $user = Auth::user();
 
-        $data['startTime'] = date("Y-m-d h:i:s",strtotime($data['startTime']));
-        $data['endTime'] = date("Y-m-d h:i:s",strtotime($data['endTime']));
+        $data['startTime'] = new DateTime($data['startTime']);
+        $data['endTime'] = new DateTime($data['endTime']);
         $data['userID'] = $user->id;
+        $data['workspaceID'] = $user->current_workspace_id;
+        if($data['projectID']){
+            $data['clientID'] = Project::find($data['projectID'])->clientID;
+        }
 
         $v = TimeEntries::validate($data);
 

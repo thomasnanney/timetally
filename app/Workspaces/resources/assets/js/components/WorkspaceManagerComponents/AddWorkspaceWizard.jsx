@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 //components imports
+import validator from 'validator';
 
 export default class AddWorkspaceWizard extends Component {
 
@@ -10,7 +11,7 @@ export default class AddWorkspaceWizard extends Component {
             step: 1,
             name: '',
             users: [],
-            usersCount: 1
+            error: null
         };
 
         this.nextStep = this.nextStep.bind(this);
@@ -53,17 +54,31 @@ export default class AddWorkspaceWizard extends Component {
         }else{
             this.setState({error: error});
         }
+
         this.setState((prevState, props) => ({
             step: prevState.step + 1,
         }));
     }
 
     addWorkspace(){
-        alert('You added a workspace');
-        this.setState((prevState, porps) => ({
-            step: 1,
-        }));
-        this.props.addWorkspace(this.state.name);
+        let self = this;
+        if(this.state.error){
+            alert("You must fix the errors before saving");
+            return;
+        }else{
+            axios.post('/workspaces/create', {
+                data: {
+                    name: self.state.name
+                },
+                users: self.state.users
+            }).then(function(response){
+                self.setState({step: 1});
+                self.props.updateWorkspaces();
+            }).catch(function(error){
+                console.log(error);
+                alert("There was an error creating your workspace, please try reloading the page.");
+            });
+        }
     }
 
     setName(event){
@@ -80,9 +95,17 @@ export default class AddWorkspaceWizard extends Component {
     };
 
     updateUserName(id, evt){
+        let email = evt.target.value;
+
         let users = this.state.users.slice();
-        users[id] = evt.target.value;
+        users[id] = email;
         this.setState({users: users});
+
+        if(email && !validator.isEmail(email)){
+            this.setState({error: "Invalid email address"});
+        }else{
+            this.setState({error: null});
+        }
     }
 
     render() {
@@ -96,7 +119,7 @@ export default class AddWorkspaceWizard extends Component {
                             return (
                                 <div>
                                     <p>Give your workspace a name</p>
-                                    <input type="text" className="tk-form-input" value={this.state.name} placeholder="Workspace name..." onChange={this.setName}></input>
+                                    <input type="text" className="tk-form-input" value={this.state.name} placeholder="Workspace name..." onChange={this.setName}/>
                                     <button onClick={this.nextStep} className="btn tk-btn">Continue</button>
                                 </div >
                             );
@@ -106,7 +129,7 @@ export default class AddWorkspaceWizard extends Component {
                                     <p>Add Users</p>
                                     {
                                         this.state.users.map((user, id) => (
-                                            <input type="text" className="tk-form-input" placeholder="User's Email..." value={this.state.users[id]} onChange={this.updateUserName.bind(this, id)}></input>
+                                            <input type="text" className="tk-form-input" placeholder="User's Email..." value={this.state.users[id]} onChange={this.updateUserName.bind(this, id)}/>
                                         ))
                                     }
                                     <button onClick={this.addUserField} className="btn tk-btn">Add User</button>

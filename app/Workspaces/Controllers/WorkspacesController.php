@@ -4,9 +4,10 @@ namespace App\Workspaces\Controllers;
 
 use App\Workspaces\Models\Workspace;
 use App\Core\Controllers\Controller;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Exception;
+use App\Users\Models\User;
 
 
 class WorkspacesController extends Controller
@@ -31,59 +32,56 @@ class WorkspacesController extends Controller
         return view('workspaces');
     }
 
-    public function getEdit(){
-        return view('editWorkspace');
+    public function getEdit(Workspace $workspace){
+
+        return view('editWorkspace', ['workspace' => $workspace]);
     }
 
     public function postEdit(Request $request, Workspace $workspace)
     {
         $data = $request->input('data');
 
-        if(isset($request['data'])) {
+        if($data) {
             $validator = Workspace::validate($data);
 
             if($validator->fails()) {
                 return response()->json([
-                    'status' => 'Fail',
                     'errors' => $validator->errors(),
-                ]);
+                ], 400);
             }
-            $workspace->name = $request->input('name');
-            $workspace->description = $request->input('description');
-            $workspace->organizationID = $request->input('organizationID');
+
+            $workspace->fill($data);
             $workspace->save();
-            return response()->json([
-                'errors' => 'false'
-            ]);
+
+            return response('Workspace saved', 200);
         }
 
-        return response()->json([
-            'status' => 'Fail',
-            'errors' => 'No input',
-        ]);
+        return response('Invalid input', 400);
     }
 
     public function postCreate(Request $request) {
-
         // validate info
         $data = $request->input('data');
+        $data['ownerID'] = Auth::id();
 
         $v = Workspace::validate($data);
 
         if($v->fails()) {
             return response()->json([
-                'status' => 'Fail',
                 'errors' => $v->errors(),
-            ]);
+            ], 400);
         }
-
         // workspace information
-        Workspace::create($data);
+        $workspace = Workspace::create($data);
 
-        return response()->json([
-           'status' => 'success',
-            'errors' => null
-        ]);
+        //attach the current user since they created the workspace;
+        $workspace->attachAdminUser(Auth::id());
+
+        $users = $request->input('users');
+        //add users to workspace
+        $workspace->inviteUsersByEmail($users);
+
+        return response('Workspace created', 201);
     }
 
     public function deleteWorkspace(Workspace $workspace) {
@@ -92,7 +90,92 @@ class WorkspacesController extends Controller
         return redirect()->to('/workspaces')->with('status', 'Workspace Deleted');
     }
 
-    public function getAllUsers(Workspace $workspace){
-        return $workspace->queryUsers()->get();
+    public function getAllUsers(Request $request, $workspace = null){
+
+        if(!$workspace){
+            $user = Auth::user();
+            $workspace = $user->getCurrentWorkspace();
+        }else{
+            $workspace = Workspace::find($workspace);
+        }
+
+        if(!$request->input('raw')){
+            $users = $workspace->queryUsers()->get();
+
+            $users = $users->transform(function($user, $key){
+                return[
+                    'value' => $user->id,
+                    'title' => $user->email,
+                    'selected' => false
+                ];
+            })->values();
+        }else{
+            $users = $workspace->queryUsersWithPrivileges()->get();
+        }
+
+        return $users;
+    }
+
+    public function getAllClients($workspace = null){
+        if(!$workspace){
+            $user = Auth::user();
+            $workspace = $user->getCurrentWorkspace();
+        }else{
+            $workspace = Workspace::find($workspace);
+        }
+
+        $clients = $workspace->queryClients()->get();
+
+        $clients = $clients->transform(function($user, $key){
+            return[
+                'value' => $user->id,
+                'title' => $user->name,
+                'selected' => false
+            ];
+        })->values();
+
+        return $clients;
+    }
+
+    public function getAllProjects($workspace = null){
+
+        if(!$workspace){
+            $user = Auth::user();
+            $workspace = $user->getCurrentWorkspace();
+        }else{
+            $workspace = Workspace::find($workspace);
+        }
+
+        $projects = $workspace->queryProjects()->get();
+
+        $projects = $projects->transform(function($user, $key){
+            return[
+                'value' => $user->id,
+                'title' => $user->title,
+                'selected' => false
+            ];
+        })->values();
+
+        return $projects;
+    }
+
+    public function addAdmin(User $user){
+        $currentUser = Auth::user();
+        $workspace = $currentUser->getCurrentWorkspace();
+        //ToDo: Implement try catch
+        $workspace->addAdmin($user);
+        return response()->json([
+            'status' => 'success'
+        ]);
+    }
+
+    public function removeAdmin(User $user){
+        $currentUser = Auth::user();
+        $workspace = $currentUser->getCurrentWorkspace();
+        //ToDo: Implement try catch
+        $workspace->removeAdmin($user);
+        return response()->json([
+            'status' => 'success'
+        ]);
     }
 }
