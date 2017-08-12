@@ -38,18 +38,17 @@ class ProjectsTest extends TestCase
                 'data' => [
                     'title' => 'Project 1',
                     'clientID' => $client->id,
-                    'workspaceID' => $workspace->id,
                     'description' => 'Description for Project 1',
                     'projectedRevenue' => 10.00,
+                    'projectedCost' => 5.00,
                     'projectedTime' => 10,
-                    'billableType' => 'hourly',
-                    'scope' => 'public',
-                    'billableHourlyType' => 'none',
-                    'billableRate' => '1000',
+                    'private' => false,
                     'startDate' => '2017-06-01',
                     'endDate' => '2017-06-05',
                 ]
             ));
+
+        var_dump(json_decode($response->getContent()), true);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertDatabaseHas('projects', [

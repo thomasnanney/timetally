@@ -43524,6 +43524,8 @@ var DropDownDatePicker = function (_Component) {
         key: 'render',
         value: function render() {
 
+            console.log(this.props.date);
+
             return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                 __WEBPACK_IMPORTED_MODULE_3_react_simple_dropdown___default.a,
                 { ref: 'dropdown', className: 'full-width relative', onShow: this.setIcon.bind(this, true), onHide: this.setIcon.bind(this, false) },
@@ -43540,7 +43542,7 @@ var DropDownDatePicker = function (_Component) {
                 __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
                     __WEBPACK_IMPORTED_MODULE_3_react_simple_dropdown__["DropdownContent"],
                     null,
-                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_day_picker___default.a, { onDayClick: this.handleDayClick.bind(this), selectedDays: this.props.date }),
+                    __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_1_react_day_picker___default.a, { onDayClick: this.handleDayClick.bind(this), selectedDays: this.props.date ? __WEBPACK_IMPORTED_MODULE_5_dateformat___default()(this.props.date, "mm/dd/yy") : '' }),
                     __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('div', { className: 'tk-arrow' })
                 )
             );
@@ -45554,9 +45556,7 @@ var StandardReportManager = function (_Component) {
                 data.endDate = new Date(data.endDate);
                 var newState = self.state;
                 newState.data = response.data;
-                self.setState(newState, function () {
-                    console.log(self.state.data);
-                });
+                self.setState(newState);
             }).catch(function (error) {
                 console.log(error);
             });
